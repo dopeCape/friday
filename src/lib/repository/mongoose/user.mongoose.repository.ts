@@ -25,14 +25,16 @@ const userSchema = new Schema<User>({
       type: String,
       enum: userLevelSchema.enum,
     },
-    stack: [{ type: String }],
+    stack: {
+      type: [{ type: String }],
+      required: false,
+    },
     os: {
       type: String,
       enum: userOsSchema.enum,
     },
     knowsBasicCommands: {
       type: Boolean,
-      default: true,
     },
   },
 })
@@ -51,7 +53,4 @@ export default class UserRepository extends MongooseBaseRepository<User> {
     return UserRepository.instance
   }
 }
-
-
-
 

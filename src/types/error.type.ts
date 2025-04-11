@@ -1,5 +1,5 @@
 import { Sevrity } from "./logger.type";
-import { Logger } from "@/lib/services/logger.service";
+import { Logger } from "@/types";
 
 export interface ErrorMetadata {
   service?: string;

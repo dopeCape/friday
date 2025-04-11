@@ -5,8 +5,7 @@ import {
   IErrorHandler,
 } from "@/types";
 import { BaseErrorHandler } from "./baseErrorHandler";
-import { Logger } from "@/lib/services/logger.service";
-import { ClientSession } from "mongoose";
+import { Logger } from "@/types"
 
 /**
  * Central error handling coordinator that manages multiple error handlers
@@ -30,7 +29,7 @@ export class CentralErrorHandler {
    * Logger instance for error tracking
    * @private
    */
-  private logger = Logger.getInstance();
+  private logger: Logger;
 
   /**
    * Default error response when all handlers fail
@@ -46,7 +45,8 @@ export class CentralErrorHandler {
    * Initializes the CentralErrorHandler with a default fallback handler
    * @description Creates an anonymous handler that catches all unhandled errors
    */
-  constructor() {
+  constructor(logger: Logger) {
+    this.logger = logger;
     this.fallbackHandler = new (class extends BaseErrorHandler {
       name = "FallbackHandler";
       priority = Infinity;
@@ -160,17 +160,12 @@ export class CentralErrorHandler {
   async handleError<T>(
     operation: () => Promise<T>,
     metadata?: ErrorMetadata,
-    session?: ClientSession | null,
   ): Promise<T> {
     try {
       return await operation();
     } catch (error) {
       const processedError = await this.processError(error as Error, metadata);
       throw processedError;
-    } finally {
-      if (session) {
-        await session.endSession();
-      }
     }
   }
 }

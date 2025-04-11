@@ -12,7 +12,7 @@ const userSchema = z.object({
     stack: z.array(z.string()),
     os: userOsSchema,
     knowsBasicCommands: z.boolean(),
-  }),
+  }).optional(),
 });
 
 

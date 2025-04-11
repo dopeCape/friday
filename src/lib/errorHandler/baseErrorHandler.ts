@@ -105,7 +105,6 @@ export abstract class BaseErrorHandler implements IErrorHandler {
       isOperational,
       errorData,
       metadata: {
-        timestamp: new Date(),
         ...metadata,
       },
     };

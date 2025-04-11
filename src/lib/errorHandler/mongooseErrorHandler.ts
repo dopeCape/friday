@@ -27,7 +27,6 @@ export class MongoErrorHandler extends BaseErrorHandler {
    * @type {string[]}
    */
   allowedErrors: string[] = [
-    "MongoServerError",
     "CastError",
     "ValidationError",
   ];

@@ -37,6 +37,13 @@ const envSchema = {
     description:
       "Clerk secret key",
   },
+  CLERK_WEBHOOK_SIGNING_SECRET: {
+    type: "string" as const,
+    required: true,
+    description:
+      "Signing secret for clerk webhooks",
+
+  }
   // REDIS_HOST: {
   //   type: "string" as const,
   //   required: true,

@@ -5,10 +5,11 @@ import { BaseRepository, MongooseUpdateOpts, Logger } from "@/types"
 export class MongooseBaseRepository<T> implements BaseRepository<T> {
   private model: Model<T>
   private logger: Logger;
-  private errorHandler = new CentralErrorHandler();
+  private errorHandler;
   private resourceName: string;
   constructor(logger: Logger, model: Model<T>, resourceName: string) {
     this.model = model
+    this.errorHandler = new CentralErrorHandler(logger);
     this.errorHandler.registerHandler(new MongoErrorHandler())
     this.resourceName = resourceName
     this.logger = logger;
@@ -74,12 +75,13 @@ export class MongooseBaseRepository<T> implements BaseRepository<T> {
         filter
       });
       const deletedData = await this.model.findOneAndDelete(filter).lean();
+      if (!deletedData) {
+        this.logger.warn(`${this.resourceName} does not exists`, { filter });
+        return null;
+      }
       this.logger.info(`Deleted ${this.resourceName}`, {
         deletedData
       })
-      if (!deletedData) {
-        return null;
-      }
       return deletedData as T;
     }, {
       method: `delete${this.getUpperCaseResourceName()}`,

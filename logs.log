@@ -1,0 +1,44 @@
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:29:06"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:29:06"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:29:06"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:29:06"}
+{"level":"error","message":"Unhandled error","metadata":{"error":{"message":"Operation `users.findOne()` buffering timed out after 10000ms","name":"MongooseError","stack":"MongooseError: Operation `users.findOne()` buffering timed out after 10000ms\n    at Timeout.<anonymous> (/home/baby/workflow/projects/friday/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:187:23)\n    at listOnTimeout (node:internal/timers:581:17)\n    at process.processTimers (node:internal/timers:519:7)"},"metadata":{"method":"getUser","service":"UserModel","timestamp":"2025-04-11T11:59:16.831Z"}},"timestamp":"2025-04-11 17:29:16"}
+{"level":"error","message":"Internal server error","metadata":{"errorCode":"INTERNAL_ERROR","method":"getUser","service":"UserModel","timestamp":"2025-04-11T11:59:16.831Z"},"timestamp":"2025-04-11 17:29:16"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:35:34"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:35:34"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:35:34"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:35:34"}
+{"level":"error","message":"Unhandled error","metadata":{"error":{"message":"Operation `users.findOne()` buffering timed out after 10000ms","name":"MongooseError","stack":"MongooseError: Operation `users.findOne()` buffering timed out after 10000ms\n    at Timeout.<anonymous> (/home/baby/workflow/projects/friday/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:187:23)\n    at listOnTimeout (node:internal/timers:581:17)\n    at process.processTimers (node:internal/timers:519:7)"},"metadata":{"method":"getUser","service":"UserModel","timestamp":"2025-04-11T12:05:44.047Z"}},"timestamp":"2025-04-11 17:35:44"}
+{"level":"error","message":"Internal server error","metadata":{"errorCode":"INTERNAL_ERROR","method":"getUser","service":"UserModel","timestamp":"2025-04-11T12:05:44.047Z"},"timestamp":"2025-04-11 17:35:44"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:37:10"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:37:10"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:37:10"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:37:10"}
+{"level":"error","message":"Unhandled error","metadata":{"error":{"message":"Operation `users.findOne()` buffering timed out after 10000ms","name":"MongooseError","stack":"MongooseError: Operation `users.findOne()` buffering timed out after 10000ms\n    at Timeout.<anonymous> (/home/baby/workflow/projects/friday/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:187:23)\n    at listOnTimeout (node:internal/timers:581:17)\n    at process.processTimers (node:internal/timers:519:7)"},"metadata":{"method":"getUser","service":"UserModel","timestamp":"2025-04-11T12:07:20.247Z"}},"timestamp":"2025-04-11 17:37:20"}
+{"level":"error","message":"Internal server error","metadata":{"errorCode":"INTERNAL_ERROR","method":"getUser","service":"UserModel","timestamp":"2025-04-11T12:07:20.247Z"},"timestamp":"2025-04-11 17:37:20"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:41:01"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:41:01"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:41:01"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:41:01"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-11 17:41:02"}
+{"level":"info","message":"User already exists","metadata":{},"timestamp":"2025-04-11 17:41:02"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:42:38"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:42:38"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:42:38"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:42:38"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-11 17:42:39"}
+{"level":"warn","message":"User already exists","metadata":{"email":"tmank14319@gmail.com","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:42:39"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Creating user","metadata":{"data":{"email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ"}},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Created user","metadata":{"createdData":{"__v":0,"_id":"67f9077e08b2b1794e0db570","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ","stats":{"knowsBasicCommands":true,"stack":[]}}},"timestamp":"2025-04-11 17:43:50"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-11 17:45:28"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:45:28"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-11 17:45:28"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-11 17:45:28"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-11 17:45:29"}
+{"level":"info","message":"Creating user","metadata":{"data":{"email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ"}},"timestamp":"2025-04-11 17:45:29"}
+{"level":"info","message":"Created user","metadata":{"createdData":{"__v":0,"_id":"67f907e104dc6da411c019df","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ","stats":{"stack":[]}}},"timestamp":"2025-04-11 17:45:29"}
