@@ -21,6 +21,7 @@ import {
   IErrorHandler
 } from "./error.type"
 import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } from "@/types/signatures/baseRespository.signature"
+import { UserRepository } from "@/types/signatures/userRepository.signature"
 import { Logger } from "./signatures/logger.signature"
 // ==== barrel export====
 export type {
@@ -44,5 +45,6 @@ export type {
   UpdateOpts,
   MongooseUpdateOpts,
   Filter, Projection,
-  Logger
+  Logger,
+  UserRepository
 }

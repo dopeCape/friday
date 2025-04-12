@@ -42,3 +42,37 @@
 {"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-11 17:45:29"}
 {"level":"info","message":"Creating user","metadata":{"data":{"email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ"}},"timestamp":"2025-04-11 17:45:29"}
 {"level":"info","message":"Created user","metadata":{"createdData":{"__v":0,"_id":"67f907e104dc6da411c019df","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmFBS0RTaThpVWE4VG80UFVqREppNmxyNVEifQ","stats":{"stack":[]}}},"timestamp":"2025-04-11 17:45:29"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.deleted","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-12 10:46:57"}
+{"level":"error","message":"Cannot read properties of undefined (reading '0')","metadata":{},"timestamp":"2025-04-12 10:46:57"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.deleted","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-12 10:48:56"}
+{"level":"error","message":"Cannot read properties of undefined (reading '0')","metadata":{},"timestamp":"2025-04-12 10:48:56"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.deleted","id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","webhook":"Clerk"},"timestamp":"2025-04-12 10:52:37"}
+{"level":"info","message":"user delete event from clerk","metadata":{"data":{"deleted":true,"id":"user_2vaAK84govs7Ekv5IMQVqi6PIer","object":"user"},"email":""},"timestamp":"2025-04-12 10:52:37"}
+{"level":"info","message":"Deleting user with ","metadata":{"email":""},"timestamp":"2025-04-12 10:52:37"}
+{"level":"info","message":"Deleting user","metadata":{"filter":{"email":""}},"timestamp":"2025-04-12 10:52:37"}
+{"level":"warn","message":"user does not exists","metadata":{"filter":{"email":""}},"timestamp":"2025-04-12 10:52:37"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vcElgi3wkCx4wxofJSbJC6kajv","webhook":"Clerk"},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Creating user","metadata":{"data":{"clerkId":"user_2vcElgi3wkCx4wxofJSbJC6kajv","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmNFbGozTGVlcjFFdW5CdklReUtSY2ZjODAifQ"}},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Created user","metadata":{"createdData":{"__v":0,"_id":"67f9fb93e06cd280511bf441","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmNFbGozTGVlcjFFdW5CdklReUtSY2ZjODAifQ","stats":{"stack":[]}}},"timestamp":"2025-04-12 11:05:15"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.deleted","id":"user_2vcElgi3wkCx4wxofJSbJC6kajv","webhook":"Clerk"},"timestamp":"2025-04-12 11:05:42"}
+{"level":"info","message":"user delete event from clerk","metadata":{"clerkId":"user_2vcElgi3wkCx4wxofJSbJC6kajv","data":{"deleted":true,"id":"user_2vcElgi3wkCx4wxofJSbJC6kajv","object":"user"}},"timestamp":"2025-04-12 11:05:42"}
+{"level":"info","message":"Deleting user with ","metadata":{"clerkId":"user_2vcElgi3wkCx4wxofJSbJC6kajv"},"timestamp":"2025-04-12 11:05:42"}
+{"level":"info","message":"Deleting user","metadata":{"filter":{"clerkId":"user_2vcElgi3wkCx4wxofJSbJC6kajv"}},"timestamp":"2025-04-12 11:05:42"}
+{"level":"warn","message":"user does not exists","metadata":{"filter":{"clerkId":"user_2vcElgi3wkCx4wxofJSbJC6kajv"}},"timestamp":"2025-04-12 11:05:42"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.created","id":"user_2vcEzhU2OBtYArAAG32z73gYSpA","webhook":"Clerk"},"timestamp":"2025-04-12 11:07:08"}
+{"level":"info","message":"user create event from clerk","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-12 11:07:08"}
+{"level":"info","message":"Checking if user exists","metadata":{"email":"tmank14319@gmail.com"},"timestamp":"2025-04-12 11:07:08"}
+{"level":"info","message":"Getting user","metadata":{"filter":{"email":"tmank14319@gmail.com"}},"timestamp":"2025-04-12 11:07:08"}
+{"level":"info","message":"Got user","metadata":{"data":null},"timestamp":"2025-04-12 11:07:09"}
+{"level":"info","message":"Creating user","metadata":{"data":{"clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmNFemRNU3hzU3g2RERuNVZPOGlpNXdWNmkifQ"}},"timestamp":"2025-04-12 11:07:09"}
+{"level":"info","message":"Created user","metadata":{"createdData":{"__v":0,"_id":"67f9fc05888f62cb80808ff1","clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmNFemRNU3hzU3g2RERuNVZPOGlpNXdWNmkifQ","stats":{"stack":[]}}},"timestamp":"2025-04-12 11:07:09"}
+{"level":"info","message":"Webhook received","metadata":{"eventType":"user.deleted","id":"user_2vcEzhU2OBtYArAAG32z73gYSpA","webhook":"Clerk"},"timestamp":"2025-04-12 11:07:43"}
+{"level":"info","message":"user delete event from clerk","metadata":{"clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA","data":{"deleted":true,"id":"user_2vcEzhU2OBtYArAAG32z73gYSpA","object":"user"}},"timestamp":"2025-04-12 11:07:43"}
+{"level":"info","message":"Deleting user with ","metadata":{"clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA"},"timestamp":"2025-04-12 11:07:43"}
+{"level":"info","message":"Deleting user","metadata":{"filter":{"clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA"}},"timestamp":"2025-04-12 11:07:43"}
+{"level":"info","message":"Deleted user","metadata":{"deletedData":{"__v":0,"_id":"67f9fc05888f62cb80808ff1","clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA","email":"tmank14319@gmail.com","name":"Tejas","profileImage":"https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydmNFemRNU3hzU3g2RERuNVZPOGlpNXdWNmkifQ","stats":{"stack":[]}}},"timestamp":"2025-04-12 11:07:43"}
+{"level":"warn","message":"User does not exists","metadata":{"clerkId":"user_2vcEzhU2OBtYArAAG32z73gYSpA"},"timestamp":"2025-04-12 11:07:43"}

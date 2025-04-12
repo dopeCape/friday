@@ -55,4 +55,14 @@ export default class UserService {
       method: "deleteUser"
     })
   }
+  public async deleteUserWithClerkId(clerkId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Deleting user with ", { clerkId });
+      return await this.userRepository.delete({ clerkId });
+    }, {
+      service: "UserService",
+      method: "deleteUser"
+    })
+  }
+
 }

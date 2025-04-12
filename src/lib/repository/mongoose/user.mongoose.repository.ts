@@ -20,6 +20,10 @@ const userSchema = new Schema<User>({
     required: true,
     default: ""
   },
+  clerkId: {
+    type: String,
+    required: true,
+  },
   stats: {
     level: {
       type: String,

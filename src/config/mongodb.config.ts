@@ -6,8 +6,6 @@ declare global {
 }
 
 const MONGODB_URI = env.MONGO_URI
-
-
 let cached = global.mongoose;
 
 if (!cached) {
@@ -32,7 +30,6 @@ async function dbConnect() {
     cached.promise = null;
     throw e;
   }
-
   return cached.conn;
 }
 

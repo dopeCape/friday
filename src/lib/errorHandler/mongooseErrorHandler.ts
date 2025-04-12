@@ -85,6 +85,7 @@ export class MongoErrorHandler extends BaseErrorHandler {
       errorName = "Validation error";
     }
 
+    console.log(metadata);
     if (errorResponse) {
       logger.error(errorName, {
         error: {
