@@ -2,7 +2,7 @@ import { z } from "zod";
 const moduleContentTypeSchema = z.enum(["chapter", "quiz"]);
 
 const courseSchema = z.object({
-  id: z.string(),
+  _id: z.string(),
   title: z.string(),
   description: z.string(),
   isPrivate: z.boolean(),
@@ -15,18 +15,13 @@ const courseSchema = z.object({
   currentModuleId: z.string(),
 });
 
-const moduleContentSchema = z.object({
-  type: moduleContentTypeSchema,
-  id: z.string()
-})
-
 const moduleSchema = z.object({
   title: z.string(),
-  id: z.string(),
+  _id: z.string(),
   description: z.string(),
   courseId: z.string(),
   refs: z.array(z.string()),
-  contentIds: z.array(moduleContentSchema),
+  contents: z.array(z.string()),
   isLocked: z.boolean(),
   isCompleted: z.boolean(),
   currentChapterId: z.string(),
@@ -34,33 +29,38 @@ const moduleSchema = z.object({
 });
 
 const chapterSchema = z.object({
-  id: z.string(),
+  _id: z.string(),
   title: z.string(),
   content: z.string(),
-  isGenerated: z.string(),
+  isGenerated: z.boolean(),
   refs: z.array(z.string()),
   moduleId: z.string(),
+  type: z.string().default(moduleContentTypeSchema.enum.chapter),
   isCommpleted: z.boolean(),
 });
 const answerTypeSchema = z.enum(["code", "text", "mcq"])
-
 const questionSchema = z.object({
+  _id: z.string(),
   question: z.string(),
   answerType: answerTypeSchema,
+  isCorrect: z.boolean(),
+  isAnswered: z.boolean(),
   options: z.array(z.string()),
   answer: z.union([z.string(), z.number()]),
-  codeBlockType: z.array(z.string())
+  codeBlockType: z.string()
 })
-
 const quizSchema = z.object({
-  id: z.string(),
+  _id: z.string(),
   moduleId: z.string(),
-  questions: z.array(questionSchema)
+  questions: z.array(questionSchema),
+  type: z.string().default(moduleContentTypeSchema.enum.quiz),
 })
 
 export {
   courseSchema,
   moduleSchema,
   chapterSchema,
-  quizSchema
+  quizSchema,
+  questionSchema,
+  answerTypeSchema
 }

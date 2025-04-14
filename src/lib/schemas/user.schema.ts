@@ -5,7 +5,7 @@ const userOsSchema = z.enum(["windows", "mac", "linux"])
 const userSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  _id: z.string().optional(),
+  _id: z.string(),
   clerkId: z.string(),
   profileImage: z.string(),
   stats: z.object({

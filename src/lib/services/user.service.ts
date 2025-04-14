@@ -1,5 +1,5 @@
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
-import { Logger, User } from "@/types"
+import { Logger, User, WithoutId } from "@/types"
 import { UserRepository as UserRepositoryType } from "@/types/signatures/userRepository.signature";
 
 export default class UserService {
@@ -22,11 +22,11 @@ export default class UserService {
     return this.instance
   }
 
-  public async createUser(user: User) {
+  public async createUser(user: WithoutId<User>) {
     return this.errorHandler.handleError(async () => {
-      if (user._id) {
-        this.logger.info("deleting _id from user", { user });
-        delete user._id;
+      if ((user as unknown as User)._id) {
+        this.logger.warn("User id present in user object", { user });
+        delete (user as any)._id
       }
       const createdUser = await this.userRepository.create(user);
       return createdUser;
@@ -64,5 +64,4 @@ export default class UserService {
       method: "deleteUser"
     })
   }
-
 }

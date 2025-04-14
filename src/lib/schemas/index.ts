@@ -7,6 +7,8 @@ import {
   courseSchema,
   moduleSchema,
   chapterSchema,
+  questionSchema,
+  answerTypeSchema,
   quizSchema
 } from "./course.schema"
 
@@ -19,5 +21,7 @@ export {
   courseSchema,
   moduleSchema,
   chapterSchema,
-  quizSchema
+  quizSchema,
+  questionSchema,
+  answerTypeSchema
 }

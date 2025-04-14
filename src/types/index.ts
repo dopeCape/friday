@@ -20,10 +20,20 @@ import {
   ErrorHandlerContext,
   IErrorHandler
 } from "./error.type"
+import {
+  Course
+} from "./course.type"
 import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } from "@/types/signatures/baseRespository.signature"
 import { UserRepository } from "@/types/signatures/userRepository.signature"
 import { Logger } from "./signatures/logger.signature"
-// ==== barrel export====
+import {
+  Module
+} from "./module.type"
+import {
+  Chapter, Quiz, Question, AnswerType
+} from "./chapter.type"
+import { WithoutId } from "./utils.type"
+import { CourseRepository } from "./signatures/courseRepository.signature"
 export type {
   User, UserOs, UserLevel,
   EnvVarType,
@@ -46,5 +56,7 @@ export type {
   MongooseUpdateOpts,
   Filter, Projection,
   Logger,
-  UserRepository
+  UserRepository,
+  Course,
+  Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository
 }

@@ -76,7 +76,7 @@ describe("User Service Tests", () => {
     test("should create a user successfully, when _id is present in user", async () => {
       const user = await userService.createUser(testUser);
       expect(user.name).toEqual(testUser.name);
-      expect(loggerMock.info).toHaveBeenCalledTimes(1);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -126,5 +126,4 @@ describe("User Service Tests", () => {
       expect(result).toEqual(null);
     })
   })
-
 });

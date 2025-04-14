@@ -1,4 +1,5 @@
 import { AnyBulkWriteOperation, FilterQuery, PipelineStage, ProjectionType, UpdateQuery } from "mongoose"
+import { WithoutId } from "../utils.type";
 export type DeleteManyResult = {
   count: number
 }
@@ -21,7 +22,7 @@ export interface BaseRepository<T> {
     filter: Filter<T>,
     projection?: Projection<T>,
   ): Promise<P | null>;
-  create(data: T): Promise<T>;
+  create(data: WithoutId<T>): Promise<T>;
   update(filter: Filter<T>, update: Update<T>, opts?: UpdateOpts): Promise<T | null>;
   delete(filter: Filter<T>): Promise<T | null>;
   list<P extends Partial<T> = T>(filter: Filter<T>, projection?: Projection<T>): Promise<P[]>;

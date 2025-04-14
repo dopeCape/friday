@@ -43,7 +43,6 @@ describe("User Repository Tests", () => {
     await disconnectToTestDb();
   });
 
-
   describe("get() method suit", async () => {
     test("should get user, if the user exists", async () => {
       const user = await userRepository.get({ _id: testUserId });

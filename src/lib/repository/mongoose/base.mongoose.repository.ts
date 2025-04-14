@@ -1,7 +1,7 @@
 import { Model, FilterQuery, ProjectionType, UpdateQuery, PipelineStage, AnyBulkWriteOperation } from "mongoose"
 import { CentralErrorHandler } from "../../errorHandler/centralErrorHandler"
 import { MongoErrorHandler } from "../../errorHandler/mongooseErrorHandler"
-import { BaseRepository, MongooseUpdateOpts, Logger } from "@/types"
+import { BaseRepository, MongooseUpdateOpts, Logger, WithoutId } from "@/types"
 export class MongooseBaseRepository<T> implements BaseRepository<T> {
   private model: Model<T>
   private logger: Logger;
@@ -35,7 +35,7 @@ export class MongooseBaseRepository<T> implements BaseRepository<T> {
       service: `${this.getUpperCaseResourceName()}Model`,
     })
   }
-  public async create(data: T) {
+  public async create(data: WithoutId<T>) {
     return this.errorHandler.handleError(async () => {
       this.logger.info(`Creating ${this.resourceName}`, {
         data
@@ -50,7 +50,6 @@ export class MongooseBaseRepository<T> implements BaseRepository<T> {
       service: `${this.getUpperCaseResourceName()}Model`,
     })
   }
-
   public async update(filter: FilterQuery<T>, data: UpdateQuery<T>, opts?: MongooseUpdateOpts) {
     return this.errorHandler.handleError(async () => {
       this.logger.info(`Updating ${this.resourceName}`, {
@@ -179,5 +178,3 @@ export class MongooseBaseRepository<T> implements BaseRepository<T> {
     })
   }
 }
-
-

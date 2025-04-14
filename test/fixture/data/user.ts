@@ -1,7 +1,8 @@
-import { User } from "@/types";
+import { User, WithoutId } from "@/types";
 
-export const testUserToBeCreated: User = {
+export const testUserToBeCreated: WithoutId<User> = {
   name: "John Doe",
+  clerkId: "123",
   email: "8U6lU@example.com",
   profileImage: "https://example.com/profile.jpg",
   stats: {
@@ -14,6 +15,7 @@ export const testUserToBeCreated: User = {
 export const testUser: User = {
   _id: "67f7bc13936315660e38e5e3",
   name: "John Doe",
+  clerkId: "1234",
   email: "6lU@example.com",
   profileImage: "https://example.com/profile.jpg",
   stats: {
@@ -24,8 +26,9 @@ export const testUser: User = {
   }
 }
 
-export const testUserWithoutId: User = {
+export const testUserWithoutId: WithoutId<User> = {
   name: "John Doe",
+  clerkId: "12346",
   email: "6lU@example.com",
   profileImage: "https://example.com/profile.jpg",
   stats: {
