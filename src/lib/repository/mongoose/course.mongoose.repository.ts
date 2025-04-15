@@ -41,6 +41,11 @@ const courseSchema = new Schema<Course>({
   currentModuleId: {
     type: String,
     required: true,
+  },
+  isEnhanced: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 }, {
   timestamps: true,

@@ -21,7 +21,8 @@ import {
   IErrorHandler
 } from "./error.type"
 import {
-  Course
+  Course,
+  NewCourse
 } from "./course.type"
 import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } from "@/types/signatures/baseRespository.signature"
 import { UserRepository } from "@/types/signatures/userRepository.signature"
@@ -34,6 +35,7 @@ import {
 } from "./chapter.type"
 import { WithoutId } from "./utils.type"
 import { CourseRepository } from "./signatures/courseRepository.signature"
+import { LLMProvider, LLMOpts, ConverstionType } from "./llm.type"
 export type {
   User, UserOs, UserLevel,
   EnvVarType,
@@ -58,5 +60,6 @@ export type {
   Logger,
   UserRepository,
   Course,
-  Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository
+  Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository, NewCourse,
+  LLMProvider, LLMOpts, ConverstionType
 }

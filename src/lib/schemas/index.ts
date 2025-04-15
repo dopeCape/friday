@@ -9,7 +9,8 @@ import {
   chapterSchema,
   questionSchema,
   answerTypeSchema,
-  quizSchema
+  quizSchema,
+  createNewCourseSchema
 } from "./course.schema"
 
 
@@ -23,5 +24,6 @@ export {
   chapterSchema,
   quizSchema,
   questionSchema,
-  answerTypeSchema
+  answerTypeSchema,
+  createNewCourseSchema
 }

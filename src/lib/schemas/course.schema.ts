@@ -13,6 +13,8 @@ const courseSchema = z.object({
   internalDescription: z.string(),
   moduleIds: z.array(z.string()),
   currentModuleId: z.string(),
+  isEnhanced: z.boolean(),
+
 });
 
 const moduleSchema = z.object({
@@ -27,6 +29,7 @@ const moduleSchema = z.object({
   currentChapterId: z.string(),
   icon: z.string(),
 });
+
 
 const chapterSchema = z.object({
   _id: z.string(),
@@ -56,11 +59,21 @@ const quizSchema = z.object({
   type: z.string().default(moduleContentTypeSchema.enum.quiz),
 })
 
+
+const createNewCourseSchema = z.object({
+  userId: z.string(),
+  isPrivate: z.string(),
+  isSystemGenerated: z.boolean(),
+  prompt: z.string(),
+  isEnhanced: z.boolean(),
+})
+
 export {
   courseSchema,
   moduleSchema,
   chapterSchema,
   quizSchema,
   questionSchema,
-  answerTypeSchema
+  answerTypeSchema,
+  createNewCourseSchema
 }

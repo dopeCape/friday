@@ -43,7 +43,19 @@ const envSchema = {
     description:
       "Signing secret for clerk webhooks",
 
+  },
+  OPENAI_API_KEY: {
+    type: "string" as const,
+    required: true,
+    description: "openai api key",
+  },
+  GEMINI_API_KEY: {
+    type: "string" as const,
+    required: true,
+    description: "openai api key",
   }
+
+
   // REDIS_HOST: {
   //   type: "string" as const,
   //   required: true,
@@ -52,11 +64,6 @@ const envSchema = {
   // REDIS_PORT: {
   //   type: "number" as const,
   //   required: true,
-  // },
-  // OPENAI_API_KEY: {
-  //   type: "string" as const,
-  //   required: true,
-  //   description: "openai api key, message @dopeCape to get one of your own.",
   // },
   // BACKGROUND_JOB_URL: {
   //   type: "string" as const,
@@ -68,12 +75,12 @@ const envSchema = {
   //   type: "string" as const,
   //   required: true,
   //   description:
-  //     "mergent api key, get from app.mergent.co, login with eng@mattyoungmedia.com and you will recive a magic login link ",
+  //     "mergent api key",
   // },
   // PINECONE_API_KEY: {
   //   type: "string" as const,
   //   required: true,
-  //   description: "Pinecone api key, get it from @dopeCape",
+  //   description: "Pinecone api key",
   // },
 };
 

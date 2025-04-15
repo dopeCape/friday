@@ -1,5 +1,5 @@
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
-import { Logger, WithoutId } from "@/types"
+import { Logger, NewCourse } from "@/types"
 import { CourseRepository as CourseRepositoryType } from "@/types";
 
 export default class CourseService {
@@ -21,11 +21,19 @@ export default class CourseService {
     }
     return this.instance
   }
-  public async createCourse() {
+
+  public async createCourse(courseData: NewCourse) {
     return this.errorHandler.handleError(async () => {
+      // generate course structure  
+      //  - generate all the required modules
+      //    - generat all the inital chapters / quizes for modules
+
+
     }, {
       service: "CourseService",
       method: "createCourse"
     })
+
   }
 }
+
