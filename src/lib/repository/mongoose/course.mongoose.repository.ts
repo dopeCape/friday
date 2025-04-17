@@ -1,6 +1,7 @@
 import { Course, Logger, } from "@/types";
 import { MongooseBaseRepository } from "./base.mongoose.repository";
 import { Model, Schema, model, models } from "mongoose";
+import { difficultyLevelSchema } from "@/lib/schemas";
 const courseSchema = new Schema<Course>({
   title: {
     type: String,
@@ -46,7 +47,33 @@ const courseSchema = new Schema<Course>({
     type: Boolean,
     required: true,
     default: false
-  }
+  },
+  difficultyLevel: {
+    type: String,
+    enum: difficultyLevelSchema.options,
+    required: true,
+  },
+  prerequisites: [{
+    type: String,
+    required: true,
+  }],
+  estimatedCompletionTime: {
+    type: Number,
+    required: true,
+  },
+  learningObjectives: [{
+    type: String,
+    required: true,
+  }],
+  keywords: [{
+    type: String,
+    required: true,
+  }],
+  communityResources: [{
+    title: { type: String, required: true },
+    url: { type: String, required: true },
+    type: { type: String, required: true, enum: ["github", "forum", "discord", "other"] }
+  }],
 }, {
   timestamps: true,
 })

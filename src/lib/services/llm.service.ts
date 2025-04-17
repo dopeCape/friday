@@ -1,7 +1,7 @@
-import { ConverstionType, LLMOpts, LLMProvider, Logger } from "@/types";
+import { ConverstionType, LLMOpts, Logger } from "@/types";
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
 import { BaseErrorHandler } from "../errorHandler/baseErrorHandler";
-import { ZodObject } from "zod";
+import { z, ZodObject } from "zod";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import env from "@/config/env.config";

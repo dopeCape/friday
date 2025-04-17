@@ -1,5 +1,5 @@
-import { User } from "../user.type";
+import { Course } from "../course.type";
 import { BaseRepository } from "./baseRespository.signature";
 
-export interface CourseRepository extends BaseRepository<User> {
+export interface CourseRepository extends BaseRepository<Course> {
 }

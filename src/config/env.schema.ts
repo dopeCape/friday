@@ -49,11 +49,11 @@ const envSchema = {
     required: true,
     description: "openai api key",
   },
-  GEMINI_API_KEY: {
-    type: "string" as const,
-    required: true,
-    description: "openai api key",
-  }
+  // GEMINI_API_KEY: {
+  //   type: "string" as const,
+  //   required: true,
+  //   description: "gemini api key",
+  // }
 
 
   // REDIS_HOST: {

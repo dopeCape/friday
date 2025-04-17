@@ -4,13 +4,18 @@ import {
   userLevelSchema
 } from "./user.schema"
 import {
+
   courseSchema,
   moduleSchema,
   chapterSchema,
+  quizSchema,
   questionSchema,
   answerTypeSchema,
-  quizSchema,
-  createNewCourseSchema
+  createNewCourseSchema,
+  moduleContentTypeSchema,
+  difficultyLevelSchema,
+  assignmentSchema,
+  courseGenerationSchema
 } from "./course.schema"
 
 
@@ -25,5 +30,9 @@ export {
   quizSchema,
   questionSchema,
   answerTypeSchema,
-  createNewCourseSchema
+  createNewCourseSchema,
+  moduleContentTypeSchema,
+  difficultyLevelSchema,
+  assignmentSchema,
+  courseGenerationSchema
 }

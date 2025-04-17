@@ -2,6 +2,7 @@ import { Logger } from "@/types"
 import { Module } from "@/types";
 import { MongooseBaseRepository } from "./base.mongoose.repository";
 import { model, Model, models, Schema } from "mongoose";
+import { difficultyLevelSchema } from "@/lib/schemas";
 const moduleSchema = new Schema<Module>({
   title: {
     required: true,
@@ -41,6 +42,24 @@ const moduleSchema = new Schema<Module>({
     required: true,
     type: String,
   },
+  difficultyLevel: {
+    type: String,
+    enum: difficultyLevelSchema.options,
+    required: true,
+  },
+  prerequisites: [{
+    type: String,
+    required: true,
+  }],
+  estimatedCompletionTime: {
+    type: Number,
+    required: true,
+  },
+  learningObjectives: [{
+    type: String,
+    required: true,
+  }],
+  moduleType: { type: String, enum: ["content", "assignment"], required: true },
 }, { timestamps: true, })
 
 export class ModuleRepository extends MongooseBaseRepository<Module> {

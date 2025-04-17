@@ -6,10 +6,18 @@ const chapterSchema = new Schema<Chapter>({
     required: true,
     type: String,
   },
-  content: {
-    required: true,
-    type: String,
-  },
+  content: [{
+    type: {
+      type: String,
+      required: true,
+      enum: ["text", "code", "diagram"],
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    codeBlockLanguage: String,
+  }],
   isGenerated: {
     required: true,
     type: Boolean,
@@ -27,10 +35,11 @@ const chapterSchema = new Schema<Chapter>({
     type: String,
     default: "chapter"
   },
-  isCommpleted: {
+  isCompleted: {
     required: true,
     type: Boolean,
   },
+
 }, { timestamps: true, })
 
 export class ChapterRepository extends MongooseBaseRepository<Chapter> {

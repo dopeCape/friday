@@ -22,7 +22,8 @@ import {
 } from "./error.type"
 import {
   Course,
-  NewCourse
+  NewCourse,
+  CourseGenreation
 } from "./course.type"
 import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } from "@/types/signatures/baseRespository.signature"
 import { UserRepository } from "@/types/signatures/userRepository.signature"
@@ -31,11 +32,14 @@ import {
   Module
 } from "./module.type"
 import {
-  Chapter, Quiz, Question, AnswerType
+  Chapter, Quiz, Question, AnswerType, ModuleContent, DifficultyLevel, Assignment
 } from "./chapter.type"
 import { WithoutId } from "./utils.type"
 import { CourseRepository } from "./signatures/courseRepository.signature"
 import { LLMProvider, LLMOpts, ConverstionType } from "./llm.type"
+import { ModuleRepository } from "./signatures/moduleRepository.signature"
+import { QuizRepository } from "./signatures/quizRepository.signature"
+import { ChapterRepository } from "./signatures/chapterRepository.signature"
 export type {
   User, UserOs, UserLevel,
   EnvVarType,
@@ -61,5 +65,7 @@ export type {
   UserRepository,
   Course,
   Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository, NewCourse,
-  LLMProvider, LLMOpts, ConverstionType
+  LLMProvider, LLMOpts, ConverstionType,
+  CourseGenreation,
+  ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository
 }
