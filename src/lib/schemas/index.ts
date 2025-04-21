@@ -15,7 +15,8 @@ import {
   moduleContentTypeSchema,
   difficultyLevelSchema,
   assignmentSchema,
-  courseGenerationSchema
+  courseGenerationSchema,
+  moduleContentSchema
 } from "./course.schema"
 
 
@@ -34,5 +35,6 @@ export {
   moduleContentTypeSchema,
   difficultyLevelSchema,
   assignmentSchema,
-  courseGenerationSchema
+  courseGenerationSchema,
+  moduleContentSchema
 }

@@ -35,7 +35,7 @@ const moduleSchema = new Schema<Module>({
     default: false,
   },
   currentChapterId: {
-    required: true,
+    required: false,
     type: String,
   },
   icon: {

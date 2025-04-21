@@ -22,11 +22,6 @@ const courseSchema = z.object({
   estimatedCompletionTime: z.number(),
   learningObjectives: z.array(z.string()),
   keywords: z.array(z.string()),
-  communityResources: z.array(z.object({
-    title: z.string(),
-    url: z.string(),
-    type: z.enum(["forum", "discord", "github", "other"])
-  })),
 });
 
 const moduleSchema = z.object({
@@ -102,6 +97,12 @@ const quizSchema = z.object({
   currentScore: z.number(),
 });
 
+export const chapterContentGenerationSchema = z.object({
+  title: z.string().describe("title of the chapter"),
+  estimatedCompletionTime: z.number().describe("Estimated minutes to complete this chapter")
+});
+
+
 const createNewCourseSchema = z.object({
   userId: z.string(),
   isPrivate: z.boolean(),
@@ -112,11 +113,6 @@ const createNewCourseSchema = z.object({
   desiredCompletionTime: z.number().optional(),
 });
 
-const chapterContentGenerationSchema = z.object({
-  title: z.string().describe("title of the chapter"),
-  references: z.array(z.string()).describe("References for the chapter, articles, books, videos, repositories"),
-  learningObjectives: z.array(z.string()).describe("List of objective for this chapter"),
-})
 
 
 const quizContentGenerationSchema = z.object({
@@ -136,7 +132,7 @@ const quizContentGenerationSchema = z.object({
 const courseGenerationSchema = z.object({
   title: z.string().describe("title of the course"),
   description: z.string().describe("description of the course"),
-  icon: z.array(z.string()).describe("Nerd font icons that perfectly , appropreate for the course, about 2-5 will be enough"),
+  iconQuery: z.array(z.array(z.string())).describe("Nerd font icon search query that perfectly , appropreate for the course, keywords for each icons,   about 2-5 will be enough"),
   technologies: z.array(z.string()).describe("technologies that will be used in this course"),
   difficultyLevel: difficultyLevelSchema.describe("difficulty level of the course, beginner, intermediate, advanced, expert"),
   prerequisites: z.array(z.string()).describe("Prerequisites of the course"),
@@ -144,26 +140,31 @@ const courseGenerationSchema = z.object({
   learningObjectives: z.array(z.string()).describe("List of objective for this course"),
   keywords: z.array(z.string()).describe("Keywords for the course, used for search"),
   internalDescription: z.string().describe("Internal description of the course, used for semantic search"),
-  communityResources: z.array(z.object({
-    title: z.string().describe("Title of resource"),
-    url: z.string().describe("Url for the resource"),
-    type: z.enum(["forum", "discord", "github", "other"]).describe("Type of resource")
-  })),
+  // communityResources: z.array(z.object({
+  //   title: z.string().describe("Title of resource"),
+  //   url: z.string().describe("Url for the resource"),
+  //   type: z.enum(["forum", "discord", "github", "other"]).describe("Type of resource")
+  // })),
   modules: z.array(z.object({
     title: z.string().describe("title of the module"),
     description: z.string().describe("description of the module"),
-    icon: z.string().describe("Nerd font icons that perfectly , appropreate for the module"),
-    references: z.array(z.string()).describe("References for the module, articles, books, videos, repositories"),
-    difficultyLevel: difficultyLevelSchema.describe("difficulty level of the module, beginner, intermediate, advanced, expert"),
-    prerequisites: z.array(z.string()).describe("Prerequisites of the module"),
-    estimatedCompletionTime: z.number().describe("Esimated hours to complete the module"),
-    learningObjectives: z.array(z.string()).describe("List of objective for this module"),
-    moduleType: z.enum(["content", "assignment"]).describe("Type of module, content or assignment"),
-    chapters: z.array(chapterContentGenerationSchema),
-    quize: quizContentGenerationSchema,
+    topicsToCover: z.string().describe("Topics that needs to be taught in this module ")
   }))
 })
 
+
+const moduleContentSchema = z.object({
+  title: z.string().describe("title of the module"),
+  description: z.string().describe("description of the module"),
+  refs: z.array(z.string()).describe("Search query for articles / youtube vidoes that can help user in this module"),
+  icon: z.string().describe("Nerd font icon search query that perfectly , appropreate for the module"),
+  difficultyLevel: difficultyLevelSchema.describe("difficulty level of the module, beginner, intermediate, advanced, expert"),
+  prerequisites: z.array(z.string()).describe("Prerequisites of the module"),
+  estimatedCompletionTime: z.number().describe("Esimated hours to complete the module"),
+  learningObjectives: z.array(z.string()).describe("Learning objectives from this module"),
+  chapters: z.array(chapterContentGenerationSchema),
+  quiz: quizSchema
+});
 
 export {
   courseSchema,
@@ -176,5 +177,6 @@ export {
   moduleContentTypeSchema,
   difficultyLevelSchema,
   assignmentSchema,
-  courseGenerationSchema
+  courseGenerationSchema,
+  moduleContentSchema
 }

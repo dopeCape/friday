@@ -18,7 +18,10 @@
     "@clerk/nextjs": "^6.14.2",
     "@clerk/themes": "^2.2.30",
     "@langchain/google-genai": "^0.2.3",
+    "@langchain/tavily": "^0.1.1",
+    "@pinecone-database/pinecone": "^5.1.1",
     "dotenv": "^16.4.7",
+    "flexsearch": "^0.8.158",
     "hookdeck-cli": "^0.11.2",
     "langchain": "^0.3.21",
     "mongoose": "^8.13.2",
@@ -26,6 +29,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "svix": "^1.64.0",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "zod": "^3.24.2"
   },

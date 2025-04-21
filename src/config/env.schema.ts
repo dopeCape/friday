@@ -49,6 +49,27 @@ const envSchema = {
     required: true,
     description: "openai api key",
   },
+  TAVILY_API_KEY: {
+    type: "string" as const,
+    required: true,
+    description: "tavilya api key",
+  },
+  PINECONE_API_KEY: {
+    type: "string" as const,
+    required: true,
+    description: "Pinecone api key",
+  },
+  ICONS_PINECONE_INDEX: {
+    type: "string" as const,
+    required: true,
+    description: "Index name for icons saved in pinecone",
+  },
+  DEFAULT_EMBEDDING_MODEL: {
+    type: "string" as const,
+    required: true,
+    description: "Index name for icons saved in pinecone",
+  }
+
   // GEMINI_API_KEY: {
   //   type: "string" as const,
   //   required: true,
@@ -76,11 +97,6 @@ const envSchema = {
   //   required: true,
   //   description:
   //     "mergent api key",
-  // },
-  // PINECONE_API_KEY: {
-  //   type: "string" as const,
-  //   required: true,
-  //   description: "Pinecone api key",
   // },
 };
 

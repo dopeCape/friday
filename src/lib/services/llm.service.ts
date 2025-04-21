@@ -45,7 +45,9 @@ export default class LLMService {
       case "gemini":
         return new ChatGoogleGenerativeAI({
           temperature: opts.temperature,
-          apiKey: env.GEMINI_API_KEY,
+          apiKey: "",
+          // uncommnet the following line if you want to use gemini
+          // apiKey: env.GEMINI_API_KEY,
           model: opts.model
         })
     }

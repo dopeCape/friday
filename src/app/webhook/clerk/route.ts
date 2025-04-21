@@ -1,6 +1,6 @@
 import { getDefaultLogger, getDefaultUserService, } from '@/config/defaults';
 import { responseCreator, apiErrorHandler } from '@/lib/utils/apiResponse.utils';
-import { ErrorResponse, Logger, User } from '@/types';
+import { ErrorResponse, Logger, User, WithoutId } from '@/types';
 import { DeletedObjectJSON, UserJSON } from '@clerk/nextjs/server';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import dbConnect from '@/config/mongodb.config';
@@ -39,7 +39,7 @@ async function createUser(data: UserJSON, logger: Logger, userService: UserServi
   logger.info("user create event from clerk", { email })
   const userExists = await userService.checkIfUserExists(email);
   if (!userExists) {
-    const user: User = {
+    const user: WithoutId<User> = {
       name: userFromClerk.first_name || userFromClerk.username || "",
       email,
       profileImage: userFromClerk.image_url,

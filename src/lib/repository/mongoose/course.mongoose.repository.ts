@@ -41,7 +41,7 @@ const courseSchema = new Schema<Course>({
   },
   currentModuleId: {
     type: String,
-    required: true,
+    required: false,
   },
   isEnhanced: {
     type: Boolean,
@@ -69,11 +69,7 @@ const courseSchema = new Schema<Course>({
     type: String,
     required: true,
   }],
-  communityResources: [{
-    title: { type: String, required: true },
-    url: { type: String, required: true },
-    type: { type: String, required: true, enum: ["github", "forum", "discord", "other"] }
-  }],
+
 }, {
   timestamps: true,
 })

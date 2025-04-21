@@ -5,6 +5,8 @@ import type {
   ValidationError,
   ValidationSchema,
 } from "@/types";
+import dotenv from "dotenv"
+dotenv.configDotenv({ path: "/home/baby/workflow/projects/friday/.env.local" })
 
 class EnvironmentValidator {
   private schema: ValidationSchema;
