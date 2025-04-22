@@ -29,7 +29,9 @@ import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } fr
 import { UserRepository } from "@/types/signatures/userRepository.signature"
 import { Logger } from "./signatures/logger.signature"
 import {
-  Module
+  Module,
+  ModuleGenerationData,
+  GeneratedModuleData
 } from "./module.type"
 import {
   Chapter, Quiz, Question, AnswerType, ModuleContent, DifficultyLevel, Assignment
@@ -67,5 +69,5 @@ export type {
   Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository, NewCourse,
   LLMProvider, LLMOpts, ConverstionType,
   CourseGenreation,
-  ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository
+  ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData
 }

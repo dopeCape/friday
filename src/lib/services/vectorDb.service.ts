@@ -11,7 +11,7 @@ export default class VectorDbService {
   private static Instance: VectorDbService | null
   private pinecone = new Pinecone({
     apiKey: env.PINECONE_API_KEY,
-    maxRetries: 5
+    maxRetries: 10,
   });
   private embeddingService: EmbeddingService;
 

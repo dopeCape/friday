@@ -53,6 +53,7 @@ const envSchema = {
     type: "string" as const,
     required: true,
     description: "tavilya api key",
+    transform: (value: string) => { return value.split(",") }
   },
   PINECONE_API_KEY: {
     type: "string" as const,

@@ -19,7 +19,7 @@ Generate a course outline that is EXTREMELY thorough and comprehensive. This wil
 ### 1. Course Details
 - **Title**: Clear, concise title describing the course content
 - **Description**: Comprehensive overview of what the course covers (minimum 150 words)
-- **Icon**: Array of appropriate nerd font icons keywords example (for mern stack,  for react, react[react, reactjs, framework etc etc],  expressjs[backend, express etc. etc] , nodejs etc).
+- **Icon**: Array of appropriate nerd font icons keywords example (for mern stack,  for react, react, reactjs, framework etc ,  for expressjs :backend, express etc. , nodejs etc).
 - **Technologies**: List of ALL technologies/frameworks/languages used, including prerequisites
 - **Difficulty Level**: "beginner", "intermediate", "advanced", or "expert"
 - **Prerequisites**: MINIMAL required knowledge or skills before taking this course
@@ -76,9 +76,9 @@ Generate a complete module with all details, chapters and quiz content following
 
 ### 1. Module Details
 Create a complete module with:
-- **Title**: (You'll be provided this)
+- **Title**: (You'll be provided )
 - **Description**: Detailed explanation of what the module covers (minimum 100 words)
-- **Icon**: Specific nerd font icon search query that will be used to search for the icon in nerd fonts (example: react, go etc);
+- **Icon**: query for appropriate nerd font icons keywords for the module, (regardless of the course), the icon shold dipict the module,ex: for react, query would be reactjs, react, frontend etc. for Commandline it wold be (terminal, cmd, etc.) 
 - **References**: 3-5 search queries that will be used to search for learning materials (artiles, youtube videos etc)  on web.
 - **Difficulty Level**: "beginner", "intermediate", "advanced", or "expert"
 - **Prerequisites**: Required knowledge for this specific module

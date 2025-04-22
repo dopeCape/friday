@@ -1,4 +1,5 @@
 import { OpenAIErrorHandler } from "@/lib/errorHandler/openaiErrorHandler";
+import IconsProvider from "@/lib/providers/icons.provider";
 import { ChapterRepository } from "@/lib/repository/mongoose/chapter.mongoose.repository";
 import CourseRepository from "@/lib/repository/mongoose/course.mongoose.repository";
 import { ModuleRepository } from "@/lib/repository/mongoose/module.mongoose.repository";
@@ -38,7 +39,10 @@ export function getDefaultModuleRepository() {
 export function getDefaultModuleService() {
   const moduleRepository = getDefaultModuleRepository();
   const logger = getDefaultLogger();
-  return ModuleService.getInstance(logger, moduleRepository);
+  const llmService = getDefaultLLMService();
+  const iconProvider = getDefaultIconsProvider()
+  const serarchService = getDefaultSearchService()
+  return ModuleService.getInstance(logger, moduleRepository, llmService, iconProvider, serarchService, getDefaultQuizService(), getDefaultChapterService());
 }
 export function getDefaultLLMService() {
   const logger = getDefaultLogger();
@@ -79,14 +83,17 @@ export function getDefaultVectorDbService() {
   const embeddignService = getDefaultEmbeddingsService();
   return VectorDbService.getInstance(logger, embeddignService);
 }
+export function getDefaultIconsProvider() {
+  const logger = getDefaultLogger();
+  const vectorDbService = getDefaultVectorDbService()
+  return IconsProvider.getInstance(logger, vectorDbService,);
+}
 
 export function getDefaultCourseService() {
   const logger = getDefaultLogger();
   const courseRepository = getDefaultCourseRepository()
   const moduleService = getDefaultModuleService();
   const llmService = getDefaultLLMService();
-  const quizService = getDefaultQuizService();
-  const chapterService = getDefaultChapterService();
-  const vectorDbService = getDefaultVectorDbService();
-  return CourseService.getInstance(logger, courseRepository, moduleService, quizService, chapterService, llmService, vectorDbService);
+  const iconsProvider = getDefaultIconsProvider();
+  return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider);
 }

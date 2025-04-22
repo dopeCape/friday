@@ -9,14 +9,10 @@ import {
   SystemMessage,
 } from "@langchain/core/messages";
 import {
-  moduleContentSchema,
   courseGenerationSchema
 } from "@/lib/schemas";
 import ModuleService from "./module.service";
-import QuizService from "./quiz.service";
-import ChapterService from "./chapter.service";
 import IconsProvider from "../providers/icons.provider";
-import VectorDbService from "./vectorDb.service";
 
 
 
@@ -27,61 +23,45 @@ export default class CourseService {
   private errorHandler: CentralErrorHandler;
   private llmService: LLMService;
   private moduleService: ModuleService;
-  private quizService: QuizService;
-  private chapterService: ChapterService;
   private iconProvider: IconsProvider
 
   private constructor(
     logger: Logger,
     courseRepository: CourseRepositoryType,
     moduleService: ModuleService,
-    quizService: QuizService,
-    chapterService: ChapterService,
     llmService: LLMService,
-    vectorDbService: VectorDbService
+    iconProvider: IconsProvider
   ) {
     this.logger = logger;
     this.courseRepository = courseRepository;
     this.errorHandler = new CentralErrorHandler(logger);
     this.llmService = llmService;
     this.moduleService = moduleService;
-    this.quizService = quizService;
-    this.iconProvider = IconsProvider.getInstance(vectorDbService)
-    this.chapterService = chapterService;
+    this.iconProvider = iconProvider
   }
 
   public static getInstance(
     logger: Logger,
     courseRepository: CourseRepositoryType,
     moduleService: ModuleService,
-    quizService: QuizService,
-    chapterService: ChapterService,
     llmService: LLMService,
-    vectorDbService: VectorDbService
+    iconProvider: IconsProvider
   ) {
     if (!this.instance) {
       const courseService = new CourseService(
         logger,
         courseRepository,
         moduleService,
-        quizService,
-        chapterService,
         llmService,
-        vectorDbService
+        iconProvider
       );
       this.instance = courseService;
     }
     return this.instance;
   }
 
-  // generate course structure
-  //  - create course --done
-  // pass down to module service to generate module
-  //  - create module
-  // pass down to quiz/ chapter service to save chapter / quiz 
 
-  private async getCourseFromGeneratedCourseData(courseData: NewCourse, courseGenerationResult: CourseGenreation) {
-    const courseId = new mongoose.Types.ObjectId().toString()
+  private async getCourseFromGeneratedCourseData(courseData: NewCourse, courseId: string, courseGenerationResult: CourseGenreation, moduleIds: string[]) {
     const course: Course = {
       _id: courseId,
       title: courseGenerationResult.title,
@@ -92,7 +72,7 @@ export default class CourseService {
       isSystemGenerated: courseData.isSystemGenerated,
       technologies: courseGenerationResult.technologies,
       internalDescription: courseGenerationResult.internalDescription,
-      moduleIds: [],
+      moduleIds,
       isEnhanced: courseData.isEnhanced,
       difficultyLevel: courseGenerationResult.difficultyLevel,
       prerequisites: courseGenerationResult.prerequisites,
@@ -113,12 +93,14 @@ export default class CourseService {
       this.logger.info("Generating course", { courseData });
       const courseGenerationResult = await this.llmService.structuredRespose(this.getCouseGenerationMessages(courseData.prompt), courseGenerationSchema, {
         provider: "openai",
-        model: "o4-mini",
+        model: "gpt-4o-mini",
       });
       this.logger.info("Generated course", { courseGenerationResult })
-      const course = await this.getCourseFromGeneratedCourseData(courseData, courseGenerationResult);
-      return course
-      // await this.courseRepository.create(course);
+      const courseId = new mongoose.Types.ObjectId().toString()
+      const { modules, chapters } = await this.moduleService.createModules(courseGenerationResult.modules, courseId)
+      const course = await this.getCourseFromGeneratedCourseData(courseData, courseId, courseGenerationResult, modules.map(module => module._id));
+      await this.courseRepository.create(course);
+      return { course, modules, chapters }
     }, {
       service: "CourseService",
       method: "createCourse"

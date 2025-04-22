@@ -91,9 +91,9 @@ const quizSchema = z.object({
   _id: z.string(),
   moduleId: z.string(),
   questions: z.array(questionSchema),
-  type: z.string().default(moduleContentTypeSchema.enum.quiz),
+  type: z.string(),
   passingScore: z.number(),
-  maxAttempts: z.number().default(1),
+  maxAttempts: z.number(),
   currentScore: z.number(),
 });
 
@@ -157,13 +157,12 @@ const moduleContentSchema = z.object({
   title: z.string().describe("title of the module"),
   description: z.string().describe("description of the module"),
   refs: z.array(z.string()).describe("Search query for articles / youtube vidoes that can help user in this module"),
-  icon: z.string().describe("Nerd font icon search query that perfectly , appropreate for the module"),
+  iconQuery: z.string().describe("Nerd font icon search query that perfectly , appropreate for the course, keywords for each icons,  bout 2-5 will be enough"),
   difficultyLevel: difficultyLevelSchema.describe("difficulty level of the module, beginner, intermediate, advanced, expert"),
   prerequisites: z.array(z.string()).describe("Prerequisites of the module"),
   estimatedCompletionTime: z.number().describe("Esimated hours to complete the module"),
   learningObjectives: z.array(z.string()).describe("Learning objectives from this module"),
   chapters: z.array(chapterContentGenerationSchema),
-  quiz: quizSchema
 });
 
 export {
