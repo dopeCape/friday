@@ -13,6 +13,7 @@ import {
 } from "@/lib/schemas";
 import ModuleService from "./module.service";
 import IconsProvider from "../providers/icons.provider";
+import { AppError } from "../errorHandler/appError";
 
 
 
@@ -107,4 +108,18 @@ export default class CourseService {
     });
   }
 
+  public async getCourse(id: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting course", { id });
+      const course = await this.courseRepository.get({ _id: id });
+      if (!course) {
+        throw new AppError(404, "Course not found", "CourseDoesNotExists");
+      }
+      this.logger.info("Got course in db", { id });
+      return course
+    }, {
+      service: "CourseService",
+      method: "getCourse"
+    })
+  }
 }

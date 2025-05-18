@@ -2,14 +2,10 @@ import type { Metadata } from 'next'
 import { dark } from '@clerk/themes'
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import Navbar from '@/components/Navbar/Navbar'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,8 +32,19 @@ export default function RootLayout({
       { baseTheme: dark }
     }>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {children}
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" />
+          <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet" />
+        </head>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background dark`}>
+          <div className='relative w-full z-100'>
+            <Navbar />
+          </div>
+          <div className=''>
+            {children}
+          </div>
         </body>
       </html>
     </ClerkProvider>
