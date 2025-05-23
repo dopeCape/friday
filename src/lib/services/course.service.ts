@@ -62,13 +62,21 @@ export default class CourseService {
   }
 
 
-  private async getCourseFromGeneratedCourseData(courseData: NewCourse, courseId: string, courseGenerationResult: CourseGenreation, moduleIds: string[]) {
+  private async getCourseFromGeneratedCourseData(
+    courseData: NewCourse,
+    courseId: string,
+    courseGenerationResult: CourseGenreation,
+    moduleIds: string[]
+  ) {
+    const iconQueries = courseGenerationResult.iconQuery.map(query => query.join(","));
+    const icons = await this.iconProvider.searchIconsBatch(iconQueries);
+
     const course: Course = {
       _id: courseId,
       title: courseGenerationResult.title,
       description: courseGenerationResult.description,
       isPrivate: courseData.isPrivate,
-      icon: await this.iconProvider.searchIcons(courseGenerationResult.iconQuery.map(query => query.join(","))),
+      icon: icons,
       createdBy: courseData.userId,
       isSystemGenerated: courseData.isSystemGenerated,
       technologies: courseGenerationResult.technologies,
@@ -82,7 +90,6 @@ export default class CourseService {
       keywords: courseGenerationResult.keywords,
     }
     return course
-
   }
   private getCouseGenerationMessages(userQuery: string) {
     const systemMessage = new SystemMessage(PromptProvider.getCourseStructureGenerationPrompt())

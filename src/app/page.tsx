@@ -12,7 +12,7 @@ const maskStyle = {
 export default function Home() {
   const [showPromptInput, setShowPromptInput] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
-  const handleChangeSetShow = (state: boolean) => {
+  const handleChangeSetShow = async (state: boolean) => {
     setShowPromptInput(state);
   }
   return (
@@ -57,7 +57,7 @@ export default function Home() {
             }}
             style={maskStyle}
           />
-          <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} />
+          <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} disabled={false} />
         </div>
         <div className="h-16 mx-auto w-[30%] relative" >
           <VertialDottedLines animationDirection="top" maskDirection="bottom" delay={0.5} />

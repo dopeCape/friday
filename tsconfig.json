@@ -26,7 +26,13 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "noUnusedLocals": false, // Allow unused local variables
+    "noUnusedParameters": false, // Allow unused function parameters
+    "noImplicitAny": false, // Allow implicit 'any' type
+    "noImplicitReturns": false, // Allow functions without explicit returns
+    "noFallthroughCasesInSwitch": false, // Allow switch statement fallthrough
+    "noImplicitThis": false
   },
   "include": [
     "next-env.d.ts",

@@ -6,9 +6,10 @@ interface ITryFridayProp {
   text: string
   clickHandler: (state: boolean) => void
   isTextBox: boolean;
+  disabled: boolean;
 }
 const placeholders = ["Tell use what you want to learn", "Full stack webdev with Typescript", "Rust from zero to hero"]
-export default function TryFriday({ text, clickHandler, isTextBox }: ITryFridayProp) {
+export default function TryFriday({ text, clickHandler, isTextBox, disabled }: ITryFridayProp) {
   const [showTextBox, setShowTextBox] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
@@ -33,8 +34,9 @@ export default function TryFriday({ text, clickHandler, isTextBox }: ITryFridayP
     />
     <motion.div
       layout={false}
-      className={`text-3xl italic mx-auto relative flex items-center justify-center transition-colors z-0 ${!isTextBox && "hover:bg-[var(--friday-hover)]"} min-w-[30%]`}
+      className={`text-3xl italic mx-auto relative flex items-center justify-center transition-colors z-0 ${!isTextBox && "hover:bg-[var(--friday-hover)]"} min-w-[30%] ${disabled && "opacity-50 cursor-not-allowed"}`}
       onClick={() => {
+        if (disabled) return;
         if (isTextBox) return
         clickHandler(true)
       }}

@@ -10,6 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
+.open-next/
+
 # testing
 /coverage
 
@@ -23,6 +25,7 @@
 # misc
 .DS_Store
 *.pem
+logs.log
 
 # debug
 npm-debug.log*
@@ -42,4 +45,3 @@ next-env.d.ts
 whiteboard.txt
 todo.md
 prompt.txt
-logs.log

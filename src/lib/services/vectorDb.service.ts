@@ -103,4 +103,78 @@ export default class VectorDbService {
       method: "topK"
     })
   }
+  public async batchTopK(queries: string[], topK: number, opts: {
+    index: string,
+    model: string
+    nameSpace?: string,
+    includeMetadata: boolean
+    filter?: Record<string, string>,
+    concurrency?: number // Control concurrent requests
+  }) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting batch top k", { queries, topK, opts });
+
+      const embeddings = await Promise.all(
+        queries.map(query => this.embeddingService.getEmbeddings(query, opts.model))
+      );
+
+      const namespace = this.pinecone.index(opts.index).namespace(opts.nameSpace || "");
+
+      const concurrency = opts.concurrency || 5
+      const results: any[] = [];
+
+      for (let i = 0; i < embeddings.length; i += concurrency) {
+        const batch = embeddings.slice(i, i + concurrency);
+        const batchQueries = queries.slice(i, i + concurrency);
+
+        this.logger.info(`Processing batch ${Math.floor(i / concurrency) + 1}`, {
+          batchSize: batch.length,
+          queries: batchQueries
+        });
+
+        const batchResults = await Promise.all(
+          batch.map(async (embedding, index) => {
+            try {
+              const result = await namespace.query({
+                vector: embedding,
+                topK: topK,
+                includeMetadata: opts.includeMetadata,
+                filter: opts.filter
+              });
+              return {
+                query: batchQueries[index],
+                matches: result.matches,
+                success: true
+              };
+            } catch (error) {
+              this.logger.error(`Failed to query for: ${batchQueries[index]}`, error);
+              return {
+                query: batchQueries[index],
+                matches: [],
+                success: false,
+                error
+              };
+            }
+          })
+        );
+
+        results.push(...batchResults);
+
+        if (i + concurrency < embeddings.length) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+      }
+
+      this.logger.info("Batch top k results", {
+        totalQueries: queries.length,
+        successfulQueries: results.filter(r => r.success).length,
+        failedQueries: results.filter(r => !r.success).length
+      });
+
+      return results;
+    }, {
+      service: "VectorDbService",
+      method: "batchTopK"
+    })
+  }
 }

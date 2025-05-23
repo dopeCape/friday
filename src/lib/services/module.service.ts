@@ -1,4 +1,4 @@
-import { Chapter, GeneratedModuleData, Logger, Module, ModuleGenerationData, ModuleRepository as ModuleRepositoryType, Quiz } from "@/types"
+import { Chapter, GeneratedModuleData, Logger, Module, ModuleGenerationData, ModuleRepository as ModuleRepositoryType } from "@/types"
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
 import mongoose from "mongoose";
 import {
@@ -113,10 +113,12 @@ Next module
       const lastIndex = modules.length - 1;
       const createdModules: Record<number, Module> = {};
       const createdChapters: Chapter[] = [];
-      await Promise.all(modules.map(async (module, index) => {
+
+      const generationResults = await Promise.all(modules.map(async (module, index) => {
         const moduleGenerationContext = [];
         const moduleId = new mongoose.Types.ObjectId().toString();
         moduleGenerationContext.push(module)
+
         if (index === startIndex) {
           moduleGenerationContext.push(null)
           moduleGenerationContext.push(modules[index + 1])
@@ -127,39 +129,96 @@ Next module
           moduleGenerationContext.push(modules[index - 1])
           moduleGenerationContext.push(modules[index + 1])
         }
-        const generatedModule = await this.llmService.structuredRespose(await this.getModuleGenerationPrompt(moduleGenerationContext), moduleContentSchema, {
-          provider: "openai",
-          model: "gpt-4o-mini",
-        })
-        const chapters: Chapter[] = generatedModule.chapters.map(chapter => {
-          return {
-            _id: new mongoose.Types.ObjectId().toString(),
-            title: chapter.title,
-            content: [],
-            isGenerated: false,
-            refs: [],
-            moduleId,
-            type: "chapter",
-            isCompleted: false,
+
+        const generatedModule = await this.llmService.structuredRespose(
+          await this.getModuleGenerationPrompt(moduleGenerationContext),
+          moduleContentSchema,
+          {
+            provider: "openai",
+            model: "gpt-4o-mini",
           }
-        })
+        );
+
+        return { generatedModule, moduleId, index };
+      }));
+
+      const iconQueries = generationResults.map(result => result.generatedModule.iconQuery);
+      const icons = await this.iconProvider.searchIconsBatch(iconQueries);
+
+      await Promise.all(generationResults.map(async (result, idx) => {
+        const { generatedModule, moduleId, index } = result;
+
+        const chapters: Chapter[] = generatedModule.chapters.map(chapter => ({
+          _id: new mongoose.Types.ObjectId().toString(),
+          title: chapter.title,
+          content: [],
+          isGenerated: false,
+          refs: [],
+          moduleId,
+          type: "chapter",
+          isCompleted: false,
+        }));
 
         const chapterIds = chapters.map(ch => ch._id);
-        const createdModule = await this.createModuleFromGeneratedData(generatedModule, courseId, moduleId, chapterIds, index !== 0);
+        const createdModule = await this.createModuleFromGeneratedDataWithIcon(
+          generatedModule,
+          courseId,
+          moduleId,
+          chapterIds,
+          index !== 0,
+          icons[idx]
+        );
+
         createdChapters.push(...chapters);
-        createdModules[index] = createdModule
+        createdModules[index] = createdModule;
       }));
-      const moduleArray: Module[] = [];
-      Array.from({ length: Object.keys(createdModules).length }).map((_, index) => {
-        moduleArray.push(createdModules[index]);
-      });
+
+      const moduleArray = Object.keys(createdModules)
+        .sort((a, b) => parseInt(a) - parseInt(b))
+        .map(key => createdModules[parseInt(key)]);
+
       await this.moduleRepository.createMany(moduleArray);
       await this.chapterService.createChapters(createdChapters);
-      //TODO:Remove chapters from return object
+
       return { modules: moduleArray, chapters: createdChapters }
     }, {
       service: "ModuleService",
       method: "createModule"
     })
+  }
+
+  private async createModuleFromGeneratedDataWithIcon(
+    moduleData: GeneratedModuleData,
+    courseId: string,
+    moduleId: string,
+    content: string[],
+    isLocked: boolean,
+    icon: string
+  ): Promise<Module> {
+    const refs: string[] = [];
+    await Promise.all(moduleData.refs.map(async (ref) => {
+      const searchResults = await this.searchService.search(ref)
+      if (searchResults.results) {
+        refs.push(searchResults.results[0].url)
+      }
+    }))
+
+    return {
+      title: moduleData.title,
+      _id: moduleId,
+      description: moduleData.description,
+      courseId: courseId,
+      refs,
+      contents: content,
+      isLocked: isLocked,
+      isCompleted: false,
+      currentChapterId: content[0],
+      icon,
+      difficultyLevel: moduleData.difficultyLevel,
+      prerequisites: moduleData.prerequisites,
+      estimatedCompletionTime: moduleData.estimatedCompletionTime,
+      learningObjectives: moduleData.learningObjectives,
+      moduleType: "content",
+    }
   }
 }
