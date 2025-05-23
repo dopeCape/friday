@@ -10,7 +10,7 @@ export type Aggregate = PipelineStage[]
 export type BulkWrites = AnyBulkWriteOperation[];
 
 
-export type UpdateOpts = MongooseUpdateOpts | {};
+export type UpdateOpts = MongooseUpdateOpts | Record<string, any>;
 export type MongooseUpdateOpts = {
   new: boolean
 }

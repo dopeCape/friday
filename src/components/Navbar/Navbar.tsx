@@ -37,18 +37,44 @@ export default function Navbar() {
   }, []);
 
   return (
-    <motion.div className="w-full p-4 flex justify-center absolute"
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
+    <motion.div className="w-full  flex justify-center "
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="xl:w-[1200px] w-full sm:px-8 px-4 p-5 navbar rounded-2xl transition-all duration-300 ease-in-out relative flex-col">
+      <div className=" w-full  xl:px-48 px-4 md:px-12  transition-all duration-300 ease-in-out relative flex-col  p-5 py-2">
+        {Array.from({ length: 4 }).map((_, i) => {
+          return <div
+            style={{
+              left: `${i * 25}%`,
+              width: "25%"
+            }}
+            className=" absolute bottom-0 overflow-hidden"
+            key={i}
+          >
+            <motion.div className={`w-full bg-white h-[1px]`}
+              initial={{
+                translateX: (i + 1) % 2 !== 0 ? "100%" : "-100%",
+                opacity: 1,
+              }}
+              animate={{
+                translateX: 0,
+                opacity: 0.2,
+                transition: {
+                  ease: [0.645, 0.045, 0.355, 1],
+                  duration: 1,
+                  delay: 0.3
+                }
+              }}
+            />
+          </div>
+        })}
         <div className="flex items-center justify-between">
-          <Link className="flex items-center cursor-pointer gap-3 font-bold hover:transform-[scale(1.01)] transition-all sm:text-xl text-sm " href={"/"}>
+          <Link className="flex items-center cursor-pointer gap-3 font-bold hover:transform-[scale(1.01)] transition-all sm:text-2xl text-sm   " href={"/"}>
             <SendToBack className="text-primary text-sm sm:text-2xl" />
             Friday
           </Link>
-          <section className="hidden sm:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+          <section className="hidden sm:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2    " >
             {sections.map((section) => {
               const isActive = pathname === section.url
               return (
@@ -57,7 +83,7 @@ export default function Navbar() {
                   href={section.isProtected && !isSignedIn ? "#" : section.url}
                   className={`${isActive ? "text-white" : "text-gray-400"} 
                            ${section.isProtected && !isSignedIn ? "text-gray-600 cursor-default" : "hover:text-white cursor-pointer"} 
-                           transition-colors`}
+                           transition-colors text-2xl`}
                   onClick={(e) => {
                     if (section.isProtected && !isSignedIn) {
                       e.preventDefault()
@@ -69,11 +95,15 @@ export default function Navbar() {
               )
             })}
           </section>
-          <section className="flex items-center gap-3">
+          <section className="flex items-center gap-3 ">
             {!isLoaded ? (
-              <div className="animate-spin border-r-primary border-2 h-6 w-6 rounded-full border-transparent"></div>
+              <div className="h-12 w-12 grid place-items-center">
+                <div className="animate-spin border-r-white  border-2 h-6 w-6 border-dotted rounded-full border-transparent"></div>
+              </div>
             ) : isSignedIn ? (
-              <UserButton />
+              <div className="p-2 rounded-full border-2 border-dotted grid h-12 w-12 place-items-center border-gray-600 ">
+                <UserButton />
+              </div>
             ) : (
               <div className="flex gap-6 text-gray-400 items-center">
                 <SignInButton mode="modal">

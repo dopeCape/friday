@@ -1,5 +1,5 @@
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
-import { Chapter, Course, CourseGenreation, DifficultyLevel, Logger, Module, NewCourse, Quiz, WithoutId } from "@/types";
+import { Course, CourseGenreation, Logger, NewCourse } from "@/types";
 import { CourseRepository as CourseRepositoryType } from "@/types";
 import LLMService from "./llm.service";
 import { PromptProvider } from "../providers/prompt.provider";
@@ -98,9 +98,10 @@ export default class CourseService {
       });
       this.logger.info("Generated course", { courseGenerationResult })
       const courseId = new mongoose.Types.ObjectId().toString()
-      const { modules, chapters } = await this.moduleService.createModules(courseGenerationResult.modules, courseId)
+      //FIX: remove any
+      const { modules, chapters } = await this.moduleService.createModules(courseGenerationResult.modules as any, courseId)
       const course = await this.getCourseFromGeneratedCourseData(courseData, courseId, courseGenerationResult, modules.map(module => module._id));
-      await this.courseRepository.create(course);
+      await this.courseRepository.create(course)
       return { course, modules, chapters }
     }, {
       service: "CourseService",

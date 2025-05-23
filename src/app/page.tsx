@@ -1,82 +1,157 @@
-"use client"
-import { motion } from "motion/react"
-import { LineShadowText } from "@/components/magicui/line-shadow-text";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+"use client";
+import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import TryFriday from "@/components/Homepage/TryFridayButton";
+import VertialDottedLines from "@/components/Homepage/VerticalDottedLines";
+const maskStyle = {
+  WebkitMask: "linear-gradient(to left, black 93%, transparent), linear-gradient(to right, black 93%, transparent), linear-gradient(black, black)",
+  WebkitMaskComposite: "destination-in",
+  mask: "linear-gradient(to left, black 93%, transparent), linear-gradient(to right, black 93%, transparent), linear-gradient(black, black)",
+  maskComposite: "exclude"
+};
 export default function Home() {
+  const [showPromptInput, setShowPromptInput] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
+  const handleChangeSetShow = (state: boolean) => {
+    setShowPromptInput(state);
+  }
   return (
-    <div className="h-screen w-screen pt-16 relative px-4 sm:px-0 ">
-      <div className="absolute w-screen h-screen top-0 z-10">
-        <div className="relative w-full overflow-hidden   h-full">
-          <FlickeringGrid
-            className="relative inset-0  [mask-image:radial-gradient(1800px_circle_at_center,white,transparent)]"
-            squareSize={4}
-            gridGap={6}
-            color="gray"
-            maxOpacity={0.5}
-            flickerChance={0.1}
+    <AnimatePresence
+      mode="wait">
+      <div className="my-[80px] mx-auto text-center max-w-[600px] xl:max-w-[1100px] w-full  isolate relative">
+        <div className="h-16 mx-auto w-[30%] relative" >
+          <VertialDottedLines animationDirection="top" maskDirection="top" delay={0.0} />
+        </div>
+
+        <motion.div
+          className="absolute top-0 left-0 w-[1px] h-full bg-[linear-gradient(180deg,#fff,#fff_50%,transparent_0,transparent)] bg-[length:1px_5px]"
+          initial={{ height: "0%", opacity: 1 }}
+          animate={{ height: "100%", opacity: 0.2 }}
+          transition={{
+            duration: 1,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.3
+          }}
+        />
+
+        <motion.div
+          className="absolute top-0 right-0 w-[1px] h-full bg-[linear-gradient(180deg,#fff,#fff_50%,transparent_0,transparent)] bg-[length:1px_5px]"
+          initial={{ height: "0%", opacity: 1 }}
+          animate={{ height: "100%", opacity: 0.2 }}
+          transition={{
+            duration: 1,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.3
+          }}
+        />
+        <TextAnimation />
+        <div className="relative w-full flex ">
+          <motion.div
+            className="absolute bottom-0 left-[-75px] origin-left !h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px] z-10"
+            initial={{ width: 0, opacity: 1 }}
+            animate={{ width: "calc(100% + 150px)", opacity: 0.2 }}
+            transition={{
+              duration: 0.6,
+              ease: [0.645, 0.045, 0.355, 1],
+              delay: 0.4
+            }}
+            style={maskStyle}
           />
+          <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} />
+        </div>
+        <div className="h-16 mx-auto w-[30%] relative" >
+          <VertialDottedLines animationDirection="top" maskDirection="bottom" delay={0.5} />
         </div>
       </div>
-      <div className="h-full w-full overflow-hidden flex flex-col justify-start items-center pt-[200px]">
-        <TextAnimation />
-        <motion.div
-          initial={{ y: "10%", filter: "blur(10px)", opacity: 0 }}
-          animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
-          transition={{ delay: 1.0, ease: "easeOut", duration: 0.3 }}
-          className="z-100"
-        >
-          <InteractiveHoverButton className="mt-24 bg-white z-100 text-black  mr-8" >
-            Try Friday
-          </InteractiveHoverButton >
-        </motion.div>
-      </div>
-    </div >
+    </AnimatePresence>
   );
 }
 
 function TextAnimation() {
-  const heading = "Your Code Is Bad And You Should Feel Bad"
-  const subHeading = "But at least our AI teaching assistant won't laugh directly to your face"
-  const lastHeadingIndex = heading.split(" ").length - 1;
-  return <div className="flex flex-col space-y-8 title">
-    <div className="flex gap-3 max-w-[700px] justify-center  flex-wrap z-100">
-      {heading.split(" ").map((word, index) => {
-        return index === lastHeadingIndex ?
-          <motion.span
-            key={index}
-            className={`text-3xl sm:text-5xl font-bold italic  `}
-            initial={{ y: "20%", filter: "blur(10px)", opacity: 0 }}
-            animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
-            transition={{ delay: index * 0.08, ease: "easeOut", duration: 0.3 }}
-          >
-            <LineShadowText className="italic" shadowColor={"white"} >
-              {word}
-            </LineShadowText>
-          </motion.span>
-          : <motion.span
-            key={index}
-            className={`text-3xl sm:text-5xl font-extrabold   `}
-            initial={{ y: "20%", filter: "blur(10px)", opacity: 0 }}
-            animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
-            transition={{ delay: index * 0.08, ease: "easeOut", duration: 0.3 }}
-          >
-            {word}
-          </motion.span>
-      })}
-    </div>
-    <div className="flex gap-2 max-w-[800px] justify-center flex-wrap z-100">
-      {subHeading.split(" ").map((word, index) => {
-        return <motion.span
-          key={index}
-          className="sm:text-2xl italic"
-          initial={{ y: "20%", filter: "blur(10px)", opacity: 0 }}
-          animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
-          transition={{ delay: 0.3 + (index * 0.08), ease: "easeOut", duration: 0.3 }}
+  const heading = "Your Code Is Bad And You Should Feel Bad";
+  const subHeading = "But at least our AI teaching assistant won't laugh directly to your face";
+  return (
+    <div className="relative px-4 ">
+      <div className="relative flex flex-wrap justify-center z-10 text-2xl sm:text-3xl xl:text-6xl font-bold p-6">
+        <motion.div
+          initial={{
+            opacity: 0, y: "-50%",
+
+            filter: "blur(10px)",
+          }}
+          animate={{
+            opacity: 1, y: "0%",
+
+            filter: "blur(0px)",
+          }}
+          transition={{
+            duration: 0.6,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.1
+          }}
         >
-          {word}
-        </motion.span>
-      })}
+          {heading}
+
+        </motion.div>
+        <motion.div
+          className="absolute top-0 left-[-75px] origin-left h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px]"
+          initial={{ width: 0, opacity: 1 }}
+          animate={{ width: "calc(100% + 150px)", opacity: 0.2 }}
+          transition={{
+            duration: 0.6,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.1
+          }}
+          style={maskStyle}
+        />
+
+        <motion.div
+          className="absolute bottom-0 left-[-75px] origin-left h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px]"
+          initial={{ width: 0, opacity: 1 }}
+          animate={{ width: "calc(100% + 150px)", opacity: 0.2 }}
+          transition={{
+            duration: 0.6,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.2
+          }}
+          style={maskStyle}
+        />
+      </div>
+
+      <div className="relative text-lg sm:text-xl xl:text-3xl text-center text-gray-400 p-6 mt-4">
+        <motion.div
+          initial={{
+            opacity: 0, y: "-50%",
+
+            filter: "blur(10px)",
+          }}
+          animate={{
+            opacity: 1,
+
+            filter: "blur(0px)",
+            y: "0%"
+          }}
+          transition={{
+            duration: 0.6,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.4
+          }}
+        >
+          {subHeading}
+
+        </motion.div>
+        <motion.div
+          className="absolute bottom-0 left-[-75px] origin-left h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px]"
+          initial={{ width: 0, opacity: 1 }}
+          animate={{ width: "calc(100% + 150px)", opacity: 0.2 }}
+          transition={{
+            duration: 0.6,
+            ease: [0.645, 0.045, 0.355, 1],
+            delay: 0.3
+          }}
+          style={maskStyle}
+        />
+      </div>
     </div>
-  </div>
+  );
 }

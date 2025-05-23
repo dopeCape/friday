@@ -140,11 +140,6 @@ const courseGenerationSchema = z.object({
   learningObjectives: z.array(z.string()).describe("List of objective for this course"),
   keywords: z.array(z.string()).describe("Keywords for the course, used for search"),
   internalDescription: z.string().describe("Internal description of the course, used for semantic search"),
-  // communityResources: z.array(z.object({
-  //   title: z.string().describe("Title of resource"),
-  //   url: z.string().describe("Url for the resource"),
-  //   type: z.enum(["forum", "discord", "github", "other"]).describe("Type of resource")
-  // })),
   modules: z.array(z.object({
     title: z.string().describe("title of the module"),
     description: z.string().describe("description of the module"),

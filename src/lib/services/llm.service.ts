@@ -21,7 +21,7 @@ export default class LLMService {
     }
     return this.instance
   }
-  async structuredRespose<T extends ZodObject<any, any, any>>(input: string | ConverstionType, structure: T, opts: LLMOpts): Promise<ZodToType<T>> {
+  async structuredRespose<T extends ZodObject<any, any, any>>(input: string | ConverstionType, structure: T, opts: LLMOpts): Promise<z.infer<T>> {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Invoking structured response", { input, structure, opts });
       const model = this.getModel(opts)

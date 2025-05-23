@@ -4,6 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --friday-background:#07080A;
+  --friday-hover:#0C0D0F;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -58,9 +60,7 @@
   100% {
     background-position: 100% -100%;}}}
 
-body {
-   font-family: "JetBrains Mono", monospace;
-}
+
 
 .navbar{
 background:linear-gradient(137deg,rgba(17,18,20,.75) 4.87%,rgba(12,13,15,.9) 75.88%);
@@ -160,4 +160,89 @@ box-shadow:0 0 0 1px var(--grey-600),inset 0 0 0 1px var(--grey-900)
 
 .hider{
 background: linear-gradient(var(--direction),var(--grey-900) 0,transparent 100%);
+}
+
+body {
+  font-family: "VT323", monospace;
+  font-style: normal;
+
+}
+
+.dotted-bg{
+ background: linear-gradient(180deg,#fff,#fff 50%,transparent 0,transparent);
+ background-size:5px,1px;
+}
+
+
+
+
+
+
+
+
+@keyframes horizontalDottedLines {
+  0% {
+    height: 0%;
+    opacity: 1;
+  }
+  100% {
+    height: 100%;
+    opacity: 0.2;
+  }
+}
+
+.animated-dotted-lines-horizontal {
+  animation-name: horizontalDottedLines;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  animation-delay: 0.3s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes verticalDottedLines {
+  0% {
+    width: 0%;
+    opacity: 1;
+  }
+  100% {
+    width: calc(100%+150px);
+    opacity: 0.2;
+  }
+}
+
+.heading-with-lines::before, 
+.heading-with-lines::after,
+.subheading-with-line::after {
+  -webkit-mask: linear-gradient(to left, black 93%, transparent), 
+                linear-gradient(to right, black 93%, transparent), 
+                linear-gradient(black, black);
+  -webkit-mask-composite: destination-in;
+  mask-composite: exclude;
+  opacity: 0;
+  animation-name: verticalDottedLines;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  animation-delay: 0.3s;
+  animation-fill-mode: forwards;
+
+}
+@keyframes opacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.dotted-grid{
+  opacity:0;
+ background-image: radial-gradient(var(--color-gray-700) .5px,transparent 0);
+ background-repeat: repeat;
+ background-position: -10px -8.8px;
+ background-size: 17px 17px;
+  animation-name: opacity;
+  animation-duration: 0.6s;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
+
 }
