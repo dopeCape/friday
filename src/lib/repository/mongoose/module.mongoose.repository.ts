@@ -55,6 +55,7 @@ const moduleSchema = new Schema<Module>({
     type: Number,
     required: true,
   },
+
   learningObjectives: [{
     type: String,
     required: true,

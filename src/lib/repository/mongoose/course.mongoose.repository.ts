@@ -65,6 +65,10 @@ const courseSchema = new Schema<Course>({
     type: String,
     required: true,
   }],
+  isUnique: {
+    required: true,
+    type: Boolean,
+  },
   keywords: [{
     type: String,
     required: true,

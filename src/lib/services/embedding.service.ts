@@ -1,4 +1,4 @@
-import { ConverstionType, LLMOpts, Logger } from "@/types";
+import { Logger } from "@/types";
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import env from "@/config/env.config";

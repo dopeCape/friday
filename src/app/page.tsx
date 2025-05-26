@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import TryFriday from "@/components/Homepage/TryFridayButton";
 import VertialDottedLines from "@/components/Homepage/VerticalDottedLines";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 const maskStyle = {
   WebkitMask: "linear-gradient(to left, black 93%, transparent), linear-gradient(to right, black 93%, transparent), linear-gradient(black, black)",
   WebkitMaskComposite: "destination-in",
@@ -12,7 +14,13 @@ const maskStyle = {
 export default function Home() {
   const [showPromptInput, setShowPromptInput] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
+  const { isSignedIn, isLoaded } = useAuth()
+  const router = useRouter()
   const handleChangeSetShow = async (state: boolean) => {
+    if (!isSignedIn) {
+      router.push("/check-login")
+      return;
+    }
     setShowPromptInput(state);
   }
   return (
@@ -22,7 +30,6 @@ export default function Home() {
         <div className="h-16 mx-auto w-[30%] relative" >
           <VertialDottedLines animationDirection="top" maskDirection="top" delay={0.0} />
         </div>
-
         <motion.div
           className="absolute top-0 left-0 w-[1px] h-full bg-[linear-gradient(180deg,#fff,#fff_50%,transparent_0,transparent)] bg-[length:1px_5px]"
           initial={{ height: "0%", opacity: 1 }}
@@ -57,7 +64,7 @@ export default function Home() {
             }}
             style={maskStyle}
           />
-          <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} disabled={false} />
+          <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} disabled={!isLoaded} />
         </div>
         <div className="h-16 mx-auto w-[30%] relative" >
           <VertialDottedLines animationDirection="top" maskDirection="bottom" delay={0.5} />
@@ -68,8 +75,8 @@ export default function Home() {
 }
 
 function TextAnimation() {
-  const heading = "Your Code Is Bad And You Should Feel Bad";
-  const subHeading = "But at least our AI teaching assistant won't laugh directly to your face";
+  const heading = "Code Like You Mean It";
+  const subHeading = "Transform your development skills with personalized AI guidance that adapts to how you learn";
   return (
     <div className="relative px-4 ">
       <div className="relative flex flex-wrap justify-center z-10 text-2xl sm:text-3xl xl:text-6xl font-bold p-6">
@@ -91,7 +98,6 @@ function TextAnimation() {
           }}
         >
           {heading}
-
         </motion.div>
         <motion.div
           className="absolute top-0 left-[-75px] origin-left h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px]"
@@ -138,7 +144,6 @@ function TextAnimation() {
           }}
         >
           {subHeading}
-
         </motion.div>
         <motion.div
           className="absolute bottom-0 left-[-75px] origin-left h-[1px] bg-[linear-gradient(to_right,white,white_50%,transparent_0,transparent)] bg-[length:5px_1px]"

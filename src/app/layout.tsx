@@ -6,6 +6,7 @@ import {
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar/Navbar'
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,14 +37,15 @@ export default function RootLayout({
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" />
-          <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet" />
-          <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=VT323&display=swap" rel="stylesheet" />
+          <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+          <link href="https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/firacode-nerd-font.css" rel="stylesheet" />
         </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--friday-background)] dark`}>
           <Navbar />
           <div className=''>
             {children}
           </div>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

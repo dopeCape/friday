@@ -35,6 +35,12 @@ const chapterSchema = new Schema<Chapter>({
     type: String,
     default: "chapter"
   },
+  isUserSpecific: {
+
+    required: true,
+    type: Boolean,
+
+  },
   isCompleted: {
     required: true,
     type: Boolean,

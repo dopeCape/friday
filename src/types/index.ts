@@ -42,6 +42,11 @@ import { LLMProvider, LLMOpts, ConverstionType } from "./llm.type"
 import { ModuleRepository } from "./signatures/moduleRepository.signature"
 import { QuizRepository } from "./signatures/quizRepository.signature"
 import { ChapterRepository } from "./signatures/chapterRepository.signature"
+
+type SessionClaims = {
+  onboarded: boolean
+
+}
 export type {
   User, UserOs, UserLevel,
   EnvVarType,
@@ -69,5 +74,6 @@ export type {
   Module, Chapter, Quiz, Question, AnswerType, WithoutId, CourseRepository, NewCourse,
   LLMProvider, LLMOpts, ConverstionType,
   CourseGenreation,
-  ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData
+  ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData,
+  SessionClaims
 }

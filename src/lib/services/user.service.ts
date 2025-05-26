@@ -1,6 +1,7 @@
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
-import { Logger, User, WithoutId } from "@/types"
+import { Logger, User, UserLevel, UserOs, WithoutId } from "@/types"
 import { UserRepository as UserRepositoryType } from "@/types/signatures/userRepository.signature";
+import { AppError } from "../errorHandler/appError";
 
 export default class UserService {
   private logger: Logger;
@@ -64,4 +65,37 @@ export default class UserService {
       method: "deleteUser"
     })
   }
+
+  public async checkIfUserIsOnboarded(clerkId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Checking if user is onboarded", { clerkId });
+      const user = await this.userRepository.get({ clerkId });
+      if (!user) {
+        throw new AppError(404, "User not found", "UserDoesNotExists");
+      }
+      if (user.stats.level) {
+        return true
+      }
+      return false
+    }, {
+      service: "UserService",
+      method: "checkIfUserIsOnboarded"
+    })
+  }
+
+  public async onboardUser(clerkId: string, level: UserLevel, stack: string[], os: UserOs, knowsBasicCommands: boolean) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Onboarding user", { clerkId });
+      const user = await this.userRepository.get({ clerkId });
+      if (!user) {
+        throw new AppError(404, "User not found", "UserDoesNotExists");
+      }
+      const updatedUser = await this.userRepository.update({ clerkId }, { $set: { stats: { level, stack, os, knowsBasicCommands } } });
+      return updatedUser;
+    }, {
+      service: "UserService",
+      method: "onboardUser"
+    })
+  }
+
 }

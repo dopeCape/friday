@@ -1,5 +1,5 @@
 import { z } from "zod"
-const userLevelSchema = z.enum(["bignner", "intermediate", "expert"])
+const userLevelSchema = z.enum(["beginner", "intermediate", "expert"])
 const userOsSchema = z.enum(["windows", "mac", "linux"])
 
 const userSchema = z.object({

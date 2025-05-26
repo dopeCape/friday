@@ -6,6 +6,7 @@
 @theme inline {
   --friday-background:#07080A;
   --friday-hover:#0C0D0F;
+  --friday-mute-color:#666768;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -150,9 +151,7 @@ box-shadow:inset 0 1px 1px 0 hsla(0,0%,100%,.15);
   }
 }
 
-.title{
-font-family: 'Helvetica Neue';
-}
+
 
 .double-border {
 box-shadow:0 0 0 1px var(--grey-600),inset 0 0 0 1px var(--grey-900)
@@ -163,20 +162,19 @@ background: linear-gradient(var(--direction),var(--grey-900) 0,transparent 100%)
 }
 
 body {
-  font-family: "VT323", monospace;
+  font-family: "Inter Tight", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
   font-style: normal;
-
 }
 
+.nerd-font{
+ font-family: "FiraCode Nerd Font", monospace, sans-serif;
+}
 .dotted-bg{
  background: linear-gradient(180deg,#fff,#fff 50%,transparent 0,transparent);
  background-size:5px,1px;
 }
-
-
-
-
-
 
 
 
@@ -246,3 +244,5 @@ body {
   animation-fill-mode: forwards;
 
 }
+
+

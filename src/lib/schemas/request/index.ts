@@ -1,0 +1,1 @@
+export { userOnboardingSchema } from "./user"

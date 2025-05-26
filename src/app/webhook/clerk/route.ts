@@ -5,8 +5,9 @@ import { DeletedObjectJSON, UserJSON } from '@clerk/nextjs/server';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import dbConnect from '@/config/mongodb.config';
 import UserService from '@/lib/services/user.service';
+import { NextRequest } from 'next/server';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const logger = getDefaultLogger()
     const userService = getDefaultUserService()
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
         await createUser(data as UserJSON, logger, userService, id as string);
         break;
       case 'user.updated':
+        break;
       case 'user.deleted':
         await deleteUser(data as DeletedObjectJSON, logger, userService, id as string);
         break;

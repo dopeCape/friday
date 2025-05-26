@@ -1,14 +1,23 @@
 "use client"
-export default async function Page({
+import CourseOverview from "@/components/CourseOverview/CourseOverview"
+import dummyCourseData from "@/lib/dummyData/course"
+import { useEffect, useState } from "react"
+
+export default function Page({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+  }, [])
   return (
-    <div className=" bg-background grid grid-cols-3 grid-rows-2   h-[800px]  w-[800px]  place-items-center gap-0 relative pt-64">
-
-
+    <div className="py-[80px]">
+      <CourseOverview courseData={dummyCourseData} isLoading={loading} />
     </div>
   )
 }

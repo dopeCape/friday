@@ -9,6 +9,7 @@ const courseSchema = z.object({
   title: z.string(),
   description: z.string(),
   isPrivate: z.boolean(),
+  isUnique: z.boolean(),
   icon: z.array(z.string()),
   createdBy: z.string(),
   isSystemGenerated: z.boolean(),
@@ -57,6 +58,7 @@ const chapterSchema = z.object({
   moduleId: z.string(),
   type: z.string().default(moduleContentTypeSchema.enum.chapter),
   isCompleted: z.boolean(),
+  isUserSpecific: z.boolean(),
 });
 
 
