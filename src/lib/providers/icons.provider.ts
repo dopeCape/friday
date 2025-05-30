@@ -39,7 +39,7 @@ export default class IconsProvider {
 
       const icons = batchResults.map(result => {
         if (result.success && result.matches.length > 0) {
-          return (result.matches[0].metadata)?.iconName as string || "";
+          return (result.matches[0].metadata)?.code as string || "";
         }
         this.logger.warn(`Failed to get icon for query: ${result.query}`, result.error);
         return "";

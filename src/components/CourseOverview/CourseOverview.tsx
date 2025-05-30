@@ -3,6 +3,13 @@ import { useRef, useState } from "react";
 import HorizontalLine from "../HorizontalLine";
 import VertialDottedLines from "../Homepage/VerticalDottedLines";
 
+const renderNerdFontIcon = (hexCode: string) => {
+  const cleanHex = hexCode.replace(/^(nf-|u)/i, '');
+
+  const unicodeValue = parseInt(cleanHex, 16);
+  return String.fromCharCode(unicodeValue);
+};
+
 interface IChapter {
   _id: string;
   title: string;
@@ -138,6 +145,7 @@ const loadingToContentVariants = {
 };
 
 export default function CourseOverview({ courseData, isLoading = false }: ICourseOverview) {
+  console.log(courseData)
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: true,
@@ -666,7 +674,7 @@ function CourseTitleSection({
                 delay: index * 1
               }}
             />
-            <span className="relative z-10">{iconItem}</span>
+            <span className="relative z-10">{renderNerdFontIcon(iconItem)}</span>
           </motion.div>
         ))}
       </motion.div>
@@ -683,7 +691,7 @@ function CourseTitleSection({
         >
           <div className="space-y-4 w-full">
             <p className="text-[var(--friday-mute-color)] leading-relaxed text-sm lg:text-base">
-              {description}
+              {description.slice(0, 100) + (description.length > 100 ? "..." : "")}
             </p>
 
             <div className="text-xs text-gray-400 space-y-1">
@@ -887,7 +895,7 @@ function ModuleContent({
 
         <p className={`text-sm leading-relaxed ${module.isLocked ? 'text-gray-600' : 'text-[var(--friday-mute-color)]'
           }`}>
-          {module.description}
+          {module.description.length > 120 ? `${module.description.slice(0, 120)}...` : module.description.slice(0, 120)}
         </p>
 
         <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
@@ -946,7 +954,7 @@ function ModuleIcon({
       )}
 
       <span className="relative z-10 group-hover:scale-105 transition-transform duration-200">
-        {icon}
+        {renderNerdFontIcon(icon)}
       </span>
     </motion.div>
   );

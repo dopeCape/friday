@@ -11,11 +11,12 @@ export async function GET(req: Request) {
   const data: NewCourse = {
     userId: "asdf",
     isPrivate: true,
-    isSystemGenerated: true,
+    isSystemGenerated: false,
     prompt: userQuery,
     isEnhanced: true,
   }
   const res = await courseService.createCourse(data);
+  // const res = await courseService.createCourseFromTemplate("683789d37a8dcf8595e33059", "asdf")
   return Response.json(res);
 }
 

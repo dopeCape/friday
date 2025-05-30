@@ -19,7 +19,6 @@ Generate a course outline that is EXTREMELY thorough and comprehensive. This wil
 ### 1. Course Details
 - **Title**: Clear, concise title describing the course content
 - **Description**: Comprehensive overview of what the course covers (minimum 150 words)
-- **Icon**: Array of appropriate nerd font icons keywords example (for mern stack,  for react, react, reactjs, framework etc ,  for expressjs :backend, express etc. , nodejs etc).
 - **Technologies**: List of ALL technologies/frameworks/languages used, including prerequisites
 - **Difficulty Level**: "beginner", "intermediate", "advanced", or "expert"
 - **Prerequisites**: MINIMAL required knowledge or skills before taking this course
@@ -27,6 +26,17 @@ Generate a course outline that is EXTREMELY thorough and comprehensive. This wil
 - **Learning Objectives**: At least 8-10 specific skills learners will acquire
 - **Internal Description**: Semantic description that precisely conveys the course content for discovery
 - **Keywords**: At least 10-15 relevant search terms
+- **Icon**: Array of 3 DIFFERENT icon search queries. IMPORTANT RULES:
+  1. First icon: The main technology/language (e.g., "react", "python", "node")
+  2. Second icon: A conceptual icon (e.g., "code", "terminal", "development", "gear")
+  3. Third icon: Domain-specific icon (e.g., "web", "server", "database", "mobile", "cloud")
+  
+  NEVER repeat the same concept. Examples:
+  - React Course: ["react", "component", "web"]
+  - Python API Course: ["python", "api", "server"]
+  - Go Course: ["go", "code", "build"]
+  - Database Course: ["database", "data", "server"]
+  - DevOps Course: ["docker", "gear", "cloud"]
 
 ### 2. Module Planning
 Plan 10-15 substantial modules that create a COMPLETE learning path. The first modules should cover fundamentals/prerequisites, while later modules cover the core requested topics. Just provide the title and a 1-sentence description for each module - don't include full details.
@@ -37,7 +47,7 @@ Remember:
 - Break large topics into multiple focused modules
 - Include both theory and practical application modules
 - End with real-world integration and advanced topics
-- Font query should be generic to the required icon. ex. go insted of golang or gopher
+- Font query should be generic to the required icon. ex. go insted of golang or gopher, 
 
 ## User Adaptation
 Carefully consider these aspects when designing the course:
@@ -78,13 +88,33 @@ Generate a complete module with all details, chapters and quiz content following
 Create a complete module with:
 - **Title**: (You'll be provided )
 - **Description**: Detailed explanation of what the module covers (minimum 100 words)
-- **Icon**: query for appropriate nerd font icons keywords for the module, (regardless of the course), the icon shold dipict the module,ex: for react, query would be reactjs, react, frontend etc. for Commandline it wold be (terminal, cmd, etc.) 
 - **References**: 3-5 search queries that will be used to search for learning materials (artiles, youtube videos etc)  on web.
 - **Difficulty Level**: "beginner", "intermediate", "advanced", or "expert"
 - **Prerequisites**: Required knowledge for this specific module
 - **Estimated Completion Time**: Realistic hours to complete this module (typically 4-8 hours per substantial module)
 - **Learning Objectives**: 5-7 specific skills gained from this module
-
+- **Icon**: Single icon query that represents the MODULE'S PURPOSE, not the course language.
+  
+  Think about what the module TEACHES or what SKILL it covers:
+  - DON'T just use the language name (not "go", "python", "javascript" for every module)
+  - DO use conceptual terms that represent the module's content
+  
+  Examples by module type:
+  - "Setting Up Environment" → "gear" or "wrench" or "setup"
+  - "Introduction to X" → "book" or "start" or "info"  
+  - "Variables and Data Types" → "variable" or "box" or "tag"
+  - "Functions" → "function" or "cube" or "component"
+  - "Error Handling" → "warning" or "bug" or "shield"
+  - "Testing" → "test" or "check" or "validate"
+  - "Web Development" → "globe" or "web" or "browser"
+  - "Database Operations" → "database" or "table" or "data"
+  - "API Development" → "api" or "plug" or "network"
+  - "File I/O" → "file" or "folder" or "save"
+  - "Best Practices" → "star" or "award" or "medal"
+  - "Deployment" → "rocket" or "cloud" or "upload"
+  - "Security" → "lock" or "shield" or "key"
+  - "Debugging" → "bug" or "search" or "tools"
+  - "Performance" → "gauge" or "speed" or "chart"
 
 ### 3. Quiz
 Create a comprehensive quiz with:

@@ -22,11 +22,21 @@ export default class ChapterService {
 
   public async createChapters(chapters: Chapter[]) {
     return this.errorHandler.handleError(async () => {
-      this.logger.info("Creaing multiple Chapter", { chapters });
+      this.logger.info("Creating multiple Chapter", { chapters });
       return await this.ChapterRepository.createMany(chapters);
     }, {
       service: "ChapterService",
       method: "createChapters"
+    })
+  }
+
+  public async getChaptersByModuleId(moduleId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting chapters by module ID", { moduleId });
+      return await this.ChapterRepository.list({ moduleId });
+    }, {
+      service: "ChapterService",
+      method: "getChaptersByModuleId"
     })
   }
 }

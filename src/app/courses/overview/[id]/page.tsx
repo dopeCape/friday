@@ -9,15 +9,19 @@ export default function Page({
   params: Promise<{ id: string }>
 }) {
   const [loading, setLoading] = useState(true);
+  const [courseData, setCourseData] = useState<any>(null);
   useEffect(() => {
-    setTimeout(() => {
+    async function fetchCourseData() {
+      const response = await fetch(`/api/course/6838defff7b4db3e926c6a36`);
+      const data = await response.json();
+      setCourseData({ course: data.data.course, modules: data.data.modules, chapters: data.data.chapters });
       setLoading(false);
-    }, 3000);
-
+    }
+    fetchCourseData();
   }, [])
   return (
     <div className="py-[80px]">
-      <CourseOverview courseData={dummyCourseData} isLoading={loading} />
+      <CourseOverview courseData={courseData} isLoading={loading} />
     </div>
   )
 }

@@ -132,9 +132,9 @@ const quizContentGenerationSchema = z.object({
 })
 
 const courseGenerationSchema = z.object({
-  title: z.string().describe("title of the course"),
-  description: z.string().describe("description of the course"),
-  iconQuery: z.array(z.array(z.string())).describe("Nerd font icon search query that perfectly , appropreate for the course, keywords for each icons,   about 2-5 will be enough"),
+  title: z.string().describe("title of the course, max 4 words"),
+  description: z.string().describe("description of the course, should be very short , brief, and up to the point"),
+  iconQuery: z.array(z.array(z.string())).describe("Nerd font icon search query that perfectly , appropreate for the course, keywords for each icons,  exactly 3 ").max(3).min(3),
   technologies: z.array(z.string()).describe("technologies that will be used in this course"),
   difficultyLevel: difficultyLevelSchema.describe("difficulty level of the course, beginner, intermediate, advanced, expert"),
   prerequisites: z.array(z.string()).describe("Prerequisites of the course"),

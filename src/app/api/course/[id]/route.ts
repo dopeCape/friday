@@ -10,8 +10,8 @@ export async function GET(request: Request,
     await dbConnect();
     const { id } = await params
     const courseService = getDefaultCourseService();
-    const course = await courseService.getCourse(id);
-    return responseCreator(200, true, "Found course", course)
+    const { course, modules, chapters } = await courseService.getCourseWithContent(id);
+    return responseCreator(200, true, "Found course with content", { course, modules, chapters })
   } catch (error) {
     return apiErrorHandler(error as ErrorResponse)
   }
