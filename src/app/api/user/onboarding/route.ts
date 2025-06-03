@@ -39,8 +39,8 @@ export async function POST(req: Request) {
       return responseCreator(401, false, "Unauthorized", {});
     }
     const usreService = getDefaultUserService();
-    const { level, stack, os, knowsBasicCommands } = await validateBody(userOnboardingSchema, req);
-    const isUserOnboarded = await usreService.onboardUser(userId, level, stack, os, knowsBasicCommands);
+    const { level, stack, os, knowsBasicCommands, knowsGit } = await validateBody(userOnboardingSchema, req);
+    const isUserOnboarded = await usreService.onboardUser(userId, level, stack, os, knowsBasicCommands, knowsGit);
     const client = await clerkClient()
     await client.users.updateUserMetadata(userId, {
       publicMetadata: {

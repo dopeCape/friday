@@ -8,15 +8,6 @@ import './globals.css'
 import Navbar from '@/components/Navbar/Navbar'
 import { Toaster } from "@/components/ui/sonner"
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
 
 export const metadata: Metadata = {
   title: 'Clerk Next.js Quickstart',
@@ -38,9 +29,9 @@ export default function RootLayout({
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" />
           <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-          <link href="https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/firacode-nerd-font.css" rel="stylesheet" />
+          <link href="https://www.nerdfonts.com/assets/css/webfont.css" rel="stylesheet" />
         </head>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--friday-background)] dark`}>
+        <body className={` antialiased bg-[var(--friday-background)] dark nf`}>
           <Navbar />
           <div className=''>
             {children}

@@ -40,6 +40,9 @@ const userSchema = new Schema<User>({
     knowsBasicCommands: {
       type: Boolean,
     },
+    knowsGit: {
+      type: Boolean,
+    },
   },
 })
 

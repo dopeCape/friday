@@ -2,6 +2,9 @@ import { AnimatePresence, motion } from "motion/react";
 import VertialDottedLines from "./VerticalDottedLines"
 import { PlaceholdersAndVanishTextarea } from "../VanishInput";
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation'; // Add this import at the top
+import { toast } from "sonner"
+import z from "zod";
 interface ITryFridayProp {
   text: string
   clickHandler: (state: boolean) => void
@@ -12,6 +15,52 @@ const placeholders = ["Tell use what you want to learn", "Full stack webdev with
 export default function TryFriday({ text, clickHandler, isTextBox, disabled }: ITryFridayProp) {
   const [showTextBox, setShowTextBox] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
+  const router = useRouter();
+
+
+  const handleClick = async () => {
+    if (loading) return;
+    console.log(input);
+    if (!input) return;
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/course/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userQuery: input })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || `Server error: ${response.status} ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+      const result = await response.json();
+      const courseId = result.data.id;
+
+      if (courseId) {
+        router.push(`/courses/overview/${courseId}`);
+      } else {
+        throw new Error("Course ID not found in response");
+      }
+
+    } catch (error) {
+      let errorMessage = "An unexpected error occurred during course generation";
+      if (error instanceof z.ZodError) {
+        errorMessage = `Validation error: ${error.errors.map(e => e.message).join(', ')}`;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error("Course generation failed", {
+        description: errorMessage
+      });
+      setLoading(false);
+    }
+  }
   useEffect(() => {
     if (!isTextBox) {
       setShowTextBox(false);
@@ -67,7 +116,11 @@ export default function TryFriday({ text, clickHandler, isTextBox, disabled }: I
                 }
               }}
             >
-              <PlaceholdersAndVanishTextarea placeholders={placeholders} onChange={() => { }} isLoading={loading} onSubmit={() => { setLoading(true) }} />
+              <PlaceholdersAndVanishTextarea placeholders={placeholders} onChange={(e) => {
+                setInput(() => {
+                  return e.target.value
+                })
+              }} isLoading={loading} onSubmit={handleClick} />
             </motion.div>
           ) : (
             <div aria-hidden="true"></div>

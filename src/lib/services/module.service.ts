@@ -102,7 +102,7 @@ Next module
         moduleContentSchema,
         {
           provider: "openai",
-          model: "gpt-4o-mini",
+          model: "gpt-4.1",
         }
       );
 
@@ -114,22 +114,18 @@ Next module
 
   public async createModules(modules: ModuleGenerationData[], courseId: string, isTemplate: boolean = false) {
     return this.errorHandler.handleError(async () => {
-      // First generate all module content
       const generatedModules = await this.generateModuleContent(modules);
 
-      // Get icons for all modules at once
       const iconQueries = generatedModules.map(module => module.iconQuery);
-      const icons = await this.iconProvider.searchIconsBatch(iconQueries);
+      const icons = await this.iconProvider.searchIconsBatch(iconQueries.map(query => query.join(",")));
 
       const createdModules: Module[] = [];
       const createdChapters: Chapter[] = [];
 
-      // Create modules and chapters with proper IDs and relationships
       for (let i = 0; i < generatedModules.length; i++) {
         const generatedModule = generatedModules[i];
         const moduleId = new mongoose.Types.ObjectId().toString();
 
-        // Create chapters for this module
         const chapters: Chapter[] = generatedModule.chapters.map(chapter => ({
           _id: new mongoose.Types.ObjectId().toString(),
           title: chapter.title,
@@ -142,15 +138,14 @@ Next module
           isUserSpecific: !isTemplate,
         }));
 
-        // Create the module
         const module: Module = {
           title: generatedModule.title,
           _id: moduleId,
           description: generatedModule.description,
           courseId: courseId,
-          refs: [],  // We'll populate refs after saving
+          refs: [],
           contents: chapters.map(ch => ch._id),
-          isLocked: i !== 0,  // First module is unlocked
+          isLocked: i !== 0,
           isCompleted: false,
           currentChapterId: chapters[0]._id,
           icon: icons[i],
@@ -201,17 +196,17 @@ Next module
   public async cloneModulesForCourse(templateCourseId: string, newCourseId: string) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Cloning modules for course", { templateCourseId, newCourseId });
-      
+
       const templateModules = await this.moduleRepository.list({ courseId: templateCourseId });
-      
+
       const newModules: Module[] = [];
       const newChapters: Chapter[] = [];
-      
+
       for (const templateModule of templateModules) {
         const newModuleId = new mongoose.Types.ObjectId().toString();
-        
+
         const templateChapters = await this.chapterService.getChaptersByModuleId(templateModule._id);
-        
+
         const moduleChapters = templateChapters.map(chapter => {
           const newChapterId = new mongoose.Types.ObjectId().toString();
           return {
@@ -221,7 +216,7 @@ Next module
             isUserSpecific: true,
           };
         });
-        
+
         const newModule: Module = {
           ...templateModule,
           _id: newModuleId,
@@ -230,14 +225,14 @@ Next module
           currentChapterId: moduleChapters[0]._id,
           isCompleted: false,
         };
-        
+
         newModules.push(newModule);
         newChapters.push(...moduleChapters);
       }
-      
+
       await this.moduleRepository.createMany(newModules);
       await this.chapterService.createChapters(newChapters);
-      
+
       return { modules: newModules, chapters: newChapters };
     }, {
       service: "ModuleService",
@@ -248,71 +243,199 @@ Next module
   public async getModulesAndChaptersByCourseId(courseId: string) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Getting modules and chapters for course", { courseId });
-
-      type AggregationResult = {
-        modules: Module[];
-        chapters: Chapter[];
-      }
-
-      // Get modules with their chapters using aggregation
-      const result = await this.moduleRepository.aggregate<AggregationResult>([
-        // Match modules for this course
+      const result = await this.moduleRepository.aggregate([
         { $match: { courseId } },
-        // Sort modules by their order (assuming they have an order field)
         { $sort: { _id: 1 } },
-        // Lookup chapters for each module
         {
           $lookup: {
             from: "chapters",
-            localField: "_id",
-            foreignField: "moduleId",
+            let: { moduleId: { $toString: "$_id" } },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$moduleId", "$$moduleId"] } } },
+              { $sort: { _id: 1 } }
+            ],
             as: "moduleChapters"
           }
         },
-        // Group all results
         {
-          $group: {
-            _id: null,
-            modules: { $push: "$$ROOT" },
-            chapters: { $push: "$moduleChapters" }
-          }
-        },
-        // Project to flatten chapters array and remove unnecessary fields
-        {
-          $project: {
-            _id: 0,
-            modules: {
-              $map: {
-                input: "$modules",
-                as: "module",
-                in: {
-                  $mergeObjects: [
-                    "$$module",
-                    { moduleChapters: "$$REMOVE" }
-                  ]
+          $facet: {
+            modules: [
+              {
+                $project: {
+                  moduleChapters: 0 // Remove chapters from modules
                 }
               }
-            },
-            chapters: {
-              $reduce: {
-                input: "$chapters",
-                initialValue: [],
-                in: { $concatArrays: ["$$value", "$$this"] }
+            ],
+            chapters: [
+              {
+                $unwind: {
+                  path: "$moduleChapters",
+                  preserveNullAndEmptyArrays: false
+                }
+              },
+              {
+                $replaceRoot: { newRoot: "$moduleChapters" }
+              },
+              {
+                $project: {
+                  content: 0 // Exclude content property from chapters
+                }
               }
-            }
+            ]
           }
         }
       ]);
-
-      // If no results, return empty arrays
       if (!result.length) {
         return { modules: [], chapters: [] };
       }
-
-      return result[0];
+      return {
+        modules: (result[0] as any).modules,
+        chapters: (result[0] as any).chapters
+      };
     }, {
       service: "ModuleService",
       method: "getModulesAndChaptersByCourseId"
+    });
+  }
+
+  public async getModulesByCourseId(courseId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting modules for course", { courseId });
+
+      const modules = await this.moduleRepository.list({
+        courseId: courseId
+      });
+
+      if (!modules) {
+        this.logger.info("No modules found for course", { courseId });
+        return [];
+      }
+
+      this.logger.info("Successfully retrieved modules for course", {
+        courseId,
+        moduleCount: modules.length,
+        moduleIds: modules.map(m => m._id)
+      });
+
+      return modules;
+    }, {
+      service: "ModuleService",
+      method: "getModulesByCourseId"
+    });
+  }
+
+  public async getModulesByCourseIdWithFilter(courseId: string, options?: {
+    includeCompleted?: boolean;
+    includeLocked?: boolean;
+    limit?: number;
+  }) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting filtered modules for course", { courseId, options });
+
+      let filter: any = { courseId: courseId };
+      if (options?.includeCompleted === false) {
+        filter.isCompleted = false;
+      }
+      if (options?.includeLocked === false) {
+        filter.isLocked = false;
+      }
+
+      const modules = await this.moduleRepository.list(filter);
+
+      if (!modules) {
+        this.logger.info("No modules found for course with filter", { courseId, filter });
+        return [];
+      }
+
+      let sortedModules = modules.sort((a, b) => a._id.localeCompare(b._id));
+
+      if (options?.limit && options.limit > 0) {
+        sortedModules = sortedModules.slice(0, options.limit);
+      }
+
+      this.logger.info("Successfully retrieved filtered modules for course", {
+        courseId,
+        filter,
+        moduleCount: sortedModules.length
+      });
+
+      return sortedModules;
+    }, {
+      service: "ModuleService",
+      method: "getModulesByCourseIdWithFilter"
+    });
+  }
+
+  public async getModuleCountByCourseId(courseId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting module count for course", { courseId });
+
+      const modules = await this.moduleRepository.list({
+        courseId: courseId
+      });
+
+      const count = modules?.length || 0;
+
+      this.logger.info("Got module count for course", { courseId, count });
+
+      return count;
+    }, {
+      service: "ModuleService",
+      method: "getModuleCountByCourseId"
+    });
+  }
+
+  public async getModulesWithProgressByCourseId(courseId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting modules with progress for course", { courseId });
+
+      const modules = await this.moduleRepository.list({
+        courseId: courseId
+      });
+
+      if (!modules) {
+        return {
+          modules: [],
+          progress: {
+            total: 0,
+            completed: 0,
+            locked: 0,
+            inProgress: 0,
+            completionPercentage: 0
+          }
+        };
+      }
+
+      const total = modules.length;
+      const completed = modules.filter(m => m.isCompleted).length;
+      const locked = modules.filter(m => m.isLocked).length;
+      const inProgress = modules.filter(m => !m.isCompleted && !m.isLocked).length;
+      const completionPercentage = total > 0 ? (completed / total) * 100 : 0;
+
+      const sortedModules = modules.sort((a, b) => a._id.localeCompare(b._id));
+
+      this.logger.info("Successfully retrieved modules with progress for course", {
+        courseId,
+        total,
+        completed,
+        locked,
+        inProgress,
+        completionPercentage
+      });
+
+      return {
+        modules: sortedModules,
+        progress: {
+          total,
+          completed,
+          locked,
+          inProgress,
+          completionPercentage: Math.round(completionPercentage * 100) / 100
+        }
+      };
+    }, {
+      service: "ModuleService",
+      method: "getModulesWithProgressByCourseId"
     });
   }
 }

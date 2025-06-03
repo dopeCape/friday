@@ -1,5 +1,6 @@
 import { getDefaultCourseService } from "@/config/defaults"
 import dbConnect from "@/config/mongodb.config";
+import { AppError } from "@/lib/errorHandler/appError";
 import { apiErrorHandler, responseCreator } from "@/lib/utils/apiResponse.utils";
 import { ErrorResponse } from "@/types";
 

@@ -26,17 +26,22 @@ Generate a course outline that is EXTREMELY thorough and comprehensive. This wil
 - **Learning Objectives**: At least 8-10 specific skills learners will acquire
 - **Internal Description**: Semantic description that precisely conveys the course content for discovery
 - **Keywords**: At least 10-15 relevant search terms
-- **Icon**: Array of 3 DIFFERENT icon search queries. IMPORTANT RULES:
-  1. First icon: The main technology/language (e.g., "react", "python", "node")
-  2. Second icon: A conceptual icon (e.g., "code", "terminal", "development", "gear")
-  3. Third icon: Domain-specific icon (e.g., "web", "server", "database", "mobile", "cloud")
+- **iconSearchTerms**: Array of exactly 3 arrays, each containing 3-5 search terms for finding course icons. each of the array should be a different aspect of the course. and each icon should be different.
   
-  NEVER repeat the same concept. Examples:
-  - React Course: ["react", "component", "web"]
-  - Python API Course: ["python", "api", "server"]
-  - Go Course: ["go", "code", "build"]
-  - Database Course: ["database", "data", "server"]
-  - DevOps Course: ["docker", "gear", "cloud"]
+  **Technology/Framework Terms** (for course icons) [Example]:
+  - React Course → [["react", "component", "jsx", "frontend"], ["web", "browser", "ui"], ["javascript", "code", "script"]]
+  - Python Course → [["python", "snake", "programming"], ["code", "script", "backend"], ["data", "analysis", "automation"]]
+  - Database Course → [["database", "storage", "data"], ["sql", "query", "table"], ["server", "backend", "persistence"]]
+  - Full Stack → [["frontend", "ui", "client"], ["backend", "server", "api"], ["database", "storage", "data"]]
+  - DevOps → [["deploy", "deployment", "production"], ["docker", "container", "cloud"], ["automation", "pipeline", "ci"]]
+  - Mobile Development → [["mobile", "app", "smartphone"], ["ios", "android", "native"], ["ui", "interface", "touch"]]
+  
+  **Guidelines for Course Icon Terms**:
+  - Focus on TECHNOLOGY and FRAMEWORK names, not learning actions
+  - Use terms developers recognize for the main technologies
+  - Each sub-array should represent a different aspect/technology of the course
+  - Avoid generic terms like "tutorial", "learn", "guide" (those are for modules)
+  - Think: "What 3 technologies/concepts define this course?"
 
 ### 2. Module Planning
 Plan 10-15 substantial modules that create a COMPLETE learning path. The first modules should cover fundamentals/prerequisites, while later modules cover the core requested topics. Just provide the title and a 1-sentence description for each module - don't include full details.
@@ -93,29 +98,54 @@ Create a complete module with:
 - **Prerequisites**: Required knowledge for this specific module
 - **Estimated Completion Time**: Realistic hours to complete this module (typically 4-8 hours per substantial module)
 - **Learning Objectives**: 5-7 specific skills gained from this module
-- **Icon**: Single icon query that represents the MODULE'S PURPOSE, not the course language.
+- **iconSearchTerms**: Array of 3-5 search terms for finding the module icon.
   
-  Think about what the module TEACHES or what SKILL it covers:
-  - DON'T just use the language name (not "go", "python", "javascript" for every module)
-  - DO use conceptual terms that represent the module's content
+  CRITICAL: Generate as a single array of terms: ["term1", "term2", "term3", "term4"]
   
-  Examples by module type:
-  - "Setting Up Environment" → "gear" or "wrench" or "setup"
-  - "Introduction to X" → "book" or "start" or "info"  
-  - "Variables and Data Types" → "variable" or "box" or "tag"
-  - "Functions" → "function" or "cube" or "component"
-  - "Error Handling" → "warning" or "bug" or "shield"
-  - "Testing" → "test" or "check" or "validate"
-  - "Web Development" → "globe" or "web" or "browser"
-  - "Database Operations" → "database" or "table" or "data"
-  - "API Development" → "api" or "plug" or "network"
-  - "File I/O" → "file" or "folder" or "save"
-  - "Best Practices" → "star" or "award" or "medal"
-  - "Deployment" → "rocket" or "cloud" or "upload"
-  - "Security" → "lock" or "shield" or "key"
-  - "Debugging" → "bug" or "search" or "tools"
-  - "Performance" → "gauge" or "speed" or "chart"
-
+  **Learning Action Terms** (for module icons):
+  Focus on LEARNING ACTIONS and VISUAL METAPHORS, not technologies:
+  
+  **Module Type → Icon Search Terms**:
+  - "Introduction/Getting Started" → ["book", "tutorial", "introduction", "guide", "start"]
+  - "Setup/Installation" → ["gear", "wrench", "download", "install", "configure"]
+  - "Environment Configuration" → ["gear", "settings", "configure", "setup", "tools"]
+  - "Basic Concepts/Syntax" → ["code", "bracket", "syntax", "basic", "foundation"]
+  - "Variables & Data Types" → ["box", "tag", "variable", "data", "type"]
+  - "Functions/Methods" → ["function", "method", "cube", "procedure", "call"]
+  - "Classes/OOP" → ["class", "object", "diagram", "structure", "inheritance"]
+  - "Control Flow" → ["flow", "branch", "condition", "logic", "control"]
+  - "Loops & Iteration" → ["loop", "repeat", "cycle", "iteration", "sync"]
+  - "Arrays/Collections" → ["list", "array", "collection", "grid", "table"]
+  - "Error Handling" → ["error", "exception", "warning", "bug", "handle"]
+  - "Debugging & Troubleshooting" → ["bug", "debug", "search", "fix", "troubleshoot"]
+  - "Testing & Validation" → ["test", "check", "validate", "verify", "quality"]
+  - "File Operations" → ["file", "folder", "save", "read", "write"]
+  - "Database Integration" → ["database", "connect", "query", "data", "integration"]
+  - "API Development" → ["api", "endpoint", "interface", "connect", "service"]
+  - "Authentication & Security" → ["lock", "key", "secure", "auth", "protect"]
+  - "Deployment & Production" → [ "deploy", "launch", "production", "publish"]
+  - "Performance Optimization" → ["speed", "optimize", "performance", "fast", "efficiency"]
+  - "Best Practices" → ["star", "best", "practice", "quality", "standard"]
+  - "Project Implementation" → ["project", "build", "create", "implement", "develop"]
+  - "Documentation" → ["document", "doc", "manual", "guide", "reference"]
+  - "Version Control" → ["git", "version", "branch", "commit", "control"]
+  - "Code Review" → ["review", "inspect", "check", "evaluate", "assess"]
+  - "Advanced Concepts" → ["advanced", "expert", "complex", "deep", "mastery"]
+  - "Integration & Workflows" → ["integrate", "workflow", "connect", "combine", "process"]
+  
+  **Guidelines for Module Icon Terms**:
+  - Focus on LEARNING ACTIONS and PROCESSES, not specific technologies
+  - Use terms that describe what students DO in this module
+  - Include visual metaphors (book, gear, rocket, etc.)
+  - Avoid technology names (not "react", "python", "javascript")
+  - Think: "What action/process does this module teach?"
+  
+  **Examples**:
+  - "Introduction to React Hooks" → ["hook", "introduction", "concept", "guide", "start"]
+  - "Setting Up Docker Environment" → ["gear", "setup", "environment", "configure", "install"]
+  - "Building Your First API" → ["build", "create", "api", "project", "develop"]
+  - "Testing React Components" → ["test", "check", "component", "verify", "quality"]
+  - "Deploying to Production" → ["rocket", "deploy", "production", "launch", "publish"]
 ### 3. Quiz
 Create a comprehensive quiz with:
 - **Questions**: 5-8 questions that thoroughly test understanding:
@@ -145,6 +175,11 @@ Ensure your content:
     `
   }
 
+
+
+  /**
+   * @deprecated use getCourseStructureGenerationPrompt instead.
+  **/
   public static getCourseGenerationSystemPrompt() {
     return `
 # AI Teaching Platform Course Generation Prompt

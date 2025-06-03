@@ -5,7 +5,8 @@ const userOnboardingSchema = z.object({
   stack: z.array(z.string()),
   level: userLevelSchema,
   os: userOsSchema,
-  knowsBasicCommands: z.boolean()
+  knowsBasicCommands: z.boolean(),
+  knowsGit: z.boolean()
 })
 
 

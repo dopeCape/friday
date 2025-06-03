@@ -69,6 +69,14 @@ const courseSchema = new Schema<Course>({
     required: true,
     type: Boolean,
   },
+  isFromTemplate: {
+    type: Boolean,
+    default: false,
+  },
+  templateId: {
+    type: String,
+    required: false,
+  },
   keywords: [{
     type: String,
     required: true,

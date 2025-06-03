@@ -162,15 +162,10 @@ background: linear-gradient(var(--direction),var(--grey-900) 0,transparent 100%)
 }
 
 body {
-  font-family: "Inter Tight", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: <weight>;
-  font-style: normal;
-}
+ font-family: "Inter Tight", sans-serif  !important;
+ }
 
-.nerd-font{
- font-family: "FiraCode Nerd Font", monospace, sans-serif;
-}
+
 .dotted-bg{
  background: linear-gradient(180deg,#fff,#fff 50%,transparent 0,transparent);
  background-size:5px,1px;

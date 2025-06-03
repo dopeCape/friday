@@ -83,14 +83,14 @@ export default class UserService {
     })
   }
 
-  public async onboardUser(clerkId: string, level: UserLevel, stack: string[], os: UserOs, knowsBasicCommands: boolean) {
+  public async onboardUser(clerkId: string, level: UserLevel, stack: string[], os: UserOs, knowsBasicCommands: boolean, knowsGit: boolean) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Onboarding user", { clerkId });
       const user = await this.userRepository.get({ clerkId });
       if (!user) {
         throw new AppError(404, "User not found", "UserDoesNotExists");
       }
-      const updatedUser = await this.userRepository.update({ clerkId }, { $set: { stats: { level, stack, os, knowsBasicCommands } } });
+      const updatedUser = await this.userRepository.update({ clerkId }, { $set: { stats: { level, stack, os, knowsBasicCommands, knowsGit } } });
       return updatedUser;
     }, {
       service: "UserService",

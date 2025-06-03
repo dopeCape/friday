@@ -1,6 +1,7 @@
 import { Chapter, Logger } from "@/types";
 import { MongooseBaseRepository } from "./base.mongoose.repository";
 import { model, Model, models, Schema } from "mongoose";
+
 const chapterSchema = new Schema<Chapter>({
   title: {
     required: true,
@@ -34,12 +35,6 @@ const chapterSchema = new Schema<Chapter>({
     required: true,
     type: String,
     default: "chapter"
-  },
-  isUserSpecific: {
-
-    required: true,
-    type: Boolean,
-
   },
   isCompleted: {
     required: true,

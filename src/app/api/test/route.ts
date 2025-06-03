@@ -7,7 +7,7 @@ import { TavilySearch } from "@langchain/tavily";
 export async function GET(req: Request) {
   await dbConnect()
   const courseService = getDefaultCourseService();
-  const userQuery = "I want to learn golang from start to finish"
+  const userQuery = "I want to learn rust from start to end"
   const data: NewCourse = {
     userId: "asdf",
     isPrivate: true,

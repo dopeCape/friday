@@ -54,7 +54,6 @@ export function PlaceholdersAndVanishTextarea({
   const animationRef = useRef<number | null>(null);
   const gridDotsRef = useRef<any[]>([]);
 
-  // Function to auto-resize the textarea with max height limit
   const autoResizeTextarea = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -63,7 +62,6 @@ export function PlaceholdersAndVanishTextarea({
     }
   };
 
-  // Prepare grid-based animation that matches the website aesthetic
   const prepareAnimation = useCallback(() => {
     if (!textareaRef.current || !formRef.current || !canvasRef.current) return;
 
@@ -71,7 +69,6 @@ export function PlaceholdersAndVanishTextarea({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas dimensions
     canvas.width = formRef.current.offsetWidth;
     canvas.height = formRef.current.offsetHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -81,32 +78,25 @@ export function PlaceholdersAndVanishTextarea({
     const paddingLeft = parseFloat(computedStyles.getPropertyValue("padding-left"));
     const paddingTop = parseFloat(computedStyles.getPropertyValue("padding-top"));
 
-    // Prepare to draw text
     ctx.font = `${fontSize}px ${computedStyles.fontFamily}`;
     ctx.textBaseline = 'top';
     ctx.fillStyle = "#FFF";
 
-    // Get the text content and split by lines
     const lines = value.split("\n");
     const lineHeight = fontSize * 1.2;
 
-    // Draw each line of text
     lines.forEach((line, index) => {
       ctx.fillText(line, paddingLeft, paddingTop + index * lineHeight);
     });
 
-    // Get image data to find text pixels
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
-    // Clear the canvas for animation
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Create grid dots that match the website's aesthetic
     gridDotsRef.current = [];
-    const dotSpacing = 20; // Match the website's grid spacing
+    const dotSpacing = 20;
 
-    // First, create the background grid pattern (like the website)
     for (let y = 0; y < canvas.height; y += dotSpacing) {
       for (let x = 0; x < canvas.width; x += dotSpacing) {
         gridDotsRef.current.push({
@@ -121,13 +111,11 @@ export function PlaceholdersAndVanishTextarea({
       }
     }
 
-    // Then, create dots for text areas
-    const textDotSpacing = 4; // Denser for text representation
+    const textDotSpacing = 4;
     for (let y = 0; y < canvas.height; y += textDotSpacing) {
       for (let x = 0; x < canvas.width; x += textDotSpacing) {
         const index = (y * canvas.width + x) * 4;
 
-        // Only create text dots where text exists
         if (data[index + 3] > 20) {
           gridDotsRef.current.push({
             x,
@@ -144,21 +132,17 @@ export function PlaceholdersAndVanishTextarea({
     }
   }, [value]);
 
-  // Run the grid-based animation
   const runAnimation = useCallback(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     let stillAnimating = false;
 
-    // Draw grid dots
     gridDotsRef.current.forEach(dot => {
-      // Background dots fade in
       if (dot.type === 'background') {
         if (!dot.active) {
           dot.delay--;
@@ -171,7 +155,6 @@ export function PlaceholdersAndVanishTextarea({
           dot.opacity += 0.01;
         }
 
-        // Draw background dot
         if (dot.opacity > 0) {
           ctx.fillStyle = `rgba(100, 100, 100, ${dot.opacity})`;
           ctx.fillRect(dot.x, dot.y, dot.size, dot.size);
@@ -179,14 +162,12 @@ export function PlaceholdersAndVanishTextarea({
         }
       }
 
-      // Text dots fade out
       if (dot.type === 'text') {
         if (!dot.active) {
           dot.delay--;
           if (dot.delay <= 0) {
             dot.active = true;
           } else {
-            // Draw static text dot
             ctx.fillStyle = `rgba(220, 220, 220, ${dot.opacity})`;
             ctx.fillRect(dot.x, dot.y, dot.size, dot.size);
             stillAnimating = true;
@@ -195,10 +176,8 @@ export function PlaceholdersAndVanishTextarea({
         }
 
         if (dot.active) {
-          // Fade out text dots
           dot.opacity -= dot.fadeSpeed;
 
-          // Draw fading text dot
           if (dot.opacity > 0) {
             ctx.fillStyle = `rgba(220, 220, 220, ${dot.opacity})`;
             ctx.fillRect(dot.x, dot.y, dot.size, dot.size);
@@ -208,9 +187,7 @@ export function PlaceholdersAndVanishTextarea({
       }
     });
 
-    // End animation if nothing left to animate
     if (!stillAnimating) {
-      // Clear input and end animation
       setValue("");
       setAnimating(false);
 
@@ -222,16 +199,24 @@ export function PlaceholdersAndVanishTextarea({
       return;
     }
 
-    // Continue animation
     animationRef.current = requestAnimationFrame(runAnimation);
   }, []);
 
-  // Resize textarea when content changes
+  // Reset animating state when loading changes to false
+  useEffect(() => {
+    if (!isLoading && animating) {
+      setAnimating(false);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    }
+  }, [isLoading, animating]);
+
   useEffect(() => {
     autoResizeTextarea();
   }, [value]);
 
-  // Clean up animation on unmount
   useEffect(() => {
     return () => {
       if (animationRef.current) {
@@ -241,28 +226,24 @@ export function PlaceholdersAndVanishTextarea({
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && e.shiftKey === false && !animating) {
+    if (e.key === "Enter" && e.shiftKey === false && !animating && !isLoading) {
       e.preventDefault();
       vanishAndSubmit();
     }
   };
 
   const vanishAndSubmit = () => {
-    if (animating || !value.trim()) return;
+    if (animating || !value.trim() || isLoading) return;
 
-    // Start animation
     setAnimating(true);
 
-    // Prepare animation
     prepareAnimation();
 
-    // Start animation
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
     animationRef.current = requestAnimationFrame(runAnimation);
 
-    // Trigger the onSubmit callback
     if (onSubmit) {
       const formEvent = { preventDefault: () => { } } as React.FormEvent<HTMLFormElement>;
       onSubmit(formEvent);
@@ -274,6 +255,9 @@ export function PlaceholdersAndVanishTextarea({
     vanishAndSubmit();
   };
 
+  // Determine text visibility - separate loading and animation states
+  const shouldHideText = isLoading || (animating && !isLoading);
+
   return (
     <form
       ref={formRef}
@@ -283,18 +267,16 @@ export function PlaceholdersAndVanishTextarea({
       )}
       onSubmit={handleSubmit}
     >
-      {/* Loading state overlay */}
       {isLoading && (
         <div className="absolute inset-0 z-30 pointer-events-none">
           <div className="w-full h-full relative overflow-hidden flex items-center justify-center">
-            {/* Grid loading pattern - covering entire textbox */}
             {Array.from({ length: 60 }).map((_, i) => {
               const cols = 12;
               const rows = 5;
               const col = i % cols;
               const row = Math.floor(i / cols);
-              const x = (col / (cols - 1)) * 90 + 5; // 5% to 95% width
-              const y = (row / (rows - 1)) * 80 + 10; // 10% to 90% height
+              const x = (col / (cols - 1)) * 90 + 5;
+              const y = (row / (rows - 1)) * 80 + 10;
 
               return (
                 <motion.div
@@ -317,8 +299,6 @@ export function PlaceholdersAndVanishTextarea({
                 />
               );
             })}
-
-            {/* Loading text in center */}
             <motion.div
               className="text-sm text-gray-500 font-mono tracking-wider z-10"
               animate={{
@@ -336,7 +316,6 @@ export function PlaceholdersAndVanishTextarea({
         </div>
       )}
 
-      {/* Vanish animation canvas */}
       <canvas
         ref={canvasRef}
         className={cn(
@@ -360,7 +339,7 @@ export function PlaceholdersAndVanishTextarea({
         disabled={isLoading}
         className={cn(
           "w-full relative text-sm sm:text-base z-10 border-none dark:text-white bg-transparent text-black focus:outline-none focus:ring-0 pl-4 sm:pl-5 pr-16 py-3 resize-none overflow-auto",
-          (animating || isLoading) && "text-transparent dark:text-transparent",
+          shouldHideText && "text-transparent dark:text-transparent",
           isLoading && "cursor-wait"
         )}
         style={{
@@ -369,8 +348,7 @@ export function PlaceholdersAndVanishTextarea({
         }}
       />
 
-      {!isLoading &&
-
+      {!isLoading && (
         <button
           disabled={!value || isLoading}
           type="submit"
@@ -407,7 +385,7 @@ export function PlaceholdersAndVanishTextarea({
             <path d="M13 6l6 6" />
           </motion.svg>
         </button>
-      }
+      )}
 
       <div className="absolute inset-0 flex items-start pt-3 pointer-events-none">
         <AnimatePresence mode="wait">
@@ -438,7 +416,6 @@ export function PlaceholdersAndVanishTextarea({
         </AnimatePresence>
       </div>
 
-      {/* Character counter in top right */}
       {maxLength && !isLoading && (
         <div className={`absolute top-2 right-12 text-xs ${value.length > maxLength * 0.8 ? 'text-amber-500' : 'text-gray-400'}`}>
           {value.length}/{maxLength}
