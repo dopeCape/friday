@@ -46,7 +46,7 @@ const moduleSchema = z.object({
 });
 
 const chapterContentSchema = z.object({
-  type: z.enum(["text", "code", "diagram"]),
+  type: z.enum(["text", "code", "diagram", "markdown-code", "file-tree", "web-preview", "latex"]),
   content: z.string(),
   codeBlockLanguage: z.string().optional(),
 });
@@ -61,9 +61,17 @@ const chapterSchema = z.object({
   type: z.string().default(moduleContentTypeSchema.enum.chapter),
   isCompleted: z.boolean(),
   isUserSpecific: z.boolean(),
+  estimatedTime: z.number(),
 });
-
-
+export const chapterDetailGenerationSchema = z.object({
+  content: z.array(z.object({
+    type: z.enum(["text", "code", "diagram", "markdown-code", "file-tree", "web-preview", "latex"]).describe("Type of content block"),
+    content: z.string().describe("Main content for this block - for file-tree type, this should be JSON string of tree structure"),
+    codeBlockLanguage: z.string().optional().describe("Programming language for code blocks"),
+  })).describe("Array of content blocks that create logical flow from previous to next chapter").min(10),
+  refs: z.array(z.string()).describe("Search queries for finding additional learning resources related to this chapter's topic"),
+  estimatedTime: z.number().describe("Estimated time to complete this chapter in minutes"),
+});
 const assignmentSchema = z.object({
   _id: z.string(),
   title: z.string(),
@@ -73,7 +81,7 @@ const assignmentSchema = z.object({
   isCompleted: z.boolean(),
   isSubmitted: z.boolean(),
   requirements: z.array(z.string()),
-  estimatedCompletionTime: z.number(), // in hours
+  estimatedCompletionTime: z.number(),
   learningObjectives: z.array(z.string()),
 });
 

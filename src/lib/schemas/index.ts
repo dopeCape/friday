@@ -4,7 +4,7 @@ import {
   userLevelSchema
 } from "./user.schema"
 import {
-
+  chapterDetailGenerationSchema,
   courseSchema,
   moduleSchema,
   chapterSchema,
@@ -36,5 +36,6 @@ export {
   difficultyLevelSchema,
   assignmentSchema,
   courseGenerationSchema,
-  moduleContentSchema
+  moduleContentSchema,
+  chapterDetailGenerationSchema
 }

@@ -97,14 +97,14 @@ Next module
         moduleGenerationContext.push(modules[index + 1])
       }
 
-      const generatedModule = await this.llmService.structuredRespose(
+      const generatedModule = (await this.llmService.structuredResponse(
         await this.getModuleGenerationPrompt(moduleGenerationContext),
         moduleContentSchema,
         {
           provider: "openai",
           model: "gpt-4.1",
         }
-      );
+      )).parsed;
 
       return generatedModule;
     }));
@@ -115,7 +115,6 @@ Next module
   public async createModules(modules: ModuleGenerationData[], courseId: string, isTemplate: boolean = false) {
     return this.errorHandler.handleError(async () => {
       const generatedModules = await this.generateModuleContent(modules);
-
       const iconQueries = generatedModules.map(module => module.iconQuery);
       const icons = await this.iconProvider.searchIconsBatch(iconQueries.map(query => query.join(",")));
 
@@ -160,7 +159,6 @@ Next module
         createdChapters.push(...chapters);
       }
 
-      // Save everything
       await this.moduleRepository.createMany(createdModules);
       await this.chapterService.createChapters(createdChapters);
 

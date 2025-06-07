@@ -67,7 +67,10 @@ export function getDefaultChapterRepository() {
 export function getDefaultChapterService() {
   const logger = getDefaultLogger()
   const chapterRepository = getDefaultChapterRepository();
-  return ChapterService.getInstance(logger, chapterRepository)
+  const llmService = getDefaultLLMService();
+  const courseRepository = getDefaultCourseRepository();
+  const moduleRepository = getDefaultModuleRepository();
+  return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository)
 }
 
 export function getDefaultSearchService() {

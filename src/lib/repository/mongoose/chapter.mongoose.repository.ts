@@ -11,7 +11,7 @@ const chapterSchema = new Schema<Chapter>({
     type: {
       type: String,
       required: true,
-      enum: ["text", "code", "diagram"],
+      enum: ["text", "code", "diagram", "markdown-code", "file-tree", "web-preview", "latex"],
     },
     content: {
       type: String,
@@ -39,6 +39,9 @@ const chapterSchema = new Schema<Chapter>({
   isCompleted: {
     required: true,
     type: Boolean,
+  },
+  estimatedTime: {
+    type: Number,
   },
 
 }, { timestamps: true, })

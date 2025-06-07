@@ -23,7 +23,8 @@ import {
 import {
   Course,
   NewCourse,
-  CourseGenreation
+  CourseGenreation,
+  CourseData
 } from "./course.type"
 import { BaseRepository, UpdateOpts, MongooseUpdateOpts, Filter, Projection } from "@/types/signatures/baseRespository.signature"
 import { UserRepository } from "@/types/signatures/userRepository.signature"
@@ -75,5 +76,6 @@ export type {
   LLMProvider, LLMOpts, ConverstionType,
   CourseGenreation,
   ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData,
-  SessionClaims
+  SessionClaims,
+  CourseData
 }

@@ -146,14 +146,14 @@ export default class CourseService {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating course", { courseData });
 
-      const courseGenerationResult = await this.llmService.structuredRespose(
+      const courseGenerationResult = (await this.llmService.structuredResponse(
         this.getCouseGenerationMessages(courseData.prompt),
         courseGenerationSchema,
         {
           provider: "openai",
           model: "gpt-4.1",
         }
-      );
+      )).parsed;
 
       this.logger.info("Generated course structure", { courseGenerationResult });
 
@@ -162,7 +162,6 @@ export default class CourseService {
 
       if (!courseData.isPrivate) {
         const templateId = new mongoose.Types.ObjectId().toString();
-
         const templateResult = await this.moduleService.createModules(
           courseGenerationResult.modules as any,
           templateId,

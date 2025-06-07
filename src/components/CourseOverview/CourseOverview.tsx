@@ -1,46 +1,12 @@
-import { motion, useInView, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, useInView, AnimatePresence, useScroll } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 import HorizontalLine from "../HorizontalLine";
 import VertialDottedLines from "../Homepage/VerticalDottedLines";
-
-function fixIconName(icon: string) {
-  return icon
-}
-
-interface IChapter {
-  _id: string;
-  title: string;
-  isCompleted: boolean;
-}
-
-interface IModule {
-  _id: string;
-  title: string;
-  description: string;
-  icon: string;
-  contents: string[];
-  chapters?: IChapter[];
-  isLocked: boolean;
-  isCompleted: boolean;
-  estimatedCompletionTime: number;
-}
-
-interface ICourse {
-  _id: string;
-  title: string;
-  description: string;
-  icon: string[];
-  technologies: string[];
-  estimatedCompletionTime: number;
-  difficultyLevel: string;
-}
+import { Chapter, CourseData, Module } from "@/types";
+import { useRouter } from "next/navigation";
 
 interface ICourseOverview {
-  courseData: {
-    course: ICourse;
-    modules: IModule[];
-    chapters: IChapter[];
-  };
+  courseData: CourseData;
   isLoading?: boolean;
 }
 
@@ -61,8 +27,7 @@ const leftMaskStyle = {
   mask: "linear-gradient(270deg, black 93%, transparent)"
 };
 
-// Enhanced Morphing Blob positioned toward right side
-const EnhancedMorphingBlob = ({ isInLockedZone }: { isInLockedZone: boolean }) => (
+const MorphingBlob = ({ isInLockedZone }: { isInLockedZone: boolean }) => (
   <motion.div
     className="fixed top-1/4 right-[8%] w-96 h-96 pointer-events-none z-0"
     animate={{
@@ -92,7 +57,6 @@ const EnhancedMorphingBlob = ({ isInLockedZone }: { isInLockedZone: boolean }) =
       }}
     />
 
-    {/* Secondary blob */}
     <motion.div
       className="absolute top-1/4 left-1/4 w-48 h-48 rounded-full blur-2xl"
       animate={{
@@ -111,7 +75,6 @@ const EnhancedMorphingBlob = ({ isInLockedZone }: { isInLockedZone: boolean }) =
       }}
     />
 
-    {/* Tertiary blob for more depth */}
     <motion.div
       className="absolute top-1/2 right-1/4 w-32 h-32 rounded-full blur-xl"
       animate={{
@@ -132,7 +95,6 @@ const EnhancedMorphingBlob = ({ isInLockedZone }: { isInLockedZone: boolean }) =
   </motion.div>
 );
 
-// Enhanced floating particles with better distribution
 const FloatingParticles = () => (
   <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
     {Array.from({ length: 15 }).map((_, i) => (
@@ -163,7 +125,6 @@ const FloatingParticles = () => (
   </div>
 );
 
-// Scroll-triggered line animation hook
 const useScrollTriggeredLine = (threshold = 0.3) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
@@ -258,7 +219,6 @@ const loadingToContentVariants = {
 };
 
 export default function CourseOverview({ courseData, isLoading = false }: ICourseOverview) {
-  console.log(courseData)
   const containerRef = useRef(null);
   const ref = useRef(null);
   const [isInLockedZone, setIsInLockedZone] = useState(false);
@@ -274,11 +234,9 @@ export default function CourseOverview({ courseData, isLoading = false }: ICours
     margin: "-50px 0px -50px 0px"
   });
 
-  // Enhanced scroll position monitoring
   useEffect(() => {
     const unsubscribe = scrollYProgress.onChange((latest) => {
       if (!courseData?.modules) return;
-
       const totalModules = courseData.modules.length;
       const unlockedModules = courseData.modules.filter(m => !m.isLocked).length;
       const lockedThreshold = unlockedModules / totalModules * 0.6;
@@ -301,8 +259,7 @@ export default function CourseOverview({ courseData, isLoading = false }: ICours
       animate={isInView ? "visible" : "hidden"}
       variants={containerVariants}
     >
-      {/* Enhanced background effects */}
-      <EnhancedMorphingBlob isInLockedZone={isInLockedZone} />
+      <MorphingBlob isInLockedZone={isInLockedZone} />
       <FloatingParticles />
 
       <HorizontalLine top={`0`} right="33.33%" height={"130px"} />
@@ -547,7 +504,7 @@ function ContentSection({
   completedModules,
   totalModules
 }: {
-  courseData: any;
+  courseData: CourseData;
   progressPercentage: number;
   completedModules: number;
   totalModules: number;
@@ -559,7 +516,6 @@ function ContentSection({
       animate="content"
       className=""
     >
-      {/* Enhanced progress indicator */}
       <motion.div
         className="absolute top-[40px] left-1/2 transform -translate-x-1/2 flex items-center gap-3 text-xs text-gray-400 bg-black/40 px-4 py-2 rounded-full backdrop-blur-md border border-white/10"
         variants={itemVariants}
@@ -581,7 +537,7 @@ function ContentSection({
         className="absolute top-[40px] right-[11.33%] hidden lg:block"
         variants={itemVariants}
       >
-        <StartButton variant="minimal" />
+        <StartButton variant="minimal" courseId={courseData.course._id} />
       </motion.div>
 
       <CourseTitleSection
@@ -593,7 +549,6 @@ function ContentSection({
         estimatedTime={courseData.course.estimatedCompletionTime}
       />
 
-      {/* Enhanced stats sidebar */}
       <motion.div
         className="absolute right-[-140px] top-[300px] transform -translate-y-1/2 hidden xl:flex flex-col gap-4 text-right text-xs text-gray-500"
         variants={itemVariants}
@@ -662,20 +617,25 @@ function ContentSection({
           >
             Stop Googling basic syntax. Start building like the developer you want to become.
           </motion.p>
-          <StartButton variant="full" />
+          <StartButton variant="full" courseId={courseData.course._id} />
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
-function StartButton({ variant }: { variant: 'minimal' | 'full' }) {
+function StartButton({ variant, courseId }: { variant: 'minimal' | 'full', courseId: string }) {
+  const router = useRouter();
+  const handleClick = async () => {
+    router.push(`/course/${courseId}`);
+  }
   if (variant === 'minimal') {
     return (
       <motion.button
         className="group flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors duration-200"
         whileHover={{ x: 3 }}
         whileTap={{ scale: 0.98 }}
+        onClick={handleClick}
       >
         <span>Start Learning</span>
         <motion.span
@@ -694,6 +654,7 @@ function StartButton({ variant }: { variant: 'minimal' | 'full' }) {
       className="group relative overflow-hidden bg-transparent border border-gray-600 hover:border-primary px-8 py-3 rounded-lg font-medium text-white transition-all duration-300 hover:bg-primary/5"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      onClick={handleClick}
     >
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -832,7 +793,7 @@ function CourseTitleSection({
                 delay: index * 1
               }}
             />
-            <span className={`relative z-10  ${fixIconName(iconItem)}`}></span>
+            <span className={`relative z-10  ${iconItem}`}></span>
           </motion.div>
         ))}
       </motion.div>
@@ -870,8 +831,8 @@ function ModulesSection({
   modules,
   chapters
 }: {
-  modules: IModule[];
-  chapters: IChapter[];
+  modules: Module[];
+  chapters: Chapter[];
 }) {
   return (
     <motion.div
@@ -909,8 +870,8 @@ function ModuleRow({
   index,
   isEven
 }: {
-  module: IModule;
-  chapters: IChapter[];
+  module: Module;
+  chapters: Chapter[];
   index: number;
   isEven: boolean;
 }) {
@@ -1005,8 +966,8 @@ function ModuleContent({
   isExpanded,
   onToggleExpand
 }: {
-  module: IModule;
-  chapters: IChapter[];
+  module: Module;
+  chapters: Chapter[];
   isEven: boolean;
   isExpanded: boolean;
   onToggleExpand: () => void;
@@ -1018,7 +979,6 @@ function ModuleContent({
     >
       <AnimatePresence mode="wait">
         {!isExpanded ? (
-          // Collapsed state - chapters at top, title/description at bottom
           <motion.div
             key="collapsed"
             initial={{ opacity: 0, y: 20 }}
@@ -1027,7 +987,6 @@ function ModuleContent({
             transition={{ duration: 0.3 }}
             className="flex flex-col h-full justify-between"
           >
-            {/* Chapters preview at top */}
             <motion.div
               className="space-y-2"
               variants={{
@@ -1052,8 +1011,8 @@ function ModuleContent({
                 >
                   <motion.div
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${chapter.isCompleted
-                        ? 'bg-green-500'
-                        : 'bg-primary/50 group-hover/chapter:bg-primary'
+                      ? 'bg-green-500'
+                      : 'bg-primary/50 group-hover/chapter:bg-primary'
                       }`}
                     whileHover={{ scale: 1.2 }}
                   />
@@ -1083,7 +1042,6 @@ function ModuleContent({
               )}
             </motion.div>
 
-            {/* Title and description at bottom */}
             <motion.div className="space-y-3">
               <div className="flex items-center gap-2 mb-2">
                 <motion.h3
@@ -1126,10 +1084,10 @@ function ModuleContent({
                 <span>•</span>
                 <motion.span
                   className={`px-2 py-1 rounded-full text-[10px] ${module.isLocked
-                      ? 'bg-gray-600/20 text-gray-500'
-                      : module.isCompleted
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-blue-500/20 text-blue-400'
+                    ? 'bg-gray-600/20 text-gray-500'
+                    : module.isCompleted
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-blue-500/20 text-blue-400'
                     }`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -1141,7 +1099,6 @@ function ModuleContent({
             </motion.div>
           </motion.div>
         ) : (
-          // Expanded state - minimal chapter list only
           <motion.div
             key="expanded"
             initial={{ opacity: 0, y: 20 }}
@@ -1169,7 +1126,6 @@ function ModuleContent({
               </motion.button>
             </div>
 
-            {/* Modern minimal chapter list */}
             <motion.div
               className="flex-1 space-y-1 overflow-y-auto scrollbar-none"
               variants={{
@@ -1197,8 +1153,8 @@ function ModuleContent({
                 >
                   <motion.div
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${chapter.isCompleted
-                        ? 'bg-green-400'
-                        : 'bg-gray-600 group-hover/chapter:bg-primary'
+                      ? 'bg-green-400'
+                      : 'bg-gray-600 group-hover/chapter:bg-primary'
                       }`}
                     whileHover={{ scale: 1.3 }}
                   />
@@ -1233,7 +1189,6 @@ function ModuleContent({
               ))}
             </motion.div>
 
-            {/* Minimal progress indicator */}
             <motion.div
               className="mt-4 pt-3 border-t border-gray-800"
               initial={{ opacity: 0, y: 10 }}
@@ -1281,7 +1236,6 @@ function ModuleIcon({
         filter: isLocked ? 'grayscale(1) opacity(0.4)' : 'none'
       }}
     >
-      {/* Enhanced animated background */}
       <motion.div
         className="absolute inset-0"
         style={{
@@ -1299,7 +1253,6 @@ function ModuleIcon({
         }}
       />
 
-      {/* Pulsing effect - reverted to original */}
       <motion.div
         className="absolute inset-16 bg-current rounded-full blur-2xl opacity-5"
         animate={{
@@ -1312,7 +1265,6 @@ function ModuleIcon({
         }}
       />
 
-      {/* Enhanced lock indicator */}
       {isLocked && (
         <motion.div
           className="absolute top-4 right-4 text-lg text-gray-400 bg-gray-900/80 p-2 rounded-lg backdrop-blur-sm border border-gray-700/50"
@@ -1325,9 +1277,8 @@ function ModuleIcon({
         </motion.div>
       )}
 
-      {/* Main icon with enhanced effects */}
       <motion.span
-        className={`relative z-10 transition-all duration-300 ${fixIconName(icon)}`}
+        className={`relative z-10 transition-all duration-300 ${icon}`}
         whileHover={{
           scale: 1.05,
           textShadow: isLocked ? "none" : "0 0 20px currentColor",
@@ -1345,7 +1296,6 @@ function ModuleIcon({
         }}
       />
 
-      {/* Enhanced ripple effect */}
       <motion.div
         className="absolute inset-8 border border-primary/10 rounded-full"
         variants={{
