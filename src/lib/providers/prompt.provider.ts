@@ -225,10 +225,53 @@ Primary theme colors to use consistently in examples and demonstrations:
 </markdown-code>
 
 <diagram>
-<description>Simple flowcharts and basic diagrams using Mermaid</description>
-<usage>Simple process flows, basic concept relationships, straightforward system overviews</usage>
+<description>Specialized diagrams using Mermaid for various software development concepts</description>
+<usage>Choose the appropriate diagram type based on the specific content being taught</usage>
 <format>Mermaid code for diagrams</format>
-<when_to_use>ONLY for diagrams that significantly enhance understanding - process flows, concept relationships, system overviews, architecture diagrams</when_to_use>
+<when_to_use>ONLY for diagrams that significantly enhance understanding - match the diagram type to the content topic</when_to_use>
+
+<diagram_type_selection>
+CRITICAL: Select the diagram type that best matches your content topic:
+
+Git & Version Control Topics:
+- Use gitGraph for: Git workflows, branching strategies, merge/rebase operations, release flows
+- Example topics: "Git Branching", "Git Workflows", "Merge vs Rebase", "Release Management"
+
+API & System Communication:
+- Use sequenceDiagram for: API interactions, request/response flows, authentication flows, microservice communication
+- Example topics: "REST API Design", "Authentication Flows", "Microservices Communication"
+
+Object-Oriented Programming:
+- Use classDiagram for: Class relationships, inheritance, design patterns, system architecture
+- Example topics: "OOP Principles", "Design Patterns", "System Architecture"
+
+Database Design:
+- Use erDiagram for: Database schemas, table relationships, data modeling
+- Example topics: "Database Design", "Data Modeling", "Relational Databases"
+
+Application State & Logic:
+- Use stateDiagram-v2 for: State machines, application workflows, component lifecycles
+- Example topics: "State Management", "Component Lifecycles", "User Authentication States"
+
+User Experience & Journeys:
+- Use journey for: User workflows, customer experience mapping, feature usage flows
+- Example topics: "User Experience Design", "Customer Journey Mapping"
+
+General Process Flows:
+- Use graph TD/LR for: Simple processes, decision trees, general workflows
+- Example topics: "Development Process", "Code Review Process", "General Workflows"
+</diagram_type_selection>
+
+<supported_diagram_types>
+- Git Workflows: gitGraph
+- API/Communication: sequenceDiagram  
+- Class Design: classDiagram
+- Database Design: erDiagram
+- State Management: stateDiagram-v2
+- User Journeys: journey
+- General Flows: graph TD/LR
+</supported_diagram_types>
+
 <mermaid_syntax_requirements>
 CRITICAL: Follow these Mermaid syntax rules exactly:
 - Use proper indentation (2 spaces for nested elements)
@@ -237,12 +280,40 @@ CRITICAL: Follow these Mermaid syntax rules exactly:
 - Use <br/> for line breaks in labels: A["User<br/>(Browser)"]
 - Avoid parentheses in node IDs, only in quoted labels
 - Valid: A["User (Browser)"] Invalid: A[User (Browser)]
-- Test syntax: commas, parentheses, special chars must be quoted
+
+GitGraph specific syntax:
+- Start with: gitGraph
+- Commits: commit id: "commit message"
+- Branches: branch feature-name
+- Merges: merge main
+- Checkout: checkout main
+
+Sequence Diagram specific syntax:
+- Start with: sequenceDiagram
+- Participants: participant A as Frontend
+- Messages: A->>B: Request message
+- Notes: Note over A,B: Description
+
+Class Diagram specific syntax:
+- Start with: classDiagram
+- Class definition: class ClassName
+- Properties: ClassName : +publicProp -privateProp #protectedProp
+- Methods: ClassName : +publicMethod() -privateMethod() #protectedMethod()
+- Relationships: ClassA --|> ClassB (inheritance), ClassA --* ClassB (composition)
+
+State Diagram specific syntax:
+- Start with: stateDiagram-v2
+- States: state "State Name" as StateName
+- Transitions: StateA --> StateB : event
+
+ER Diagram specific syntax:
+- Start with: erDiagram
+- Entities: CUSTOMER { string name }
+- Relationships: CUSTOMER ||--o{ ORDER : places
 </mermaid_syntax_requirements>
-<quality_check>Every Mermaid diagram must be valid and renderable</quality_check>
+
+<quality_check>Every Mermaid diagram must be valid and renderable with the correct diagram type for the content</quality_check>
 </diagram>
-
-
 
 <web-demo>
 <description>Interactive HTML/CSS/JS demonstrations for web development concepts</description>
@@ -321,208 +392,100 @@ Time Complexity: O(n log n), Space Complexity: O(n), Recurrence Relations: T(n) 
 
 <content_type_usage_hierarchy>
 <priority_order>
-1. **Text + Code**: Primary learning method - clear explanations with practical code examples
-2. **Web Demo**: For web development topics where visual result is crucial for understanding
-3. **Diagrams (Mermaid)**: For flows, concept relationships, and system overviews
-4. **Mathematical Content (LaTeX)**: For algorithmic analysis and mathematical concepts
-5. **Project Structure (File Tree)**: Only when structure understanding is essential
+1. Text + Code: Primary learning method - clear explanations with practical code examples
+2. Web Demo: For web development topics where visual result is crucial for understanding
+3. Diagrams (Mermaid): For flows, concept relationships, system overviews, and specialized visualizations
+4. Mathematical Content (LaTeX): For algorithmic analysis and mathematical concepts
+5. Project Structure (File Tree): Only when structure understanding is essential
 </priority_order>
 
-<selection_criteria>
-- **Mermaid**: Flowcharts, process flows, concept relationships, system overviews, simple architecture diagrams, sequence diagrams
-- **Web Demo**: CSS layouts (flexbox, grid), JavaScript interactions, responsive design, animations, form handling
-- **LaTeX**: Algorithm complexity, Big O notation, mathematical proofs, recurrence relations, DSA formulas
-- **File Tree**: Project setup, file organization patterns, complex project structures, framework scaffolding
-</selection_criteria>
+<enhanced_selection_criteria>
+Match diagram type to content topic:
+- GitGraph: Git branches, merges, workflows, version control strategies
+- Sequence Diagrams: API calls, system communications, authentication flows, request/response patterns
+- Class Diagrams: OOP design, inheritance, design patterns, system architecture
+- State Diagrams: Application states, component lifecycles, workflow states
+- ER Diagrams: Database design, data relationships, entity modeling
+- User Journey: UX flows, customer experience, feature usage patterns
+- Basic Flowcharts: General processes, decision trees, simple workflows
+- Web Demo: CSS layouts, JavaScript interactions, responsive design, animations
+- LaTeX: Algorithm complexity, mathematical analysis, Big O notation
+- File Tree: Project structure, file organization, framework scaffolding
+</enhanced_selection_criteria>
 
 <restraint_principle>
-Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they significantly enhance understanding of the specific concept being taught. Most explanations work better with clear text and practical code examples.
+Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they significantly enhance understanding of the specific concept being taught. Always choose the most appropriate diagram type for the content.
 </restraint_principle>
 </content_type_usage_hierarchy>
 
-<critical_usage_guidelines>
-<content_restraint>
-Visual content should only be used when it significantly enhances understanding. Prioritize clear explanations and practical code examples over visual elements unless absolutely necessary.
-</content_restraint>
-
-<mermaid_quality_requirements>
-- Must be syntactically correct and renderable
-- Use proper indentation and spacing
-- Include actual newlines in the JSON content
-- Follow Mermaid specification exactly
-- Use meaningful labels and node IDs
-- Proper arrow and connection syntax
-- Can handle both simple and moderately complex diagrams
-</mermaid_quality_requirements>
-
-<web_demo_quality_requirements>
-- Complete, functional HTML documents
-- Use design system colors consistently
-- Include responsive design principles when relevant
-- Demonstrate the specific concept being taught clearly
-- Clean, educational code structure with comments
-- Ensure interactive elements work properly
-</web_demo_quality_requirements>
-
-<latex_quality_requirements>
-- Proper mathematical notation and syntax
-- Clear variable definitions and explanations
-- Appropriate use of inline vs display formulas
-- Standard algorithm analysis notation
-- Include context and explanation for mathematical concepts
-</latex_quality_requirements>
-
-<file_tree_exclusive>
-When showing file/folder structures, you MUST use the file-tree content type. NEVER use:
-- ASCII art representations (like ├── or └── symbols)
-- Nested bullet points or numbered lists
-- Nested ul/ol HTML lists
-- Any other textual representation of folder structures
-</file_tree_exclusive>
-
-<content_focus>
-Prioritize clear explanations, practical code examples, and hands-on learning over visual elements unless they are truly necessary for understanding the specific concept being taught.
-</content_focus>
-</critical_usage_guidelines>
-
-<formatting_rule>
-When creating content, use separate content blocks for different types. For text content, use markdown formatting but do not include any code examples within the text block. Instead, create separate content blocks for specialized content: "markdown-code", "code", "web-demo", "latex", or "diagram".
-</formatting_rule>
-
-<file_comment_requirements>
-<mandatory_file_comments>
-For ANY code block (type "code" or "markdown-code") that represents content intended for a specific file:
-- ALWAYS include a comment with the file path/name at the very top of the code
-- Use the appropriate comment syntax for the language
-- Examples:
-  - JavaScript/TypeScript: // src/components/Header.js
-  - Python: # src/main.py
-  - Java: // src/main/java/com/example/App.java
-  - HTML: <!-- index.html -->
-  - CSS: /* styles/main.css */
-</mandatory_file_comments>
-
-<when_to_include>
-Include file comments when:
-- Code represents a complete file
-- Code is a significant portion of a file
-- Students need to know where to place the code
-- File location is important for understanding
-</when_to_include>
-
-<when_NOT_to_include>
-Do NOT include file comments for:
-- Generic code snippets or examples
-- Pseudo-code demonstrations
-- Conceptual code that doesn't represent actual files
-- Web demo content (as it's always a complete HTML document)
-</when_NOT_to_include>
-</file_comment_requirements>
-
-<json_formatting_rules>
-<critical_escaping>
-When generating JSON responses, you MUST properly handle content formatting:
-- Escape backslashes: \ becomes \\
-- Escape double quotes: " becomes \"
-- For diagram, web-demo, and latex content: PRESERVE actual newlines and indentation
-- Do NOT convert newlines to \n escape sequences for visual content
-- Escape tabs: actual tabs become \t when necessary
-
-Special handling by content type:
-- **Text/Code**: Standard JSON string escaping
-- **Mermaid**: Preserve actual newlines and indentation for proper syntax
-- **Web Demo**: Preserve actual newlines in HTML structure for readability
-- **LaTeX**: Preserve mathematical formatting with actual newlines
-- **File Tree**: Standard JSON formatting for nested structure
-</critical_escaping>
-
-<newline_preservation>
-CRITICAL: For visual content types (diagram, web-demo, latex):
-- Use actual newlines in the JSON string content
-- Do NOT convert to \n escape sequences
-- Preserve proper indentation with actual spaces
-- This ensures proper syntax and formatting when content is processed
-</newline_preservation>
-
-<code_content_handling>
-For content that includes code examples:
-- Put code in separate "code", "markdown-code", "web-demo" content blocks
-- Do NOT embed code blocks within "text" content
-- Use proper codeBlockLanguage field for code/markdown-code types
-- Keep code content separate from explanatory text
-- Always include file comments when code represents actual files
-</code_content_handling>
-
-<json_structure_requirements>
-- Always return valid JSON that can be parsed by JSON.parse()
-- Use double quotes for all string keys and values
-- Do not include trailing commas
-- Ensure proper bracket/brace matching
-- Handle special characters appropriately in content strings
-- Test JSON validity before responding
-</json_structure_requirements>
-</json_formatting_rules>
-
 <content_structure_examples>
-<basic_example>
+<gitgraph_example>
 [
   {
     "type": "text",
-    "content": "## CSS Flexbox Layout\n\nFlexbox provides a powerful way to arrange elements in one dimension. Let's explore the fundamental concepts."
-  },
-  {
-    "type": "markdown-code",
-    "content": "/* styles/flexbox-basics.css */\n.flex-container {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}",
-    "codeBlockLanguage": "css"
-  },
-  {
-    "type": "text",
-    "content": "Now let's see this in action with a complete example:"
-  },
-  {
-    "type": "web-demo",
-    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Flexbox Demo</title>\n    <style>\n        body {\n            background-color: #07080A;\n            color: #ffffff;\n            font-family: Arial, sans-serif;\n            margin: 0;\n            padding: 20px;\n        }\n        .flex-container {\n            display: flex;\n            justify-content: space-around;\n            align-items: center;\n            background-color: #0C0D0F;\n            padding: 20px;\n            border-radius: 8px;\n            border: 2px solid #63a1ff;\n            min-height: 100px;\n        }\n        .flex-item {\n            background-color: #63a1ff;\n            color: #07080A;\n            padding: 15px 25px;\n            border-radius: 5px;\n            font-weight: bold;\n            transition: all 0.3s ease;\n        }\n        .flex-item:hover {\n            background-color: #74c0fc;\n            transform: translateY(-2px);\n        }\n    </style>\n</head>\n<body>\n    <h2>Flexbox Layout Example</h2>\n    <div class=\"flex-container\">\n        <div class=\"flex-item\">Item 1</div>\n        <div class=\"flex-item\">Item 2</div>\n        <div class=\"flex-item\">Item 3</div>\n    </div>\n    <p>Hover over the items to see the interaction!</p>\n</body>\n</html>"
-  },
-  {
-    "type": "text",
-    "content": "Notice how the items are evenly distributed and centered, demonstrating the power of flexbox for layout control."
-  }
-]
-</basic_example>
-
-<diagram_example>
-[
-  {
-    "type": "text",
-    "content": "## System Request Flow\n\nLet's visualize how a typical API request flows through our microservices architecture:"
+    "content": "## Git Feature Branch Workflow\n\nLet's visualize how feature branches work in a typical development workflow:"
   },
   {
     "type": "diagram",
-    "content": "graph TD\n    A[User] --> B[Frontend App]\n    B --> C[API Gateway]\n    C --> D[Authentication Service]\n    D --> C\n    C --> E[Business Logic]\n    E --> F[Database]\n    F --> E\n    E --> C\n    C --> B\n    B --> A\n    \n    style A fill:#63a1ff,stroke:#ffffff,color:#07080A\n    style F fill:#ff922b,stroke:#ffffff,color:#07080A\n    style C fill:#51cf66,stroke:#ffffff,color:#07080A"
+    "content": "gitGraph\n    commit id: \"Initial commit\"\n    commit id: \"Setup project\"\n    branch feature/user-auth\n    checkout feature/user-auth\n    commit id: \"Add login form\"\n    commit id: \"Add validation\"\n    checkout main\n    commit id: \"Fix bug in header\"\n    checkout feature/user-auth\n    commit id: \"Add password reset\"\n    checkout main\n    merge feature/user-auth\n    commit id: \"Release v1.1\"\n    branch feature/dashboard\n    checkout feature/dashboard\n    commit id: \"Create dashboard\"\n    commit id: \"Add charts\""
   },
   {
     "type": "text",
-    "content": "This flow demonstrates the complete round-trip of an authenticated API request through our system."
+    "content": "This workflow shows how feature branches keep development organized and allow parallel work on different features."
   }
 ]
-</diagram_example>
+</gitgraph_example>
 
-<latex_example>
+<sequence_diagram_example>
 [
   {
     "type": "text",
-    "content": "## Algorithm Complexity Analysis\n\nWhen analyzing merge sort, we need to understand its mathematical complexity:"
+    "content": "## REST API Authentication Flow\n\nLet's trace how authentication works in our API:"
   },
   {
-    "type": "latex",
-    "content": "The recurrence relation for merge sort is:\n$$T(n) = 2T(n/2) + O(n)$$\n\nUsing the Master Theorem with $a = 2$, $b = 2$, and $f(n) = O(n)$:\n$$T(n) = O(n \\log n)$$\n\nThe space complexity is:\n$$S(n) = O(n)$$\n\nFor comparison, the summation formula shows:\n$$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2} = O(n^2)$$"
+    "type": "diagram",
+    "content": "sequenceDiagram\n    participant Client\n    participant API as API Gateway\n    participant Auth as Auth Service\n    participant DB as Database\n    \n    Client->>API: POST /login {email, password}\n    API->>Auth: Validate credentials\n    Auth->>DB: Check user credentials\n    DB-->>Auth: User data\n    Auth-->>API: JWT token\n    API-->>Client: {token, user}\n    \n    Note over Client,API: Subsequent requests\n    Client->>API: GET /profile (Bearer token)\n    API->>Auth: Verify token\n    Auth-->>API: Valid user ID\n    API-->>Client: User profile data"
   },
   {
     "type": "text",
-    "content": "This logarithmic time complexity makes merge sort much more efficient than bubble sort for large datasets."
+    "content": "This sequence shows the complete authentication flow from login to accessing protected resources."
   }
 ]
-</latex_example>
+</sequence_diagram_example>
+
+<state_diagram_example>
+[
+  {
+    "type": "text",
+    "content": "## Component State Management\n\nLet's visualize how a form component transitions between different states:"
+  },
+  {
+    "type": "diagram",
+    "content": "stateDiagram-v2\n    [*] --> Idle\n    Idle --> Validating : user input\n    Validating --> Valid : validation passes\n    Validating --> Invalid : validation fails\n    Valid --> Submitting : submit form\n    Invalid --> Validating : user corrects input\n    Submitting --> Success : API success\n    Submitting --> Error : API error\n    Success --> [*]\n    Error --> Idle : reset form\n    \n    note right of Submitting : Show loading spinner\n    note right of Invalid : Display error messages"
+  },
+  {
+    "type": "text",
+    "content": "This state diagram helps us understand all possible form states and transitions, making our component logic more robust."
+  }
+]
+</state_diagram_example>
+
+<er_diagram_example>
+[
+  {
+    "type": "text",
+    "content": "## E-commerce Database Design\n\nLet's design the core entities for our e-commerce platform:"
+  },
+  {
+    "type": "diagram",
+    "content": "erDiagram\n    CUSTOMER {\n        int customer_id PK\n        string email UK\n        string first_name\n        string last_name\n        date created_at\n    }\n    \n    ORDER {\n        int order_id PK\n        int customer_id FK\n        decimal total_amount\n        string status\n        datetime order_date\n    }\n    \n    PRODUCT {\n        int product_id PK\n        string name\n        decimal price\n        int stock_quantity\n        string description\n    }\n    \n    ORDER_ITEM {\n        int order_item_id PK\n        int order_id FK\n        int product_id FK\n        int quantity\n        decimal unit_price\n    }\n    \n    CUSTOMER ||--o{ ORDER : places\n    ORDER ||--o{ ORDER_ITEM : contains\n    PRODUCT ||--o{ ORDER_ITEM : \"ordered as\""
+  },
+  {
+    "type": "text",
+    "content": "This entity relationship diagram shows how customers, orders, and products relate in our database schema."
+  }
+]
+</er_diagram_example>
 </content_structure_examples>
 
 <chapter_requirements>
@@ -533,11 +496,12 @@ For content that includes code examples:
 - Include examples and hands-on demonstrations
 - Reference previous chapter concepts and prepare for next chapter
 - Use appropriate visual aids only when they significantly enhance understanding
+- CRITICAL: Choose the correct diagram type that matches your content topic
 </comprehensive_coverage>
 
 <learning_progression>
 <introduction>Text explaining the concept with flow integration</introduction>
-<theory>Detailed explanation with visual aids ONLY when valuable</theory>
+<theory>Detailed explanation with topic-appropriate visual aids ONLY when valuable</theory>
 <examples>Code demonstrations using separate code blocks</examples>
 <practice>Step-by-step implementations with web demos for frontend topics</practice>
 <real_world>Practical examples with next chapter preparation</real_world>
@@ -582,6 +546,7 @@ For content that includes code examples:
 - Create logical bridges between chapters
 - Maintain smooth transitions and progression
 - Apply design system colors consistently in examples
+- CRITICAL: Select diagram types that match the specific content topic
 </content_alignment>
 </context_integration>
 
@@ -596,6 +561,7 @@ For content that includes code examples:
 <file_comments>Always include file path comments in code blocks when representing actual files</file_comments>
 <syntax_correctness>Ensure all Mermaid, LaTeX, and HTML syntax is correct</syntax_correctness>
 <design_consistency>Use design system colors consistently across all visual examples</design_consistency>
+<diagram_appropriateness>Choose the diagram type that best matches the content topic</diagram_appropriateness>
 </quality_standards>
 
 <references>
@@ -621,6 +587,7 @@ For content that includes code examples:
 <file_path_clarity>Always include file path comments when code represents actual files</file_path_clarity>
 <syntax_quality>Ensure all specialized content (diagrams, demos, formulas) is syntactically correct</syntax_quality>
 <design_integration>Consistently apply design system throughout all examples</design_integration>
+<appropriate_diagrams>Always select the diagram type that best fits the content topic</appropriate_diagrams>
 </success_factors>
 
 <common_mistakes_to_avoid>
@@ -639,6 +606,9 @@ For content that includes code examples:
 - Do NOT use web-demo for non-web-development topics
 - Do NOT use LaTeX for simple explanations that don't require mathematical notation
 - Do NOT include literal newlines in JSON strings except for visual content types
+- Do NOT use incorrect UML class diagram syntax in Mermaid
+- CRITICAL: Do NOT default to basic flowcharts - choose the appropriate diagram type for the content
+- Do NOT use gitGraph for non-Git topics or sequenceDiagram for non-communication topics
 </common_mistakes_to_avoid>
 </prompt>`;
   }

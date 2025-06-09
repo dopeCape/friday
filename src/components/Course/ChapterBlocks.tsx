@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import mermaid from 'mermaid';
@@ -455,6 +456,8 @@ interface FridayMarkdownProps {
   className?: string;
 }
 
+
+
 const FridayMarkdown: React.FC<FridayMarkdownProps> = ({ content, className = '' }) => {
   const components = {
     h1: ({ children }: any) => (
@@ -513,6 +516,16 @@ const FridayMarkdown: React.FC<FridayMarkdownProps> = ({ content, className = ''
         {children}
       </motion.ul>
     ),
+    ol: ({ children }: any) => (
+      <motion.ol
+        className="space-y-3 mb-6 list-decimal list-inside"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        {children}
+      </motion.ol>
+    ),
     li: ({ children, node }: any) => {
       const isOrdered = node?.parent?.tagName === 'ol';
 
@@ -549,6 +562,60 @@ const FridayMarkdown: React.FC<FridayMarkdownProps> = ({ content, className = ''
           {children}
         </div>
       </motion.blockquote>
+    ),
+    // Table Components - Minimalist & Modern
+    table: ({ children }: any) => (
+      <motion.div
+        className="overflow-x-auto my-12"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <table className="w-full">
+          {children}
+        </table>
+      </motion.div>
+    ),
+    thead: ({ children }: any) => (
+      <thead>
+        {children}
+      </thead>
+    ),
+    tbody: ({ children }: any) => (
+      <tbody>
+        {children}
+      </tbody>
+    ),
+    tr: ({ children, ...props }: any) => {
+      const isHeader = props.node?.parent?.tagName === 'thead';
+
+      if (isHeader) {
+        return (
+          <tr className="border-b border-white/8">
+            {children}
+          </tr>
+        );
+      }
+
+      return (
+        <motion.tr
+          className="border-b border-white/4 hover:bg-white/[0.02] transition-all duration-300 group"
+          whileHover={{ scale: 1.005 }}
+          transition={{ duration: 0.2 }}
+        >
+          {children}
+        </motion.tr>
+      );
+    },
+    th: ({ children }: any) => (
+      <th className="text-left py-4 pr-8 text-sm font-medium text-white/70 tracking-wide uppercase text-xs">
+        {children}
+      </th>
+    ),
+    td: ({ children }: any) => (
+      <td className="py-5 pr-8 text-base text-white/85 leading-relaxed group-hover:text-white/95 transition-colors duration-300">
+        {children}
+      </td>
     ),
     code: ({ inline, className, children, ...props }: any) => {
       if (inline || !className || !String(children).includes('\n')) {
@@ -604,12 +671,17 @@ const FridayMarkdown: React.FC<FridayMarkdownProps> = ({ content, className = ''
 
   return (
     <div className={`friday-markdown prose prose-invert max-w-none ${className}`}>
-      <ReactMarkdown components={components}>
+      <ReactMarkdown
+        components={components}
+        remarkPlugins={[remarkGfm]}
+      >
         {content}
       </ReactMarkdown>
     </div>
   );
 };
+
+
 
 interface FridayMarkdownCodeProps {
   content: string;
