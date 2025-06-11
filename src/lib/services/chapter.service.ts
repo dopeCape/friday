@@ -136,7 +136,7 @@ export default class ChapterService {
         chapterDetailGenerationSchema,
         {
           provider: "openai",
-          model: "gpt-4.1",
+          model: "o3",
         }
       )).parsed;
 

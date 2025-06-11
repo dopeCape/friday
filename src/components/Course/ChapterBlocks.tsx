@@ -3,8 +3,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import katex from 'katex';
 import mermaid from 'mermaid';
 import { motion } from "motion/react";
+import 'katex/dist/katex.min.css';
 
 interface FridayMermaidProps {
   chart: string;
@@ -348,47 +350,66 @@ const FridayLatex: React.FC<FridayLatexProps> = ({ content }) => {
         setIsLoading(true);
         setError('');
 
-        const katex = await import('katex');
-
         let processedContent = content.trim();
 
-        const isDisplayMath = processedContent.startsWith('$$') && processedContent.endsWith('$$');
+        // If content doesn't have $ markers, assume it's display math
+        if (!processedContent.includes('$')) {
+          processedContent = `$$${processedContent}$$`;
+        }
 
-        if (isDisplayMath) {
+        if (processedContent.startsWith('$$') && processedContent.endsWith('$$')) {
           const mathContent = processedContent.slice(2, -2).trim();
           const html = katex.renderToString(mathContent, {
             displayMode: true,
             throwOnError: false,
             errorColor: '#ff6b6b',
             colorIsTextColor: true,
-            trust: false
+            trust: false,
+            strict: false
           });
           setRenderedHtml(html);
         } else {
-          const html = processedContent.replace(
-            /\$\$(.*?)\$\$/g,
-            (match, math) => katex.renderToString(math, {
-              displayMode: true,
-              throwOnError: false,
-              errorColor: '#ff6b6b',
-              colorIsTextColor: true
-            })
-          ).replace(
-            /\$(.*?)\$/g,
-            (match, math) => katex.renderToString(math, {
-              displayMode: false,
-              throwOnError: false,
-              errorColor: '#ff6b6b',
-              colorIsTextColor: true
-            })
-          );
+          let html = processedContent;
+
+          // Replace display math $$...$$ - Fixed regex without 's' flag
+          html = html.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+            try {
+              return katex.renderToString(math.trim(), {
+                displayMode: true,
+                throwOnError: false,
+                errorColor: '#ff6b6b',
+                colorIsTextColor: true,
+                strict: false
+              });
+            } catch (e) {
+              console.error('Display math error:', e);
+              return `<span style="color: #ff6b6b;">Error: ${math}</span>`;
+            }
+          });
+
+          // Replace inline math $...$
+          html = html.replace(/\$([^$\n]+)\$/g, (match, math) => {
+            try {
+              return katex.renderToString(math.trim(), {
+                displayMode: false,
+                throwOnError: false,
+                errorColor: '#ff6b6b',
+                colorIsTextColor: true,
+                strict: false
+              });
+            } catch (e) {
+              console.error('Inline math error:', e);
+              return `<span style="color: #ff6b6b;">Error: ${math}</span>`;
+            }
+          });
+
           setRenderedHtml(html);
         }
-
         setError('');
       } catch (err) {
         console.error('LaTeX rendering error:', err);
-        setError(`Failed to render formula: ${err.message || 'Unknown error'}`);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        setError(`Failed to render formula: ${errorMessage}`);
         setRenderedHtml('');
       } finally {
         setIsLoading(false);
@@ -430,6 +451,7 @@ const FridayLatex: React.FC<FridayLatexProps> = ({ content }) => {
         animate={{ opacity: 1 }}
       >
         <div className="text-red-400/70 text-sm">{error}</div>
+        <div className="text-white/40 text-xs mt-2 font-mono">{content}</div>
       </motion.div>
     );
   }

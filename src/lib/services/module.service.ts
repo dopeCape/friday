@@ -102,7 +102,7 @@ Next module
         moduleContentSchema,
         {
           provider: "openai",
-          model: "gpt-4.1",
+          model: "o3",
         }
       )).parsed;
 

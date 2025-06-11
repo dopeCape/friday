@@ -44,13 +44,11 @@ const moduleSchema = z.object({
   learningObjectives: z.array(z.string()),
   moduleType: z.enum(["content", "assignment"]),
 });
-
 const chapterContentSchema = z.object({
   type: z.enum(["text", "code", "diagram", "markdown-code", "file-tree", "web-preview", "latex"]),
   content: z.string(),
   codeBlockLanguage: z.string().optional(),
 });
-
 const chapterSchema = z.object({
   _id: z.string(),
   title: z.string(),
@@ -105,7 +103,6 @@ const quizSchema = z.object({
   questions: z.array(questionSchema),
   type: z.string(),
   passingScore: z.number(),
-  maxAttempts: z.number(),
   currentScore: z.number(),
 });
 
@@ -113,7 +110,6 @@ export const chapterContentGenerationSchema = z.object({
   title: z.string().describe("title of the chapter"),
   estimatedCompletionTime: z.number().describe("Estimated minutes to complete this chapter")
 });
-
 
 const createNewCourseSchema = z.object({
   userId: z.string(),
@@ -126,10 +122,8 @@ const createNewCourseSchema = z.object({
 });
 
 
-
 const quizContentGenerationSchema = z.object({
   passingScore: z.number().describe("How many right question before passing the quiz"),
-  maxAttempts: z.number().describe("How many times the user can attempt the quiz"),
   questions: z.array(z.object({
     question: z.string().describe("question text"),
     answerType: answerTypeSchema.describe("Type of expected answer"),
@@ -170,6 +164,7 @@ const moduleContentSchema = z.object({
   estimatedCompletionTime: z.number().describe("Esimated hours to complete the module"),
   learningObjectives: z.array(z.string()).describe("Learning objectives from this module"),
   chapters: z.array(chapterContentGenerationSchema),
+
 });
 
 export {
