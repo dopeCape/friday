@@ -39,6 +39,17 @@ const chapterSchema = new Schema<Chapter>({
   isCompleted: {
     required: true,
     type: Boolean,
+    default: true,
+  },
+  isActive: {
+    required: true,
+    type: Boolean,
+    default: true,
+  },
+  isLocked: {
+    required: true,
+    type: Boolean,
+    default: true,
   },
   estimatedTime: {
     type: Number,

@@ -38,10 +38,6 @@ const quizSchema = new Schema<Quiz>({
     type: Number,
     required: true,
   },
-  maxAttempts: {
-    type: Number,
-    required: true,
-  },
   currentScore: {
     type: Number,
   }

@@ -5,7 +5,7 @@ import { BaseRepository, MongooseUpdateOpts, Logger, WithoutId } from "@/types"
 export class MongooseBaseRepository<T> implements BaseRepository<T> {
   private model: Model<T>
   private logger: Logger;
-  private errorHandler;
+  private errorHandler: CentralErrorHandler;
   private resourceName: string;
   constructor(logger: Logger, model: Model<T>, resourceName: string) {
     this.model = model

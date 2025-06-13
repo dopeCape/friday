@@ -5,12 +5,10 @@ import env from "@/config/env.config";
 import { TavilySearch } from "@langchain/tavily";
 
 const apikeyProvider = () => {
-  console.log(env.TAVILY_API_KEY)
   const apiKeys = env.TAVILY_API_KEY as unknown as string[]
   const key = apiKeys[Math.floor(Math.random() * apiKeys.length)];
   return key
 }
-
 export default class SearchService {
   private logger: Logger
   private static instance: SearchService | null

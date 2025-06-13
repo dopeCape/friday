@@ -54,10 +54,12 @@ const chapterSchema = z.object({
   title: z.string(),
   content: z.array(chapterContentSchema),
   isGenerated: z.boolean(),
+  isCompleted: z.boolean(),
   refs: z.array(z.string()),
   moduleId: z.string(),
   type: z.string().default(moduleContentTypeSchema.enum.chapter),
-  isCompleted: z.boolean(),
+  isLocked: z.boolean(),
+  isActive: z.boolean(),
   isUserSpecific: z.boolean(),
   estimatedTime: z.number(),
 });

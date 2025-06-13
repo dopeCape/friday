@@ -303,6 +303,143 @@ Students should feel a sense of natural progression from the previous chapter an
     });
   }
 
+  public async handleNext(chapterId: string, moduleId: string, courseId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Handling next chapter", { chapterId, moduleId, courseId });
+
+      const course = await this.courseRepository.get({ _id: courseId });
+      if (!course) {
+        throw new AppError(404, "Invalid course", "CourseNotFound");
+      }
+
+      const module = await this.moduleRepository.get({ _id: moduleId });
+      if (!module) {
+        this.logger.error("Module not found", { moduleId });
+        throw new AppError(404, "Invalid module", "ModuleNotFound");
+      }
+
+      const chapter = await this.ChapterRepository.get({ _id: chapterId });
+      if (!chapter) {
+        throw new AppError(404, "Chapter not found", "ChapterNotFound");
+      }
+
+      const currentChapterIndex = module.contents.findIndex((id) => id === chapter._id.toString());
+      const currentModuleIndex = course.moduleIds.findIndex((id) => id === module._id.toString());
+
+      if (currentChapterIndex === -1) {
+        this.logger.error("Chapter not found in module contents", { chapterId, moduleId });
+        throw new AppError(400, "Chapter does not belong to this module", "InvalidChapterModule");
+      }
+
+      if (currentModuleIndex === -1) {
+        this.logger.error("Module not found in course", { moduleId, courseId });
+        throw new AppError(400, "Module does not belong to this course", "InvalidModuleCourse");
+      }
+
+      this.logger.info("Current positions found", {
+        currentChapterIndex,
+        currentModuleIndex,
+        totalChapters: module.contents.length,
+        totalModules: course.moduleIds.length
+      });
+
+      const isLastChapterInModule = currentChapterIndex === module.contents.length - 1;
+      const isLastModuleInCourse = currentModuleIndex === course.moduleIds.length - 1;
+
+      this.logger.info("Navigation flags", { isLastChapterInModule, isLastModuleInCourse });
+
+      await this.ChapterRepository.update({ _id: chapterId }, { isCompleted: true });
+      this.logger.info("Chapter marked as completed", { chapterId });
+
+      let nextChapterId: string | null = null;
+      let nextModuleId: string | null = null;
+      let moduleCompleted = false;
+      let courseCompleted = false;
+
+      if (isLastChapterInModule && isLastModuleInCourse) {
+        this.logger.info("Course completed - last chapter of last module", { courseId });
+        await this.moduleRepository.update({ _id: moduleId }, { isCompleted: true });
+        this.logger.info("Final module marked as completed", { moduleId });
+        moduleCompleted = true;
+        courseCompleted = true;
+
+      } else if (isLastChapterInModule && !isLastModuleInCourse) {
+        this.logger.info("Moving to next module", { currentModuleIndex });
+
+        await this.moduleRepository.update({ _id: moduleId }, { isCompleted: true });
+        this.logger.info("Current module marked as completed", { moduleId });
+        moduleCompleted = true;
+
+        nextModuleId = course.moduleIds[currentModuleIndex + 1];
+        this.logger.info("Next module identified", { nextModuleId });
+
+        const nextModule = await this.moduleRepository.get({ _id: nextModuleId });
+        if (!nextModule) {
+          throw new AppError(404, "Next module not found", "NextModuleNotFound");
+        }
+
+        if (nextModule.contents.length === 0) {
+          throw new AppError(400, "Next module has no chapters", "EmptyNextModule");
+        }
+
+        await this.moduleRepository.update({ _id: nextModuleId }, {
+          isLocked: false,
+          currentChapterId: nextModule.contents[0]
+        });
+        this.logger.info("Next module unlocked", { nextModuleId });
+
+        nextChapterId = nextModule.contents[0];
+        this.logger.info("First chapter of next module identified", { nextChapterId });
+
+        await this.ChapterRepository.update({ _id: nextChapterId }, {
+          isLocked: false,
+          isActive: true
+        });
+        this.logger.info("First chapter of next module unlocked and activated", { nextChapterId });
+
+        await this.courseRepository.update({ _id: courseId }, { currentModuleId: nextModuleId });
+        this.logger.info("Course current module updated", { courseId, currentModuleId: nextModuleId });
+
+      } else if (!isLastChapterInModule) {
+        nextChapterId = module.contents[currentChapterIndex + 1];
+        this.logger.info("Next chapter in current module identified", { nextChapterId });
+
+        await this.moduleRepository.update({ _id: moduleId }, { currentChapterId: nextChapterId });
+        this.logger.info("Module current chapter updated", { moduleId, currentChapterId: nextChapterId });
+
+        const nextChapter = await this.ChapterRepository.get({ _id: nextChapterId });
+        if (nextChapter && nextChapter.isLocked) {
+          await this.ChapterRepository.update({ _id: nextChapterId }, {
+            isLocked: false,
+            isActive: true
+          });
+          this.logger.info("Next chapter unlocked and activated", { nextChapterId });
+        } else if (nextChapter) {
+          await this.ChapterRepository.update({ _id: nextChapterId }, { isActive: true });
+          this.logger.info("Next chapter activated", { nextChapterId });
+        }
+      }
+
+      await this.ChapterRepository.update({ _id: chapterId }, { isActive: false });
+      this.logger.info("Current chapter deactivated", { chapterId });
+
+      const result = {
+        nextChapterId,
+        nextModuleId,
+        moduleCompleted,
+        courseCompleted,
+        currentChapterId: chapterId
+      };
+
+      this.logger.info("Successfully handled next chapter", result);
+      return result;
+
+    }, {
+      service: "ChapterService",
+      method: "handleNext"
+    });
+  }
+
   public async updateChapter(chapterId: string, updateData: Partial<Chapter>) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Updating chapter", { chapterId, updateData });
@@ -314,6 +451,7 @@ Students should feel a sense of natural progression from the previous chapter an
 
       const updatedChapter = { ...chapter, ...updateData };
       await this.ChapterRepository.update({ _id: chapterId }, updatedChapter);
+
 
       this.logger.info("Chapter updated successfully", { chapterId });
       return updatedChapter;

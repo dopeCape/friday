@@ -314,7 +314,6 @@ export default function OnboardingPage() {
       }
 
       const responseData = await response.json();
-      console.log('Onboarding successful:', responseData);
 
       toast.success("Onboarding completed successfully!");
 

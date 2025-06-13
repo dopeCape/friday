@@ -12,6 +12,7 @@ interface CollapsibleCourseNavProps {
   isExpanded: boolean;
   onToggleExpand: () => void;
 }
+
 const CollapsibleCourseNav: React.FC<CollapsibleCourseNavProps> = ({
   courseData,
   selectedModule,
@@ -33,8 +34,10 @@ const CollapsibleCourseNav: React.FC<CollapsibleCourseNavProps> = ({
     }
     setExpandedModules(newExpanded);
   };
+
   const completedModules = courseData.modules.filter(m => m.isCompleted).length;
   const progressPercentage = (completedModules / courseData.modules.length) * 100;
+
   return (
     <motion.div
       className="fixed right-0 top-0 h-screen flex items-center z-40"
@@ -179,40 +182,62 @@ const CollapsibleCourseNav: React.FC<CollapsibleCourseNavProps> = ({
                         {courseData.chapters.filter(ch => module.contents.includes(ch._id)).map((chapter, chapterIndex) => (
                           <motion.button
                             key={chapter._id}
-                            className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-sm group/chapter ${selectedChapter?._id === chapter._id
+                            className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-sm group/chapter cursor-pointer ${selectedChapter?._id === chapter._id
                               ? 'text-white bg-[#63a1ff]/10'
-                              : 'text-[var(--friday-mute-color)] hover:text-white'
+                              : chapter.isLocked
+                                ? 'text-white/30 hover:text-white/50'
+                                : 'text-[var(--friday-mute-color)] hover:text-white'
                               }`}
                             onClick={() => onSelectChapter(chapter)}
+                            disabled={chapter.isLocked}
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: chapterIndex * 0.05 }}
                             whileHover={{
                               x: 2,
-                              backgroundColor: "rgba(99, 161, 255, 0.05)"
+                              backgroundColor: chapter.isLocked
+                                ? "rgba(99, 161, 255, 0.02)"
+                                : "rgba(99, 161, 255, 0.05)"
                             }}
                           >
                             <span className="text-xs text-white/20 font-mono w-6">
                               {String(chapterIndex + 1).padStart(2, '0')}
                             </span>
 
-                            <motion.div
-                              className={`w-2 h-2 rounded-full ${chapter.isCompleted ? 'bg-[#63a1ff]/80' :
-                                chapter.isActive ? 'bg-[#63a1ff]/50' : 'bg-white/10'
-                                }`}
-                              whileHover={{ scale: 1.5 }}
-                            />
+                            <div className="relative">
+                              <motion.div
+                                className={`w-2 h-2 rounded-full ${chapter.isCompleted ? 'bg-[#63a1ff]/80' :
+                                  chapter.isActive ? 'bg-[#63a1ff]/50' :
+                                    chapter.isLocked ? 'bg-white/5' : 'bg-white/10'
+                                  }`}
+                                whileHover={{ scale: chapter.isLocked ? 1 : 1.5 }}
+                              />
+                              {chapter.isLocked && (
+                                <motion.span
+                                  className="nf nf-fa-lock absolute -top-1 -right-1 text-[6px] text-white/40"
+                                  initial={{ opacity: 0, scale: 0 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ delay: chapterIndex * 0.05 + 0.2 }}
+                                />
+                              )}
+                            </div>
+
                             <div className="flex-1">
-                              <p className="text-sm font-light">
+                              <p className={`text-sm font-light ${chapter.isLocked ? ' decoration-white/20' : ''}`}>
                                 {chapter.title}
                               </p>
                               <div className="flex items-center gap-3 mt-1">
                                 <span className="text-xs text-white/20">
-                                  {chapter.estimatedTime || '45min'}
+                                  {chapter.estimatedTime && `${chapter.estimatedTime} Min`}
                                 </span>
-                                {chapter.isActive && (
+                                {chapter.isActive && !chapter.isLocked && (
                                   <span className="text-xs text-[#63a1ff]/60">
                                     current
+                                  </span>
+                                )}
+                                {chapter.isLocked && (
+                                  <span className="text-xs text-white/30">
+                                    locked
                                   </span>
                                 )}
                               </div>

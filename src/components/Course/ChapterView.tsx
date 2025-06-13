@@ -59,10 +59,6 @@ const ChapterView: React.FC<ChapterViewProps> = ({
               <span className="nf nf-md-clock_outline text-[#63a1ff]/60"></span>
               <span>{chapter.estimatedTime || '50 minutes'}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="nf nf-cod-terminal text-[#63a1ff]/60"></span>
-              <span>Interactive Content</span>
-            </div>
           </motion.div>
 
         </div>

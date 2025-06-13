@@ -125,7 +125,7 @@ Next module
         const generatedModule = generatedModules[i];
         const moduleId = new mongoose.Types.ObjectId().toString();
 
-        const chapters: Chapter[] = generatedModule.chapters.map(chapter => ({
+        const chapters: Chapter[] = generatedModule.chapters.map((chapter, index) => ({
           _id: new mongoose.Types.ObjectId().toString(),
           title: chapter.title,
           content: [],
@@ -133,10 +133,11 @@ Next module
           refs: [],
           moduleId,
           type: "chapter",
+          isLocked: !(i === 0 && index === 0),
+          isActive: i !== 0 && index !== 0,
           isCompleted: false,
           isUserSpecific: !isTemplate,
         }));
-
         const module: Module = {
           title: generatedModule.title,
           _id: moduleId,
@@ -162,8 +163,8 @@ Next module
       await this.moduleRepository.createMany(createdModules);
       await this.chapterService.createChapters(createdChapters);
 
-      // Update refs after saving (this can be done asynchronously)
-      this.updateModuleRefs(createdModules, generatedModules);
+      //TODO: FIX
+      await this.updateModuleRefs(createdModules, generatedModules);
 
       return { modules: createdModules, chapters: createdChapters };
     }, {

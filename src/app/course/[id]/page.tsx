@@ -95,7 +95,181 @@ export default function Page({
   const [navExpanded, setNavExpanded] = useState(true);
   const [view, setView] = useState('course');
 
-  const loadCourseData = async () => {
+  const updateModuleStatus = (moduleId: string) => {
+    setCourseData((prevCourseData) => {
+      if (!prevCourseData) return prevCourseData;
+
+      return {
+        ...prevCourseData,
+        modules: prevCourseData.modules.map((module) =>
+          module._id === moduleId
+            ? { ...module, isLocked: false }
+            : module
+        )
+      };
+    });
+
+    setSelectedModule((prevModule) => {
+      if (prevModule && prevModule._id === moduleId) {
+        return {
+          ...prevModule,
+          isLocked: false,
+        };
+      }
+      return prevModule;
+    });
+  };
+
+  const updateChapterCompletion = (chapterId: string) => {
+    setCourseData((prevCourseData) => {
+      if (!prevCourseData) return prevCourseData;
+
+      return {
+        ...prevCourseData,
+        chapters: prevCourseData.chapters.map((chapter) =>
+          chapter._id === chapterId
+            ? { ...chapter, isCompleted: true }
+            : chapter
+        )
+      };
+    });
+
+    setSelectedChapter((prevChapter) => {
+      if (prevChapter && prevChapter._id === chapterId) {
+        return {
+          ...prevChapter,
+          isCompleted: true,
+        };
+      }
+      return prevChapter;
+    });
+  };
+
+  const updateChapterStatus = (chapterId: string) => {
+    setCourseData((prevCourseData) => {
+      if (!prevCourseData) return prevCourseData;
+
+      return {
+        ...prevCourseData,
+        chapters: prevCourseData.chapters.map((chapter) =>
+          chapter._id === chapterId
+            ? { ...chapter, isLocked: false, isActive: true }
+            : { ...chapter, isActive: false } // Deactivate other chapters
+        )
+      };
+    });
+
+    setSelectedChapter((prevChapter) => {
+      if (prevChapter && prevChapter._id === chapterId) {
+        return {
+          ...prevChapter,
+          isLocked: false,
+          isActive: true,
+        };
+      }
+      return prevChapter;
+    });
+  };
+
+  const updateModuleCompletion = (moduleId: string) => {
+    setCourseData((prevCourseData) => {
+      if (!prevCourseData) return prevCourseData;
+
+      return {
+        ...prevCourseData,
+        modules: prevCourseData.modules.map((module) =>
+          module._id === moduleId
+            ? { ...module, isCompleted: true }
+            : module
+        )
+      };
+    });
+
+    setSelectedModule((prevModule) => {
+      if (prevModule && prevModule._id === moduleId) {
+        return {
+          ...prevModule,
+          isCompleted: true,
+        };
+      }
+      return prevModule;
+    });
+  };
+
+
+  const updateNavigationState = (updates: {
+    completedChapterId?: string;
+    completedModuleId?: string;
+    unlockedChapterId?: string;
+    unlockedModuleId?: string;
+    newCurrentChapterId?: string;
+  }) => {
+    setCourseData((prevCourseData) => {
+      if (!prevCourseData) return prevCourseData;
+      let updatedData = { ...prevCourseData };
+
+      if (updates.completedModuleId || updates.unlockedModuleId) {
+        updatedData.modules = updatedData.modules.map((module) => {
+          let updatedModule = { ...module };
+          if (updates.completedModuleId && module._id === updates.completedModuleId) {
+            updatedModule.isCompleted = true;
+          }
+          if (updates.unlockedModuleId && module._id === updates.unlockedModuleId) {
+            updatedModule.isLocked = false;
+          }
+          return updatedModule;
+        });
+      }
+
+      if (updates.completedChapterId || updates.unlockedChapterId || updates.newCurrentChapterId) {
+        updatedData.chapters = updatedData.chapters.map((chapter) => {
+          let updatedChapter = { ...chapter };
+
+          if (updates.completedChapterId && chapter._id === updates.completedChapterId) {
+            updatedChapter.isCompleted = true;
+            updatedChapter.isActive = false;
+          }
+
+          if (updates.unlockedChapterId && chapter._id === updates.unlockedChapterId) {
+            updatedChapter.isLocked = false;
+          }
+
+          if (updates.newCurrentChapterId) {
+            updatedChapter.isActive = chapter._id === updates.newCurrentChapterId;
+          }
+
+          return updatedChapter;
+        });
+      }
+
+      return updatedData;
+    });
+
+    if (updates.completedChapterId) {
+      setSelectedChapter((prevChapter) => {
+        if (prevChapter && prevChapter._id === updates.completedChapterId) {
+          return {
+            ...prevChapter,
+            isCompleted: true,
+            isActive: false
+          };
+        }
+        return prevChapter;
+      });
+    }
+
+    if (updates.newCurrentChapterId) {
+      setSelectedChapter((prevChapter) => {
+        if (prevChapter && prevChapter._id === updates.newCurrentChapterId) {
+          return {
+            ...prevChapter,
+            isActive: true
+          };
+        }
+        return prevChapter;
+      });
+    }
+  }; const loadCourseData = async () => {
     const { id: courseId } = await params;
     setIsDataLoading(true);
     setError(null);
@@ -160,6 +334,7 @@ export default function Page({
   };
 
   const handleGoHome = () => {
+    //TODO: repace with next js router.
     window.location.href = '/courses';
   };
 
@@ -212,6 +387,10 @@ export default function Page({
           navExpanded={navExpanded}
           onSelectModule={handleSelectModule}
           onSelectChapter={handleSelectChapter}
+          updateModuleStatus={updateModuleStatus}
+          updateChapterCompletion={updateChapterCompletion}
+          updateChapterStatus={updateChapterStatus}
+          updateNavigationState={updateNavigationState}
         />
         <CollapsibleCourseNav
           courseData={courseData}
