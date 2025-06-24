@@ -1,4 +1,4 @@
-import { getDefaultCourseService, getDefaultLLMService, getDefaultSearchService } from "@/config/defaults";
+import { getDefaultCourseService, getDefaultLLMService, getDefaultMemeProvider, getDefaultSearchService } from "@/config/defaults";
 import env from "@/config/env.config";
 import dbConnect from "@/config/mongodb.config";
 import { NewCourse } from "@/types";
@@ -21,9 +21,9 @@ import { z } from "zod";
 //   return Response.json(res);
 // }
 
-// export async function GET(req: Request) {
-//   const searchService = getDefaultSearchService()
-//   const result = await searchService.search("learn Concurrency in go, articles")
-//   return Response.json(result);
-// }
+export async function GET(req: Request) {
+  const memeProvider = getDefaultMemeProvider();
+  const result = await memeProvider.generateMeme("Me learning c++ for the first time.");
+  return Response.json(result);
+}
 

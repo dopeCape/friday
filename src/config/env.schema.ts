@@ -65,10 +65,25 @@ const envSchema = {
     required: true,
     description: "Index name for icons saved in pinecone",
   },
+  MEME_PINECONE_INDEX: {
+    type: "string" as const,
+    required: true,
+    description: "Index name for memes saved in pinecone",
+  },
   DEFAULT_EMBEDDING_MODEL: {
     type: "string" as const,
     required: true,
-    description: "Index name for icons saved in pinecone",
+    description: "Default embedding model for embedding service",
+  },
+  IMGFLIP_USERNAME: {
+    type: "string" as const,
+    required: true,
+    description: "username for imgflip",
+  },
+  IMGFLIP_PASSWORD: {
+    type: "string" as const,
+    required: true,
+    description: "password for imgflip",
   }
 
   // GEMINI_API_KEY: {

@@ -22,4 +22,4 @@ export async function validateBody<T extends z.ZodSchema>(schema: T, request: Re
       throw new AppError(400, "Bad Request", "ValidationError", { errorData });
     }
   }
-};
+}

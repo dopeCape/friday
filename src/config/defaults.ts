@@ -1,5 +1,6 @@
 import { OpenAIErrorHandler } from "@/lib/errorHandler/openaiErrorHandler";
 import IconsProvider from "@/lib/providers/icons.provider";
+import MemeProvider from "@/lib/providers/meme.provider";
 import { ChapterRepository } from "@/lib/repository/mongoose/chapter.mongoose.repository";
 import CourseRepository from "@/lib/repository/mongoose/course.mongoose.repository";
 import { ModuleRepository } from "@/lib/repository/mongoose/module.mongoose.repository";
@@ -73,6 +74,7 @@ export function getDefaultChapterService() {
   return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository)
 }
 
+
 export function getDefaultSearchService() {
   const logger = getDefaultLogger()
   return SearchService.getInstance(logger)
@@ -90,6 +92,11 @@ export function getDefaultIconsProvider() {
   const logger = getDefaultLogger();
   const vectorDbService = getDefaultVectorDbService()
   return IconsProvider.getInstance(logger, vectorDbService,);
+}
+export function getDefaultMemeProvider() {
+  const logger = getDefaultLogger();
+  const vectorDbService = getDefaultVectorDbService()
+  return MemeProvider.getInstance(logger, vectorDbService);
 }
 
 export function getDefaultCourseService() {
