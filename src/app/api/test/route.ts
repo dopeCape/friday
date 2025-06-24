@@ -23,7 +23,8 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const memeProvider = getDefaultMemeProvider();
-  const result = await memeProvider.generateMeme("Me learning c++ for the first time.");
+  const url = new URL(req.url)
+  const query = url.searchParams.get("query")
+  const result = await memeProvider.generateMeme(query);
   return Response.json(result);
 }
-
