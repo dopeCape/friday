@@ -1,8 +1,9 @@
-import { getDefaultCourseService, getDefaultLLMService, getDefaultMemeProvider, getDefaultSearchService } from "@/config/defaults";
+import { getDefaultCourseService, getDefaultLLMService, getDefaultMemeProvider, getDefaultSearchService, getDefaultVideoService } from "@/config/defaults";
 import env from "@/config/env.config";
 import dbConnect from "@/config/mongodb.config";
 import { NewCourse } from "@/types";
 import { TavilySearch } from "@langchain/tavily";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 // export async function GET(req: Request) {
@@ -22,9 +23,7 @@ import { z } from "zod";
 // }
 
 export async function GET(req: Request) {
-  const memeProvider = getDefaultMemeProvider();
-  const url = new URL(req.url)
-  const query = url.searchParams.get("query")
-  const result = await memeProvider.generateMeme(query);
-  return Response.json(result);
+  const videoService = getDefaultVideoService();
+  const script = await videoService.generateVideoScript("Database Transactions and ACID Properties");
+  return NextResponse.json(script)
 }

@@ -43,7 +43,7 @@ import { LLMProvider, LLMOpts, ConverstionType } from "./llm.type"
 import { ModuleRepository } from "./signatures/moduleRepository.signature"
 import { QuizRepository } from "./signatures/quizRepository.signature"
 import { ChapterRepository } from "./signatures/chapterRepository.signature"
-
+import { VideoOpts } from "./video.type"
 type SessionClaims = {
   onboarded: boolean
 
@@ -77,5 +77,6 @@ export type {
   CourseGenreation,
   ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData,
   SessionClaims,
-  CourseData
+  CourseData,
+  VideoOpts
 }

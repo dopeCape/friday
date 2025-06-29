@@ -65,6 +65,11 @@ const envSchema = {
     required: true,
     description: "Index name for icons saved in pinecone",
   },
+  VIDEO_PINEONE_INDEX: {
+    type: "string" as const,
+    required: true,
+    description: "Index name for videos saved in pinecone",
+  },
   MEME_PINECONE_INDEX: {
     type: "string" as const,
     required: true,
@@ -84,7 +89,8 @@ const envSchema = {
     type: "string" as const,
     required: true,
     description: "password for imgflip",
-  }
+  },
+
 
   // GEMINI_API_KEY: {
   //   type: "string" as const,
@@ -93,27 +99,6 @@ const envSchema = {
   // }
 
 
-  // REDIS_HOST: {
-  //   type: "string" as const,
-  //   required: true,
-  //   description: "Redis host , most likely localhost",
-  // },
-  // REDIS_PORT: {
-  //   type: "number" as const,
-  //   required: true,
-  // },
-  // BACKGROUND_JOB_URL: {
-  //   type: "string" as const,
-  //   required: true,
-  //   description:
-  //     "background job url, when developing use hookdeck and set the lister url, other wise set it to the deployment url",
-  // },
-  // MERGENT_API_KEY: {
-  //   type: "string" as const,
-  //   required: true,
-  //   description:
-  //     "mergent api key",
-  // },
 };
 
 export default envSchema

@@ -16,6 +16,7 @@ import QuizService from "@/lib/services/quiz.service";
 import SearchService from "@/lib/services/serarch.service";
 import UserService from "@/lib/services/user.service";
 import VectorDbService from "@/lib/services/vectorDb.service";
+import VideoService from "@/lib/services/video.service";
 
 
 export function getDefaultLogger() {
@@ -106,4 +107,12 @@ export function getDefaultCourseService() {
   const llmService = getDefaultLLMService();
   const iconsProvider = getDefaultIconsProvider();
   return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider);
+}
+
+export function getDefaultVideoService() {
+  const logger = getDefaultLogger();
+  const llmService = getDefaultLLMService();
+  const vectorDbService = getDefaultVectorDbService();
+  return VideoService.getInstance(logger, vectorDbService, llmService);
+
 }
