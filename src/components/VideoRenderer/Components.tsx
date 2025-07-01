@@ -4,6 +4,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import katex from 'katex';
 import mermaid from 'mermaid';
 import 'katex/dist/katex.min.css';
+import { FridayMarkdown } from "../Course/ChapterBlocks";
 
 export const fridayConfig = {
   colors: {
@@ -33,6 +34,7 @@ export const fridayConfig = {
   }
 };
 
+// Friday Video Components
 const FridayCodeBlock = ({ content, language = 'text', comment }) => {
   const customStyle = {
     ...vscDarkPlus,
@@ -55,8 +57,8 @@ const FridayCodeBlock = ({ content, language = 'text', comment }) => {
       fontFamily: '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
       fontSize: fridayConfig.typography.code,
       color: 'rgba(255, 255, 255, 0.95)',
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word' as any
+      whiteSpace: 'pre-wrap' as any,
+      wordBreak: 'break-word' as any,
     }
   };
 
@@ -281,11 +283,6 @@ const FridayLatex = ({ content }) => {
   return (
     <div
       className="w-full p-4 rounded-lg"
-      style={{
-        backgroundColor: fridayConfig.colors.hover,
-        border: `1px solid ${fridayConfig.colors.border}`,
-        maxWidth: '100%'
-      }}
     >
       <div
         className="text-center [&_.katex]:text-white/90 [&_.katex-display]:text-white/95 [&_.katex-display]:my-2"
@@ -300,6 +297,7 @@ const FridayLatex = ({ content }) => {
   );
 };
 
+// Shared Components
 const DottedBackground = ({ opacity = 0.04, size = '80px' }) => (
   <div
     className="absolute inset-0"
@@ -333,6 +331,7 @@ const Accent = ({ className = '' }) => (
   />
 );
 
+// Content Renderer
 export const ContentRenderer = ({ content }) => {
   if (!content) return null;
 
@@ -420,7 +419,8 @@ export const ContentRenderer = ({ content }) => {
             fontSize: fridayConfig.typography.body
           }}
         >
-          {content.value}
+          <FridayMarkdown content={content.value} />
+
         </div>
       );
 
@@ -434,27 +434,8 @@ export const ContentRenderer = ({ content }) => {
             lineHeight: '1.6'
           }}
         >
-          {content.value.split('\n').map((line, i) => {
-            if (line.startsWith('**') && line.endsWith('**')) {
-              return (
-                <div key={i} className="font-bold mb-2" style={{ fontSize: fridayConfig.typography.h3 }}>
-                  {line.slice(2, -2)}
-                </div>
-              );
-            }
-            if (line.startsWith('- ')) {
-              return (
-                <div key={i} className="flex items-start gap-3 mb-2">
-                  <div
-                    className="w-1.5 h-1.5 rounded-full mt-2"
-                    style={{ backgroundColor: fridayConfig.colors.primary }}
-                  />
-                  <div>{line.slice(2)}</div>
-                </div>
-              );
-            }
-            return line ? <div key={i} className="mb-3">{line}</div> : <div key={i} className="mb-2" />;
-          })}
+          <FridayMarkdown content={content.value} />
+
         </div>
       );
 
@@ -473,6 +454,7 @@ export const ContentRenderer = ({ content }) => {
   }
 };
 
+// Template Components
 export const HeroSlide = ({ title, subtitle, highlight, description }) => (
   <SlideContainer dotSize="100px">
     <div className="w-full text-center space-y-6">
@@ -1001,7 +983,6 @@ export const templates = {
 
 export const SlideEngine = ({ slideData }) => {
   const TemplateComponent = templates[slideData.template];
-
   if (!TemplateComponent) {
     return (
       <div style={{ color: 'red', padding: '2rem' }}>
@@ -1009,6 +990,5 @@ export const SlideEngine = ({ slideData }) => {
       </div>
     );
   }
-
   return <TemplateComponent {...slideData.props} />;
 };

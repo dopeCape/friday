@@ -1,4 +1,4 @@
-import { getDefaultCourseService, getDefaultLLMService, getDefaultMemeProvider, getDefaultSearchService, getDefaultVideoService } from "@/config/defaults";
+import { getDefaultCourseService, getDefaultFFMPEGService, getDefaultFileService, getDefaultLLMService, getDefaultMemeProvider, getDefaultScreenshotService, getDefaultSearchService, getDefaultVideoService } from "@/config/defaults";
 import env from "@/config/env.config";
 import dbConnect from "@/config/mongodb.config";
 import { NewCourse } from "@/types";
@@ -23,7 +23,13 @@ import { z } from "zod";
 // }
 
 export async function GET(req: Request) {
-  const videoService = getDefaultVideoService();
-  const script = await videoService.generateVideoScript("Database Transactions and ACID Properties");
-  return NextResponse.json(script)
+  const fs = getDefaultFFMPEGService();
+  const video = "/home/baby/workflow/projects/friday/temp/video/test1.mp4"
+  const path = await fs.stitchVideos({
+    videoPaths: [video, video, video],
+    outputPath: "/home/baby/workflow/projects/friday/temp/video/stitched.mp4",
+  })
+
+  return NextResponse.json(path);
 }
+

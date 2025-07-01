@@ -44,6 +44,7 @@ import { ModuleRepository } from "./signatures/moduleRepository.signature"
 import { QuizRepository } from "./signatures/quizRepository.signature"
 import { ChapterRepository } from "./signatures/chapterRepository.signature"
 import { VideoOpts } from "./video.type"
+import { TTSOpts } from "./tts.type";
 type SessionClaims = {
   onboarded: boolean
 
@@ -78,5 +79,6 @@ export type {
   ModuleContent, DifficultyLevel, Assignment, ModuleRepository, QuizRepository, ChapterRepository, ModuleGenerationData, GeneratedModuleData,
   SessionClaims,
   CourseData,
-  VideoOpts
+  VideoOpts,
+  TTSOpts
 }

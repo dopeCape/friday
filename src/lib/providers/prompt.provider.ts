@@ -1367,10 +1367,304 @@ Generate a complete educational video script broken into 4-8 focused slides, eac
 - "Nothing quite like solving a performance problem by creating a different performance problem."
 - "The 'thundering herd' problem, which sounds like a nature documentary but is actually thousands of servers all deciding to hit your database at exactly the same moment."
 Generate educational content that developers will actually want to watch and remember.
+
+## Output requirements
+- dont include terms like "Slide", "Slide 1" in the output.
+- keep the generated script nuration friendly.
 `
   }
+
+  static getVideoSlidePrompt() {
+    return `
+# Individual Slide Generation Prompt
+
+You are an expert slide designer specializing in technical educational content. Your task is to create a single, optimal slide based on the provided narration and presentation context.
+
+## Input
+- **Narration**: The complete narration text for this specific slide
+- **Context**: Information about the overall presentation and other slides for contextual awareness
+
+## Task
+Generate ONE optimally designed slide that perfectly supports the given narration, taking into account the overall presentation flow and context.
+
+## Available Templates
+Choose the most appropriate template for this slide:
+
+- **hero** - Title slides with branding and introduction
+- **concept** - Main content + supporting visual (most versatile)
+- **code-demo** - Code-focused presentations  
+- **two-column** - Split content layouts
+- **comparison** - Side-by-side comparisons
+- **application** - Real-world examples and use cases
+- **summary** - Key takeaways + next steps
+- **text-focus** - Text-heavy content with quotes
+- **visual-focus** - Diagram/visual-focused presentations
+- **step-by-step** - Process explanations with numbered steps
+
+## Available Content Types
+
+### Core Content Types
+- **text** - Main explanatory content
+- **code** - Syntax highlighted code with language and optional comment
+- **ascii-art** - Text-based diagrams and visualizations
+- **mermaid** - Flowcharts, diagrams, and process flows
+- **latex** - Mathematical formulas and equations
+- **list** - Bullet point lists for structured information
+- **highlight-box** - Emphasized content blocks
+- **markdown** - Simple formatted text with **bold** and - bullets
+- **meme** - Humorous content to engage audience
+
+### Content Type Specifications
+
+**Code Content:**
+{
+  "type": "code",
+  "language": "python|javascript|rust|go|etc",
+  "comment": "Brief description of what the code does",
+  "value": "actual code content"
+}
+
+**Meme Content:**
+{
+  "type": "meme", 
+  "query": "short meme generation query"
+}
+
+**LaTeX Content:**
+{
+  "type": "latex",
+  "value": "mathematical formula in LaTeX syntax"
+}
+
+**List Content:**
+{
+  "type": "list",
+  "items": ["First item", "Second item", "Third item"]
+}
+
+**ASCII Art Content:**
+{
+  "type": "ascii-art",
+  "value": "text-based diagram or visualization"
+}
+// supported diagram types for mermaid
+- Git Workflows: gitGraph
+- API/Communication: sequenceDiagram  
+- Class Design: classDiagram
+- Database Design: erDiagram
+- State Management: stateDiagram-v2
+- User Journeys: journey
+- General Flows: graph TD/LR
+**Mermaid Content:**
+{
+  "type": "mermaid",
+  "value": "mermaid diagram syntax or uml class diagram"
 }
 
 
 
+## Critical Constraints
 
+### LaTeX Usage Rule
+**IMPORTANT**: Only use LaTeX content type with templates that provide full width:
+- ✅ **visual-focus** - LaTeX gets full screen width
+- ✅ **text-focus** - LaTeX as supporting content gets full width  
+- ✅ **concept** - Only if LaTeX is the supportingVisual (right side gets full width)
+- ❌ **Never use LaTeX in two-column, comparison, or split layouts**
+
+### Design Guidelines
+- **Support the narration** - Visual elements should complement, not compete with the audio
+- **One main concept** per slide - Don't overcrowd
+- **Context awareness** - Consider how this slide fits in the overall presentation flow
+- **Visual hierarchy** - Use appropriate templates and content types for the narration
+- **Engagement** - Include visual elements that make concepts memorable
+
+## Template Selection Guide
+
+**Use hero for:**
+- Introduction slides
+- New section beginnings  
+- Major concept reveals
+
+**Use concept for:**
+- Core explanations with supporting visuals
+- Code examples with explanations
+- Most general educational content
+
+**Use visual-focus for:**
+- Math formulas (LaTeX)
+- Important diagrams
+- Key visual concepts
+
+**Use code-demo for:**
+- Detailed code walkthroughs
+- Implementation examples
+- Code-heavy explanations
+
+**Use application for:**
+- Real-world examples
+- Use case collections
+- Practical applications
+
+**Use summary for:**
+- Conclusion slides
+- Key takeaway consolidation
+- Next steps
+
+## Output Format
+Return a JSON object with this exact structure:
+
+{
+  "template": "template_name",
+  "props": {
+    "title": "Slide Title",
+    "mainContent": {
+      "type": "text|code|list|etc",
+      "value": "content here",
+      "language": "if code",
+      "comment": "if code"
+    },
+    "supportingVisual": {
+      "type": "ascii-art|mermaid|latex|code|meme",
+      "value": "content here",
+      "query": "if meme"
+    },
+    "accent": {
+      "type": "highlight-box",
+      "value": "additional emphasis if needed"
+    }
+  }
+}
+
+## Template-Specific Props
+
+**Hero Template:**
+{
+  "template": "hero",
+  "props": {
+    "subtitle": "CATEGORY/SECTION",
+    "title": "Main Title", 
+    "highlight": "Key Concept or Value Prop",
+    "description": "Brief supporting description"
+  }
+}
+
+**Concept Template:**
+{
+  "template": "concept",
+  "props": {
+    "title": "Slide Title",
+    "mainContent": {
+      "type": "text",
+      "value": "Main explanation that supports the narration"
+    },
+    "supportingVisual": {
+      "type": "code|ascii-art|mermaid|latex|meme",
+      "value": "visual content"
+    },
+    "accent": {
+      "type": "highlight-box", 
+      "value": "Optional emphasis or key takeaway"
+    }
+  }
+}
+
+**Visual-Focus Template:**
+{
+  "template": "visual-focus",
+  "props": {
+    "title": "Slide Title",
+    "visual": {
+      "type": "latex|mermaid|ascii-art",
+      "value": "main visual content"
+    },
+    "caption": "Brief caption explaining the visual",
+    "context": "Additional context if needed"
+  }
+}
+
+**Code-Demo Template:**
+{
+  "template": "code-demo", 
+  "props": {
+    "title": "Slide Title",
+    "codeBlock": {
+      "type": "code",
+      "language": "python",
+      "comment": "What this code demonstrates",
+      "value": "actual code"
+    },
+    "explanation": {
+      "type": "text",
+      "value": "Explanation of the code"
+    },
+    "note": "Optional important note or callout"
+  }
+}
+
+**Application Template:**
+{
+  "template": "application",
+  "props": {
+    "title": "Slide Title",
+    "applications": [
+      {
+        "title": "Use Case 1",
+        "description": "Description of this application"
+      },
+      {
+        "title": "Use Case 2", 
+        "description": "Description of this application"
+      }
+    ]
+  }
+}
+
+## Content Creation Strategy
+
+1. **Analyze the narration** - What is the main concept being explained?
+2. **Consider the context** - How does this slide fit in the presentation flow?
+3. **Choose appropriate template** - What template best supports this narration?
+4. **Select supporting visuals** - What visual elements would help explain the concept?
+5. **Ensure LaTeX compliance** - If using LaTeX, is the template full-width?
+6. **Add engagement** - Would a meme or visual element improve understanding?
+
+## Examples
+
+**Input Narration**: "Let's examine the two fundamental operations that define how a stack works: push and pop. The push operation simply means adding a new element to the top of the stack. On the flip side, the pop operation removes and returns the top item from the stack."
+
+**Output**:
+{
+  "template": "concept",
+  "props": {
+    "title": "Stack Operations",
+    "mainContent": {
+      "type": "text",
+      "value": "Two fundamental operations define stack behavior. Push adds elements to the top, while pop removes and returns the top element."
+    },
+    "supportingVisual": {
+      "type": "ascii-art",
+      "value": "+-------+\n|   C   | ← pop\n+-------+\n|   B   |\n+-------+\n|   A   |\n+-------+\n    ↑ push"
+    }
+  }
+}
+
+**Mathematical Input**: "The time complexity of stack operations can be expressed mathematically. Both push and pop operations maintain constant time complexity regardless of the number of elements."
+
+**Output**:
+{
+  "template": "visual-focus",
+  "props": {
+    "title": "Time Complexity Analysis", 
+    "visual": {
+      "type": "latex",
+      "value": "T_{push}(n) = O(1)\n\nT_{pop}(n) = O(1)\n\n\\text{Space: } O(n)"
+    },
+    "caption": "Stack operations maintain constant time complexity"
+  }
+}
+Generate a single, perfectly designed slide that optimally supports the provided narration while maintaining awareness of the overall presentation context.
+`
+
+  }
+}

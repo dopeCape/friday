@@ -9,11 +9,15 @@ import UserRepository from "@/lib/repository/mongoose/user.mongoose.repository";
 import ChapterService from "@/lib/services/chapter.service";
 import CourseService from "@/lib/services/course.service";
 import EmbeddingService from "@/lib/services/embedding.service";
+import FFMPEGService from "@/lib/services/ffmpeg.service";
+import FileService from "@/lib/services/file.service";
 import LLMService from "@/lib/services/llm.service";
 import { Logger } from "@/lib/services/logger.service";
 import ModuleService from "@/lib/services/module.service";
 import QuizService from "@/lib/services/quiz.service";
+import ScreenshotService from "@/lib/services/screenshot.service";
 import SearchService from "@/lib/services/serarch.service";
+import TTSService from "@/lib/services/tts.service";
 import UserService from "@/lib/services/user.service";
 import VectorDbService from "@/lib/services/vectorDb.service";
 import VideoService from "@/lib/services/video.service";
@@ -108,11 +112,35 @@ export function getDefaultCourseService() {
   const iconsProvider = getDefaultIconsProvider();
   return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider);
 }
+export function getDefaultFileService() {
+  const logger = getDefaultLogger();
+  const fileService = FileService.getInstance(logger);
+  return fileService;
+}
+export function getDefaultTTSService() {
+  const logger = getDefaultLogger();
+  const fileService = getDefaultFileService();
+  return TTSService.getInstance(logger, fileService);
+}
 
 export function getDefaultVideoService() {
   const logger = getDefaultLogger();
   const llmService = getDefaultLLMService();
   const vectorDbService = getDefaultVectorDbService();
-  return VideoService.getInstance(logger, vectorDbService, llmService);
+  const ttsService = getDefaultTTSService()
+  return VideoService.getInstance(logger, vectorDbService, llmService, ttsService);
+}
 
+export function getDefaultScreenshotService() {
+  const logger = getDefaultLogger();
+  const screenShotService = ScreenshotService.getInstance(logger);
+  return screenShotService
+
+
+}
+
+export function getDefaultFFMPEGService() {
+  const logger = getDefaultLogger();
+  const ffmpegService = FFMPEGService.getInstance(logger);
+  return ffmpegService;
 }

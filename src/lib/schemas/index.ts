@@ -18,7 +18,8 @@ import {
   courseGenerationSchema,
   moduleContentSchema
 } from "./course.schema"
-import { videoScriptGenerationShcmea } from "./video.schmea"
+import { videoScriptGenerationSchema } from "./video.schmea"
+import { videoSlideGenerationDataSchema } from "./video.json.schema"
 
 
 //========= barrel exports ==========//
@@ -39,5 +40,6 @@ export {
   courseGenerationSchema,
   moduleContentSchema,
   chapterDetailGenerationSchema,
-  videoScriptGenerationShcmea
+  videoScriptGenerationSchema,
+  videoSlideGenerationDataSchema
 }

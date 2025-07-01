@@ -1,7 +1,7 @@
 import { ConverstionType, LLMOpts, Logger } from "@/types";
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
 import { BaseErrorHandler } from "../errorHandler/baseErrorHandler";
-import { z, ZodObject } from "zod";
+import { z, ZodDiscriminatedUnion, ZodObject, ZodUnion } from "zod";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import env from "@/config/env.config";
@@ -33,9 +33,9 @@ export default class LLMService {
     return this.instance;
   }
 
-  async structuredResponse<T extends ZodObject<any, any, any>>(
+  async structuredResponse<T extends ZodObject<any, any, any> | ZodDiscriminatedUnion<any, any> | ZodUnion<any>>(
     input: string | ConverstionType,
-    structure: T,
+    structure: T | Record<string, string>,
     opts: LLMOpts
   ): Promise<{ raw: string, parsed: z.infer<T> }> {
     return this.errorHandler.handleError(async () => {
