@@ -1,23 +1,32 @@
 import { Logger } from "@/types";
 import puppeteer from 'puppeteer';
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
+import FileService from "./file.service";
+import env from "@/config/env.config";
 
 export default class ScreenshotService {
   private static instance: ScreenshotService | null;
   private logger: Logger;
-  private errorHandler: CentralErrorHandler
-  private constructor(logger: Logger) {
+  private tempPath = env.TEMP_PATH;
+  private fileService: FileService;
+  private errorHandler: CentralErrorHandler;
+  private constructor(logger: Logger, fileService: FileService) {
     this.logger = logger;
     this.errorHandler = new CentralErrorHandler(logger);
+    this.fileService = fileService
   }
-  public static getInstance(logger: Logger) {
+  public static getInstance(logger: Logger, fileService: FileService) {
     if (!this.instance) {
-      this.instance = new ScreenshotService(logger);
+      this.instance = new ScreenshotService(logger, fileService);
     }
     return this.instance;
   }
 
-  public async takeScreenshot(url: string) {
+  private getDirectoryPath(videoId: string) {
+    return `${this.tempPath}/${videoId}`;
+  }
+
+  public async takeScreenshot(url: string, videoId: string) {
     return this.errorHandler.handleError(async () => {
       const browser = await puppeteer.launch(
         {
@@ -26,14 +35,16 @@ export default class ScreenshotService {
         }
       );
       const page = await browser.newPage();
-      await page.goto("http://localhost:3000/");
+      await page.goto(url);
       await page.setViewport({ width: 1920, height: 1080 });
-      return await page.screenshot()
+      await page.waitForSelector("#rendered")
+      const buffer = await page.screenshot();
+      const path = await this.fileService.saveFile(buffer, this.getDirectoryPath(videoId), "png");
+      await browser.close();
+      return path;
     }, {
       service: "ScreenshotService",
       method: "takeScreenshot"
     })
   }
-
-
 }

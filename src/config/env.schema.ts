@@ -90,15 +90,25 @@ const envSchema = {
     required: true,
     description: "password for imgflip",
   },
+  REDIS_HOST: {
+    type: "string" as const,
+    required: true,
+    description: "Redis connecitoni url",
+  },
+  APP_URL: {
+    type: "url" as const,
+    required: true,
+  },
+  TEMP_PATH: {
+    type: "string" as const,
+    required: true,
 
-
+  }
   // GEMINI_API_KEY: {
   //   type: "string" as const,
   //   required: true,
   //   description: "gemini api key",
   // }
-
-
 };
 
 export default envSchema

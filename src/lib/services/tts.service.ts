@@ -5,7 +5,7 @@ import env from "@/config/env.config";
 import FileService from "./file.service";
 export default class TTSService {
   private logger: Logger;
-  private tempDir = `/home/baby/workflow/projects/friday/temp/`;
+  private tempDir = env.TEMP_PATH;
   private errorHandler: CentralErrorHandler;
   private static instance: TTSService | null;
   private client: OpenAI;
@@ -39,7 +39,7 @@ export default class TTSService {
       })
       const buffer = Buffer.from(await response.arrayBuffer());
       const path = this.getDirectoryPath(videoId);
-      const savedFile = this.fileService.saveFile(buffer, this.tempDir, "mp3");
+      const savedFile = this.fileService.saveFile(buffer, path, "mp3");
       return savedFile;
     }, {
       service: "TTSService",

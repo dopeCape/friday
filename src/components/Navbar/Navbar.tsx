@@ -73,6 +73,9 @@ export default function FloatingNavbar() {
     }
   }, [showNav, navPosition, hideTimer])
 
+  if (pathname.includes("sxzy")) {
+    return null;
+  }
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
       <div

@@ -23,12 +23,8 @@ import { z } from "zod";
 // }
 
 export async function GET(req: Request) {
-  const fs = getDefaultFFMPEGService();
-  const video = "/home/baby/workflow/projects/friday/temp/video/test1.mp4"
-  const path = await fs.stitchVideos({
-    videoPaths: [video, video, video],
-    outputPath: "/home/baby/workflow/projects/friday/temp/video/stitched.mp4",
-  })
+  const vs = getDefaultVideoService();
+  const path = await vs.generateVideo("functional Components in react", { lang: "typescript" });
 
   return NextResponse.json(path);
 }

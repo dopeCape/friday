@@ -15,6 +15,7 @@ import LLMService from "@/lib/services/llm.service";
 import { Logger } from "@/lib/services/logger.service";
 import ModuleService from "@/lib/services/module.service";
 import QuizService from "@/lib/services/quiz.service";
+import RedisService from "@/lib/services/redis.service";
 import ScreenshotService from "@/lib/services/screenshot.service";
 import SearchService from "@/lib/services/serarch.service";
 import TTSService from "@/lib/services/tts.service";
@@ -128,14 +129,17 @@ export function getDefaultVideoService() {
   const llmService = getDefaultLLMService();
   const vectorDbService = getDefaultVectorDbService();
   const ttsService = getDefaultTTSService()
-  return VideoService.getInstance(logger, vectorDbService, llmService, ttsService);
+  const redisService = getDefaultRedisService();
+  const screenShotService = getDefaultScreenshotService();
+  const ffmpegService = getDefaultFFMPEGService();
+  return VideoService.getInstance(logger, vectorDbService, llmService, ttsService, redisService, screenShotService, ffmpegService);
 }
 
 export function getDefaultScreenshotService() {
   const logger = getDefaultLogger();
-  const screenShotService = ScreenshotService.getInstance(logger);
+  const fileService = getDefaultFileService();
+  const screenShotService = ScreenshotService.getInstance(logger, fileService);
   return screenShotService
-
 
 }
 
@@ -143,4 +147,9 @@ export function getDefaultFFMPEGService() {
   const logger = getDefaultLogger();
   const ffmpegService = FFMPEGService.getInstance(logger);
   return ffmpegService;
+}
+
+export function getDefaultRedisService() {
+  const logger = getDefaultLogger();
+  return RedisService.getInstance(logger);
 }
