@@ -141,7 +141,7 @@ export default class VideoService {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating script for provide query ", { query });
       const response = await this.llmService.structuredResponseWithFallback(this.getVideoScriptGenerationPrompt(query), videoScriptGenerationSchema, {
-        model: "gpt-4.1",
+        model: "o3",
         provider: "openai"
       })
       this.logger.info("Generated script for video", { ...response.parsed });
@@ -204,7 +204,7 @@ current slide nurration: ${narrations[index]},
       this.logger.info("Generating slide for nurration", { query, narrations, currentIndex });
       const prompt = this.getSlideGenrationPrompt(query, narrations, currentIndex);
       const slideData = await this.llmService.structuredResponse(prompt, videoSlideGenerationDataSchema as unknown as Record<string, string>, {
-        model: "o3-mini",
+        model: "o3",
         provider: "openai",
       });
       const slideId = v4();
@@ -232,7 +232,5 @@ current slide nurration: ${narrations[index]},
       method: "stichUpImgaeToAudios"
 
     })
-
   }
-
 }

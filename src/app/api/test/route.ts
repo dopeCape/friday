@@ -24,6 +24,6 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const vs = getDefaultVideoService();
-  const path = await vs.generateVideo("Borrow checker in rust", { lang: "rust" });
+  const path = await vs.generateVideo("Binary Search Trees Fundamentals - explain the data structure, show how nodes are organized, demonstrate the search process, and cover key operations like insert and find", { lang: "rust" });
   return NextResponse.json(path);
 }

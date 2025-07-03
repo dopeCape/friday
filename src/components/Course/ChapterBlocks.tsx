@@ -372,7 +372,7 @@ const FridayLatex: React.FC<FridayLatexProps> = ({ content }) => {
           let html = processedContent;
 
           // Replace display math $$...$$ - Fixed regex without 's' flag
-          html = html.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+          html = html.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
             try {
               return katex.renderToString(math.trim(), {
                 displayMode: true,
@@ -388,7 +388,7 @@ const FridayLatex: React.FC<FridayLatexProps> = ({ content }) => {
           });
 
           // Replace inline math $...$
-          html = html.replace(/\$([^$\n]+)\$/g, (match, math) => {
+          html = html.replace(/\$([^$\n]+)\$/g, (_, math) => {
             try {
               return katex.renderToString(math.trim(), {
                 displayMode: false,
@@ -630,7 +630,7 @@ const FridayMarkdown: React.FC<FridayMarkdownProps> = ({ content, className = ''
       );
     },
     th: ({ children }: any) => (
-      <th className="text-left py-4 pr-8 text-sm font-medium text-white/70 tracking-wide uppercase text-xs">
+      <th className="text-left py-4 pr-8  font-medium text-white/70 tracking-wide uppercase text-xs">
         {children}
       </th>
     ),

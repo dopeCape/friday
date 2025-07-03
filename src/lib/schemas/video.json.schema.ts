@@ -28,9 +28,18 @@ export const videoSlideGenerationDataSchema = {
           "required": ["title"],
           "properties": {
             "title": { "type": "string" },
-            "subtitle": { "type": "string" },
-            "highlight": { "type": "string" },
-            "description": { "type": "string" }
+            "subtitle": {
+              "type": "string",
+              "description": "Optional: category or section label"
+            },
+            "highlight": {
+              "type": "string",
+              "description": "Optional: key concept or value proposition"
+            },
+            "description": {
+              "type": "string",
+              "description": "Optional: supporting description"
+            }
           },
           "additionalProperties": false
         },
@@ -53,8 +62,14 @@ export const videoSlideGenerationDataSchema = {
           "properties": {
             "title": { "type": "string" },
             "codeBlock": { "$ref": "#/definitions/CodeContent" },
-            "explanation": { "$ref": "#/definitions/Content" },
-            "note": { "type": "string" }
+            "explanation": {
+              "$ref": "#/definitions/Content",
+              "description": "Optional: explanation of the code"
+            },
+            "note": {
+              "type": "string",
+              "description": "Optional: important note or callout"
+            }
           },
           "additionalProperties": false
         },
@@ -65,8 +80,14 @@ export const videoSlideGenerationDataSchema = {
           "properties": {
             "title": { "type": "string" },
             "visual": { "$ref": "#/definitions/Content" },
-            "caption": { "type": "string" },
-            "context": { "type": "string" }
+            "caption": {
+              "type": "string",
+              "description": "Optional: caption explaining the visual"
+            },
+            "context": {
+              "type": "string",
+              "description": "Optional: additional context"
+            }
           },
           "additionalProperties": false
         },
@@ -78,6 +99,8 @@ export const videoSlideGenerationDataSchema = {
             "title": { "type": "string" },
             "applications": {
               "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
               "items": {
                 "type": "object",
                 "required": ["title", "description"],
@@ -98,6 +121,7 @@ export const videoSlideGenerationDataSchema = {
             "title": { "type": "string" },
             "keyPoints": {
               "type": "array",
+              "description": "Optional: key takeaways to highlight",
               "items": {
                 "type": "object",
                 "required": ["label", "description"],
@@ -107,9 +131,13 @@ export const videoSlideGenerationDataSchema = {
                 }
               }
             },
-            "nextSteps": { "type": "string" },
+            "nextSteps": {
+              "type": "string",
+              "description": "Optional: what comes next"
+            },
             "highlight": {
               "type": "object",
+              "description": "Optional: featured callout box",
               "required": ["title", "description"],
               "properties": {
                 "title": { "type": "string" },
@@ -129,8 +157,14 @@ export const videoSlideGenerationDataSchema = {
             "rightTitle": { "type": "string" },
             "leftContent": { "$ref": "#/definitions/Content" },
             "rightContent": { "$ref": "#/definitions/Content" },
-            "leftColor": { "type": "string" },
-            "rightColor": { "type": "string" }
+            "leftColor": {
+              "type": "string",
+              "description": "Optional: border color for left side (defaults to primary)"
+            },
+            "rightColor": {
+              "type": "string",
+              "description": "Optional: border color for right side (defaults to muted)"
+            }
           },
           "additionalProperties": false
         },
@@ -152,8 +186,14 @@ export const videoSlideGenerationDataSchema = {
           "properties": {
             "title": { "type": "string" },
             "content": { "$ref": "#/definitions/Content" },
-            "quote": { "type": "string" },
-            "author": { "type": "string" }
+            "quote": {
+              "type": "string",
+              "description": "Optional: featured quote"
+            },
+            "author": {
+              "type": "string",
+              "description": "Optional: quote author"
+            }
           },
           "additionalProperties": false
         },
@@ -165,6 +205,8 @@ export const videoSlideGenerationDataSchema = {
             "title": { "type": "string" },
             "steps": {
               "type": "array",
+              "minItems": 2,
+              "maxItems": 6,
               "items": {
                 "type": "object",
                 "required": ["title", "description"],
@@ -174,7 +216,10 @@ export const videoSlideGenerationDataSchema = {
                 }
               }
             },
-            "currentStep": { "type": "number" }
+            "currentStep": {
+              "type": "number",
+              "description": "Optional: highlights a specific step (0-based index)"
+            }
           },
           "additionalProperties": false
         }
@@ -183,51 +228,133 @@ export const videoSlideGenerationDataSchema = {
   },
   "definitions": {
     "Content": {
-      "type": "object",
-      "required": ["type"],
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "text",
-            "code",
-            "ascii-art",
-            "mermaid",
-            "diagram",
-            "latex",
-            "list",
-            "highlight-box",
-            "markdown",
-            "meme"
-          ]
+      "anyOf": [
+        {
+          "title": "TextContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "text" },
+            "value": { "type": "string" },
+            "size": { "$ref": "#/definitions/TextSize" },
+            "muted": { "type": "boolean" },
+            "primary": { "type": "boolean" }
+          },
+          "additionalProperties": false
         },
-        "value": { "type": "string" },
-        "language": { "type": "string" },
-        "comment": { "type": "string" },
-        "size": {
-          "type": "string",
-          "enum": ["small", "body", "h3", "h2", "h1", "hero"]
+        {
+          "title": "CodeContent",
+          "type": "object",
+          "required": ["type", "value", "language"],
+          "properties": {
+            "type": { "const": "code" },
+            "value": { "type": "string" },
+            "language": { "$ref": "#/definitions/ProgrammingLanguage" },
+            "comment": { "type": "string" }
+          },
+          "additionalProperties": false
         },
-        "muted": { "type": "boolean" },
-        "primary": { "type": "boolean" },
-        "items": {
-          "type": "array",
-          "items": { "type": "string" }
+        {
+          "title": "ListContent",
+          "type": "object",
+          "required": ["type", "items"],
+          "properties": {
+            "type": { "const": "list" },
+            "items": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1,
+              "maxItems": 8
+            }
+          },
+          "additionalProperties": false
         },
-        "query": { "type": "string" }
-      },
-      "additionalProperties": false
+        {
+          "title": "MermaidContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "mermaid" },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "LatexContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "latex" },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "AsciiArtContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "ascii-art" },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "DiagramContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "diagram" },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "HighlightBoxContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "highlight-box" },
+            "value": { "type": "string" },
+            "primary": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "MarkdownContent",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": { "const": "markdown" },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "CodeContent": {
       "type": "object",
-      "required": ["type", "value"],
+      "required": ["type", "value", "language"],
       "properties": {
         "type": { "const": "code" },
         "value": { "type": "string" },
-        "language": { "type": "string" },
+        "language": { "$ref": "#/definitions/ProgrammingLanguage" },
         "comment": { "type": "string" }
       },
       "additionalProperties": false
+    },
+    "ProgrammingLanguage": {
+      "type": "string",
+      "enum": [
+        "javascript", "typescript", "python", "rust", "go", "java",
+        "cpp", "c", "csharp", "php", "ruby", "swift", "kotlin",
+        "html", "css", "sql", "bash", "powershell", "yaml", "json",
+        "dockerfile", "markdown", "xml"
+      ]
+    },
+    "TextSize": {
+      "type": "string",
+      "enum": ["small", "body", "h3", "h2", "h1", "hero"]
     }
   }
 }

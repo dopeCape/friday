@@ -140,7 +140,6 @@ const FridayMermaid = ({ chart }) => {
           fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
           fontSize: 14,
         });
-
         const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
         const { svg: renderedSvg } = await mermaid.render(diagramId, chart.trim());
         setSvg(renderedSvg);
@@ -219,7 +218,7 @@ const FridayLatex = ({ content }) => {
         } else {
           let html = processedContent;
 
-          html = html.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+          html = html.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
             try {
               return katex.renderToString(math.trim(), {
                 displayMode: true,
@@ -233,7 +232,7 @@ const FridayLatex = ({ content }) => {
             }
           });
 
-          html = html.replace(/\$([^$\n]+)\$/g, (match, math) => {
+          html = html.replace(/\$([^$\n]+)\$/g, (_, math) => {
             try {
               return katex.renderToString(math.trim(), {
                 displayMode: false,
@@ -992,3 +991,4 @@ export const SlideEngine = ({ slideData }) => {
   }
   return <TemplateComponent {...slideData.props} />;
 };
+
