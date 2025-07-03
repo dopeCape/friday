@@ -117,13 +117,10 @@ export default class MemeProvider {
     return this.instance;
   }
 
-  // ============================================================================
-  // MAIN MEME GENERATION METHOD - ENHANCED AGENT APPROACH
-  // ============================================================================
 
   public async generateMeme(query: string): Promise<string> {
     return this.errorHandler.handleError(async () => {
-      this.logger.info("Starting enhanced agent-based meme generation", { query });
+      this.logger.info("Starting agent-based meme generation", { query });
 
       let attempts = 0;
       const maxAttempts = 3;
@@ -133,7 +130,7 @@ export default class MemeProvider {
         attempts++;
 
         try {
-          this.logger.info(`Enhanced agent attempt ${attempts}/${maxAttempts}`, { query });
+          this.logger.info(` agent attempt ${attempts}/${maxAttempts}`, { query });
 
           // Create enhanced agent with feedback tools
           const agent = await this.createEnhancedMemeAgent();
@@ -151,7 +148,7 @@ export default class MemeProvider {
             throw new Error("Agent did not return a valid meme URL");
           }
 
-          this.logger.info("Enhanced agent generated meme successfully", {
+          this.logger.info(" agent generated meme successfully", {
             query,
             attempts,
             memeUrl

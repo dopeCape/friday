@@ -437,6 +437,13 @@ export const ContentRenderer = ({ content }) => {
 
         </div>
       );
+    case "meme":
+      return (
+        <div>
+          <img src={content.url} />
+        </div>
+
+      )
 
     default:
       return (

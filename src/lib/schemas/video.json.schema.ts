@@ -310,6 +310,19 @@ export const videoSlideGenerationDataSchema = {
           "additionalProperties": false
         },
         {
+          "title": "MemeContent",
+          "type": "object",
+          "required": ["type", "query"],
+          "properties": {
+            "type": { "const": "meme" },
+            "query": {
+              "type": "string",
+              "description": "Meme generation query/prompt for the meme service"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
           "title": "HighlightBoxContent",
           "type": "object",
           "required": ["type", "value"],

@@ -13,6 +13,7 @@ import { v4 } from "uuid";
 import RedisService from "./redis.service";
 import ScreenshotService from "./screenshot.service";
 import FFMPEGService from "./ffmpeg.service";
+import MemeProvider from "../providers/meme.provider";
 
 // Get video from vector store -- done
 // rank if -- done 
@@ -36,13 +37,23 @@ export default class VideoService {
   private screenShotService: ScreenshotService;
   private redisService: RedisService;
   private ffmpegService: FFMPEGService;
+  private memeProvider: MemeProvider
   private tempDir = env.TEMP_PATH
   private TOP_K = 4;
   private VIDEO_STORE_OPTS = {
     index: env.VIDEO_PINEONE_INDEX,
     model: env.DEFAULT_EMBEDDING_MODEL,
   }
-  private constructor(logger: Logger, vectorDb: VectorDbService, llmService: LLMService, ttsService: TTSService, redisService: RedisService, screenShotService: ScreenshotService, ffmpegService: FFMPEGService) {
+  private constructor(
+    logger: Logger,
+    vectorDb: VectorDbService,
+    llmService: LLMService,
+    ttsService: TTSService,
+    redisService: RedisService,
+    screenShotService: ScreenshotService,
+    ffmpegService: FFMPEGService,
+    memeProvider: MemeProvider
+  ) {
     this.logger = logger;
     this.errorHandler = new CentralErrorHandler(logger);
     this.llmService = llmService
@@ -51,10 +62,20 @@ export default class VideoService {
     this.redisService = redisService;
     this.screenShotService = screenShotService;
     this.ffmpegService = ffmpegService
+    this.memeProvider = memeProvider
   }
-  public static getInstance(logger: Logger, vectorDb: VectorDbService, llmService: LLMService, ttsService: TTSService, redisService: RedisService, screenShotService: ScreenshotService, ffmpegService: FFMPEGService) {
+  public static getInstance(
+    logger: Logger,
+    vectorDb: VectorDbService,
+    llmService: LLMService,
+    ttsService: TTSService,
+    redisService: RedisService,
+    screenShotService: ScreenshotService,
+    ffmpegService: FFMPEGService,
+    memeProvider: MemeProvider
+  ) {
     if (!this.instance) {
-      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService);
+      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService, memeProvider);
     }
     return this.instance;
   }
@@ -199,6 +220,7 @@ current slide nurration: ${narrations[index]},
   private getRenderUrl(slideId: string) {
     return `${env.APP_URL}/${this.renderPagePath}/${slideId}`;
   }
+
   public async generateSlide(query: string, narrations: string[], currentIndex: number, videoId: string) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating slide for nurration", { query, narrations, currentIndex });
@@ -208,7 +230,8 @@ current slide nurration: ${narrations[index]},
         provider: "openai",
       });
       const slideId = v4();
-      await this.redisService.set(slideId, JSON.stringify(slideData.parsed));
+      const slideDataWithMeme = await this.attachMeme(slideData.parsed);
+      await this.redisService.set(slideId, JSON.stringify(slideDataWithMeme));
       const slideUrl = this.getRenderUrl(slideId);
       const slidePath = await this.screenShotService.takeScreenshot(slideUrl, videoId);
       return slidePath;
@@ -217,6 +240,24 @@ current slide nurration: ${narrations[index]},
       service: "VideoService",
       method: "generateSlide",
     })
+  }
+  private async attachMeme(slideData: any) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Checking for meme in slide data", { slideData });
+      const hasMeme = slideData?.props?.supportingVisual?.type === "meme";
+      if (!hasMeme) {
+        return slideData;
+      }
+      this.logger.info("Generating meme for query ", { query: slideData?.props?.supportingVisual?.query });
+      const memeUrl = await this.memeProvider.generateMeme(slideData?.props?.supportingVisual?.query);
+      slideData.props.supportingVisual = { ...slideData?.props?.supportingVisual, url: memeUrl };
+      this.logger.info("Attached meme to slide data ", { slideData });
+      return slideData;
+    }, {
+      service: "VideoService",
+      method: "attachMeme"
+    })
+
   }
   private async stichUpImgaeToAudios(slideData: { slide: string, audio: string }[], videoId: string) {
     return this.errorHandler.handleError(async () => {

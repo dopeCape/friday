@@ -24,6 +24,9 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const vs = getDefaultVideoService();
-  const path = await vs.generateVideo("Binary Search Trees Fundamentals - explain the data structure, show how nodes are organized, demonstrate the search process, and cover key operations like insert and find", { lang: "rust" });
+  const path = await vs.generateVideo("CSS Positioning Fundamentals - explain the differences between absolute, relative, and fixed positioning, show how they interact with the document flow, and demonstrate practical examples of when to use each approach", { lang: "rust" });
   return NextResponse.json(path);
-}
+};
+
+
+

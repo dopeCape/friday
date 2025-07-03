@@ -72,37 +72,7 @@ const ContentSchema = z.union([
   MemeContentSchema,
 ]);
 
-// Alternative: Flexible content schema for LLM compatibility
-const FlexibleContentSchema = z.object({
-  type: z.enum([
-    'text', 'code', 'ascii-art', 'mermaid', 'diagram',
-    'latex', 'list', 'highlight-box', 'markdown', 'meme'
-  ]),
-  value: z.string().optional(),
-  language: z.string().optional(),
-  comment: z.string().optional(),
-  size: z.enum(['small', 'body', 'h3', 'h2', 'h1', 'hero']).optional(),
-  muted: z.boolean().optional(),
-  primary: z.boolean().optional(),
-  items: z.array(z.string()).optional(),
-  query: z.string().optional(),
-}).refine((data) => {
-  // Validate required fields based on type
-  if (data.type === 'text' || data.type === 'code' || data.type === 'ascii-art' ||
-    data.type === 'mermaid' || data.type === 'diagram' || data.type === 'latex' ||
-    data.type === 'highlight-box' || data.type === 'markdown') {
-    return !!data.value;
-  }
-  if (data.type === 'list') {
-    return !!data.items && data.items.length > 0;
-  }
-  if (data.type === 'meme') {
-    return !!data.query;
-  }
-  return true;
-}, "Required fields missing based on content type");
 
-// Template-specific prop schemas
 const HeroSlidePropsSchema = z.object({
   title: z.string(),
   subtitle: z.string().optional(),

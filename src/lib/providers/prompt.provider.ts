@@ -1407,6 +1407,7 @@ Generate educational content that teaches effectively through clear, focused com
     <mission>
         Create ONE optimally designed slide that transforms narration into visual, slide-appropriate content.
         Use diverse templates and be selective about visual elements.
+        MANDATORY: Include memes for CSS, JavaScript, regex, debugging, and algorithm topics.
         NEVER copy script text verbatim - extract concepts and present them appropriately.
     </mission>
     
@@ -1543,6 +1544,63 @@ Generate educational content that teaches effectively through clear, focused com
                     <for_examples>Use "application" template with multiple use cases</for_examples>
                 </alternatives_to_ascii>
             </ascii_art_usage>
+            
+            <strategic_meme_usage>
+                <mandatory_meme_topics>
+                    <topic>CSS positioning, layout, centering, flexbox, grid</topic>
+                    <topic>JavaScript this keyword, closures, hoisting, scope</topic>
+                    <topic>Regular expressions, regex patterns, pattern matching</topic>
+                    <topic>Debugging, finding bugs, error handling</topic>
+                    <topic>Git merge conflicts, version control issues</topic>
+                    <topic>Performance optimization, algorithm complexity</topic>
+                    <topic>Database queries, SQL joins, normalization</topic>
+                    <topic>Memory management, garbage collection, pointers</topic>
+                    <note>For these topics, you MUST include at least one meme</note>
+                </mandatory_meme_topics>
+                
+                <strong_encouragement>
+                    <rule>When presentation topic matches mandatory meme topics, include a meme in 2nd or 3rd slide</rule>
+                    <rule>Memes are REQUIRED for universally confusing programming concepts</rule>
+                    <rule>Developer audiences expect humor for notoriously difficult topics</rule>
+                    <rule>If you're unsure whether to include a meme for a programming topic, INCLUDE IT</rule>
+                </strong_encouragement>
+                
+                <explicit_triggers>
+                    <css_trigger>ANY CSS topic → MUST include meme about CSS layout confusion or browser compatibility</css_trigger>
+                    <javascript_trigger>JavaScript concepts → MUST include meme about JS quirks or unexpected behavior</javascript_trigger>
+                    <regex_trigger>Regular expressions → MUST include meme about regex being unreadable or cryptic</regex_trigger>
+                    <debugging_trigger>Error handling or debugging → MUST include meme about finding bugs</debugging_trigger>
+                    <algorithm_trigger>Complex algorithms → MUST include meme about understanding or implementing</algorithm_trigger>
+                </explicit_triggers>
+                
+                <meme_placement_mandate>
+                    <rule>For mandatory meme topics: Place meme in slide 2 or 3 as supportingVisual</rule>
+                    <rule>Use concept template with meme as supportingVisual for maximum impact</rule>
+                    <rule>If topic is inherently meme-worthy, you MUST include one regardless of other content</rule>
+                </meme_placement_mandate>
+                
+                <meme_query_guidelines>
+                    <rule>Keep queries concise and specific to the exact programming pain point</rule>
+                    <rule>Focus on universally relatable developer experiences</rule>
+                    
+                    <guaranteed_winners>
+                        <css>"css developer trying to center div perfectly"</css>
+                        <css>"css layout broken in internet explorer browser"</css>
+                        <javascript>"javascript this keyword changing context unexpectedly"</javascript>
+                        <javascript>"javascript developer confused by closures and scope"</javascript>
+                        <regex>"programmer trying to read regex pattern six months later"</regex>
+                        <regex>"regex pattern matching email validation gone wrong"</regex>
+                        <debugging>"developer debugging code for hours tiny syntax error"</debugging>
+                        <algorithms>"programmer explaining recursion to confused teammate"</algorithms>
+                    </guaranteed_winners>
+                </meme_query_guidelines>
+                
+                <quality_over_restriction>
+                    <rule>Better to include a meme than miss the opportunity for programming topics</rule>
+                    <rule>Programming education benefits from strategic humor - use it actively</rule>
+                    <rule>When topic is CSS, JavaScript, regex, or debugging - meme inclusion is expected</rule>
+                </quality_over_restriction>
+            </strategic_meme_usage>
         </selective_mermaid_usage>
         
         <comprehensive_mermaid_patterns>
@@ -2134,6 +2192,12 @@ let isActive: boolean = true;</value>
                     <note>Only use in full-width templates</note>
                 </answer>
                 
+                <answer value="Strategic humor or memory anchor for developer experiences">
+                    <content_type>meme</content_type>
+                    <required_props>type, query</required_props>
+                    <note>USE for developer frustrations, confusing concepts, debugging pain, CSS struggles</note>
+                </answer>
+                
                 <answer value="Simple stack/queue data structure (RARE)">
                     <content_type>ascii-art</content_type>
                     <required_props>type, value</required_props>
@@ -2158,9 +2222,10 @@ let isActive: boolean = true;</value>
                 <priority level="2">code - for any programming syntax</priority>
                 <priority level="3">list - for features, benefits, or enumerations</priority>
                 <priority level="4">text - for explanatory content</priority>
-                <priority level="5">highlight-box - for emphasis</priority>
-                <priority level="6">latex - for mathematical formulas only</priority>
-                <priority level="7">ascii-art - ONLY as absolute last resort</priority>
+                <priority level="5">meme - for developer frustrations, transitions, and memory anchors</priority>
+                <priority level="6">highlight-box - for emphasis</priority>
+                <priority level="7">latex - for mathematical formulas only</priority>
+                <priority level="8">ascii-art - ONLY as absolute last resort</priority>
             </content_priority_order>
         </content_type_decision_matrix>
     </content_type_rules>
@@ -2208,7 +2273,7 @@ let isActive: boolean = true;</value>
                         "codeBlock": {
                           "type": "code",
                           "language": "typescript",
-                          "value": "function greet(name: string): string {\n  return Hello, {name}!;\n}\n\nfunction add(a: number, b: number): number {\n  return a + b;\n}",
+                          "value": "function greet(name: string): string {\n  return Hello, { name } !;\n}\n\nfunction add(a: number, b: number): number {\n  return a + b;\n}",
                           "comment": "Type annotations ensure parameter and return type safety"
                         },
                         "explanation": {
@@ -2301,12 +2366,13 @@ let isActive: boolean = true;</value>
     <decision_process>
         <step number="1">Check slide position for template overrides (hero for first, summary for last)</step>
         <step number="2">Analyze narration for content indicators (code, examples, comparisons)</step>
-        <step number="3">Apply content-based template selection rules</step>
-        <step number="4">Extract key concepts - transform, don't copy narration</step>
-        <step number="5">Choose appropriate content types based on information type</step>
-        <step number="6">Only add mermaid if it genuinely improves understanding</step>
-        <step number="7">Ensure code content uses "code" type with proper language</step>
-        <step number="8">Validate all syntax and structure before output</step>
+        <step number="3">CHECK: Is this a mandatory meme topic? (CSS, JavaScript, regex, debugging)</step>
+        <step number="4">Apply content-based template selection rules</step>
+        <step number="5">Extract key concepts - transform, don't copy narration</step>
+        <step number="6">Choose appropriate content types based on information type</step>
+        <step number="7">MANDATORY: Include meme for required topics (CSS, JS, regex, debugging)</step>
+        <step number="8">Ensure code content uses "code" type with proper language</step>
+        <step number="9">Validate all syntax and structure before output</step>
     </decision_process>
     
     <prohibited_actions>
@@ -2314,6 +2380,7 @@ let isActive: boolean = true;</value>
         <action>NEVER default to concept template without considering other options</action>
         <action>NEVER add mermaid diagrams for simple lists or basic concepts</action>
         <action>NEVER use ascii-art unless absolutely no other option exists</action>
+        <action>NEVER skip memes for mandatory meme topics (CSS, JavaScript, regex, debugging)</action>
         <action>NEVER use "text" type for programming syntax or code</action>
         <action>NEVER use concept template for first slide (always use hero)</action>
         <action>NEVER use LaTeX in split-layout templates (two-column, comparison)</action>
@@ -2322,6 +2389,7 @@ let isActive: boolean = true;</value>
         <action>NEVER omit language specification for code content</action>
         <action>NEVER use ascii-art for processes that can be mermaid diagrams</action>
         <action>NEVER use ascii-art for system architecture or workflows</action>
+        <action>NEVER use generic or outdated meme references</action>
     </prohibited_actions>
     
     <quality_validation>
@@ -2346,6 +2414,8 @@ let isActive: boolean = true;</value>
             <check>Are list items concise and scannable (1-8 items max)?</check>
             <check>Is ascii-art being used unnecessarily? (Could this be mermaid, code, or list instead?)</check>
             <check>Are processes shown with mermaid instead of ascii-art?</check>
+            <check>MANDATORY: If topic is CSS, JavaScript, regex, or debugging - did you include a meme?</check>
+            <check>For programming topics, is there at least one meme in the presentation?</check>
         </technical_validation_check>
     </quality_validation>
     
@@ -2368,7 +2438,8 @@ let isActive: boolean = true;</value>
             <requirement>Test template choice against content type</requirement>
         </requirements>
     </output_format>
-</slide_generator>`
+</slide_generator>
+`
 
   }
 }

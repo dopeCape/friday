@@ -132,7 +132,17 @@ export function getDefaultVideoService() {
   const redisService = getDefaultRedisService();
   const screenShotService = getDefaultScreenshotService();
   const ffmpegService = getDefaultFFMPEGService();
-  return VideoService.getInstance(logger, vectorDbService, llmService, ttsService, redisService, screenShotService, ffmpegService);
+  const memeProvider = getDefaultMemeProvider()
+  return VideoService.getInstance(
+    logger,
+    vectorDbService,
+    llmService,
+    ttsService,
+    redisService,
+    screenShotService,
+    ffmpegService,
+    memeProvider
+  );
 }
 
 export function getDefaultScreenshotService() {
