@@ -1,4 +1,4 @@
-import { getDefaultCourseService, getDefaultFFMPEGService, getDefaultFileService, getDefaultLLMService, getDefaultMemeProvider, getDefaultScreenshotService, getDefaultSearchService, getDefaultVideoService } from "@/config/defaults";
+import { getDefaultCourseService, getDefaultFFMPEGService, getDefaultFileService, getDefaultLLMService, getDefaultLogger, getDefaultMemeProvider, getDefaultScreenshotService, getDefaultSearchService, getDefaultVideoService } from "@/config/defaults";
 import env from "@/config/env.config";
 import dbConnect from "@/config/mongodb.config";
 import { NewCourse } from "@/types";
@@ -24,8 +24,6 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const vs = getDefaultVideoService();
-  const path = await vs.generateVideo("functional Components in react", { lang: "typescript" });
-
+  const path = await vs.generateVideo("Borrow checker in rust", { lang: "rust" });
   return NextResponse.json(path);
 }
-

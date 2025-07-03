@@ -74,7 +74,7 @@ export class Logger {
   );
 
   private constructor() {
-    const environment = env.NODE_ENV;
+    const environment = env.APP_ENV;
     this.contextStore = ContextStore.getInstance();
 
     const consoleTransport = new transports.Console({
@@ -82,6 +82,8 @@ export class Logger {
     });
 
     const winstonTransports: transport[] = [consoleTransport];
+
+
     //TODO: configer logger to push debug logs only when the env is development
     if (environment === "production" || environment === "staging") {
       const axiomTransport = new AxiomTransport({

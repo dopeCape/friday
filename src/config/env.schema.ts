@@ -8,7 +8,11 @@ const envSchema = {
   NODE_ENV: {
     type: "enum" as const,
     required: true,
-    default: "development",
+    enum: ["development", "production", "test", "staging"],
+  },
+  APP_ENV: {
+    type: "enum" as const,
+    required: true,
     enum: ["development", "production", "test", "staging"],
   },
   AXIOM_TOKEN: {

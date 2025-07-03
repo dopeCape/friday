@@ -35,9 +35,9 @@ export default class ScreenshotService {
         }
       );
       const page = await browser.newPage();
-      await page.goto(url);
+      await page.goto(url, { timeout: 100_000 });
       await page.setViewport({ width: 1920, height: 1080 });
-      await page.waitForSelector("#rendered")
+      await page.waitForSelector("#rendered", { timeout: 100_000 });
       const buffer = await page.screenshot();
       const path = await this.fileService.saveFile(buffer, this.getDirectoryPath(videoId), "png");
       await browser.close();
