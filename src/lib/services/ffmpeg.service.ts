@@ -3,6 +3,19 @@ import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
 import ffmpeg from 'fluent-ffmpeg';
 import path from 'path';
 import fs from 'fs';
+interface HLSConversionOptions {
+  inputPath: string;
+  outputDir: string;
+  playlistName: string;
+  segmentDuration?: number;
+  segmentPrefix?: string;
+  videoCodec?: string;
+  audioCodec?: string;
+  videoBitrate?: string;
+  audioBitrate?: string;
+  resolution?: string;
+  hlsFlags?: string[];
+}
 
 interface VideoCreationOptions {
   imagePath: string;
@@ -389,6 +402,215 @@ export default class FFMPEGService {
         })
         .run();
     });
+  }
+
+
+  /**
+   * Converts an MP4 video to HLS format with segmented chunks
+   * Creates a master playlist (.m3u8) and segment files (.ts)
+   * @param options Configuration options for HLS conversion
+   * @returns Promise that resolves with the playlist path when conversion is complete
+   */
+  async convertToHLS(options: HLSConversionOptions): Promise<string> {
+    const {
+      inputPath,
+      outputDir,
+      playlistName = 'playlist.m3u8',
+      segmentDuration = 10,
+      segmentPrefix = 'segment',
+      videoCodec = 'libx264',
+      audioCodec = 'aac',
+      videoBitrate = '2000k',
+      audioBitrate = '128k',
+      resolution,
+      hlsFlags = ['hls_time', 'hls_playlist_type=vod', 'hls_segment_filename']
+    } = options;
+
+    const playlistPath = path.join(outputDir, playlistName);
+    const segmentPattern = path.join(outputDir, `${segmentPrefix}_%03d.ts`);
+
+    try {
+      this.logger.info('Starting MP4 to HLS conversion', {
+        inputPath,
+        outputDir,
+        playlistPath,
+        segmentDuration,
+        segmentPrefix
+      });
+
+      // Validate input file
+      if (!fs.existsSync(inputPath)) {
+        throw new Error(`Input MP4 file not found: ${inputPath}`);
+      }
+
+      try {
+        await fs.promises.access(inputPath, fs.constants.R_OK);
+      } catch (error) {
+        throw new Error(`Cannot read input file: ${inputPath}`);
+      }
+
+      await this.ensureOutputDirectory(playlistPath);
+
+      // Get input video information for logging
+      let inputInfo;
+      try {
+        inputInfo = await this.getMediaInfo(inputPath);
+        this.logger.info('Input video information', {
+          duration: inputInfo.format?.duration || 'unknown',
+          size: inputInfo.format?.size || 'unknown',
+          videoStreams: inputInfo.streams?.filter(s => s.codec_type === 'video').length || 0,
+          audioStreams: inputInfo.streams?.filter(s => s.codec_type === 'audio').length || 0
+        });
+      } catch (error) {
+        this.logger.warn('Could not get input video info', { error: error.message });
+      }
+
+      // Calculate estimated number of segments
+      const estimatedDuration = inputInfo?.format?.duration || 0;
+      const estimatedSegments = Math.ceil(estimatedDuration / segmentDuration);
+      this.logger.info(`Estimated ${estimatedSegments} segments of ${segmentDuration}s each`);
+
+      // Execute HLS conversion
+      const result = await this.executeHLSConversion({
+        inputPath,
+        playlistPath,
+        segmentPattern,
+        segmentDuration,
+        videoCodec,
+        audioCodec,
+        videoBitrate,
+        audioBitrate,
+        resolution,
+        hlsFlags
+      });
+
+      // Verify output files were created
+      if (!fs.existsSync(playlistPath)) {
+        throw new Error('HLS playlist was not created');
+      }
+
+      // Count actual segments created
+      const segmentFiles = fs.readdirSync(outputDir)
+        .filter(file => file.startsWith(segmentPrefix) && file.endsWith('.ts'));
+
+      this.logger.info('HLS conversion completed successfully', {
+        playlistPath,
+        segmentsCreated: segmentFiles.length,
+        estimatedSegments,
+        outputDir
+      });
+
+      return playlistPath;
+
+    } catch (error) {
+      const handledError = this.errorHandler.handleError(error, {
+        context: 'FFMPEGService.convertToHLS',
+        metadata: { inputPath, outputDir, playlistPath }
+      });
+      throw handledError;
+    }
+  }
+
+  /**
+   * Executes the FFmpeg command for HLS conversion
+   */
+  private async executeHLSConversion(options: {
+    inputPath: string;
+    playlistPath: string;
+    segmentPattern: string;
+    segmentDuration: number;
+    videoCodec: string;
+    audioCodec: string;
+    videoBitrate: string;
+    audioBitrate: string;
+    resolution?: string;
+    hlsFlags: string[];
+  }): Promise<string> {
+    const {
+      inputPath,
+      playlistPath,
+      segmentPattern,
+      segmentDuration,
+      videoCodec,
+      audioCodec,
+      videoBitrate,
+      audioBitrate,
+      resolution,
+      hlsFlags
+    } = options;
+
+    return new Promise((resolve, reject) => {
+      const ffmpegCommand = ffmpeg()
+        .input(inputPath)
+        .videoCodec(videoCodec)
+        .audioCodec(audioCodec)
+        .videoBitrate(videoBitrate)
+        .audioBitrate(audioBitrate);
+
+      // Add resolution scaling if specified
+      if (resolution) {
+        ffmpegCommand.size(resolution);
+      }
+
+      // Configure HLS-specific options
+      const outputOptions = [
+        '-f hls',                                    // Force HLS format
+        `-hls_time ${segmentDuration}`,             // Segment duration
+        `-hls_segment_filename ${segmentPattern}`,   // Segment file pattern
+        '-hls_playlist_type vod',                   // Video on demand playlist
+        '-pix_fmt yuv420p',                         // Ensure compatibility
+        '-preset fast',                             // Encoding speed vs quality
+        '-movflags +faststart'                      // Optimize for streaming
+      ];
+
+      // Add any additional HLS flags
+      hlsFlags.forEach(flag => {
+        if (!outputOptions.some(opt => opt.includes(flag.split('=')[0]))) {
+          outputOptions.push(`-${flag}`);
+        }
+      });
+
+      ffmpegCommand
+        .outputOptions(outputOptions)
+        .output(playlistPath)
+        .on('start', (commandLine) => {
+          this.logger.info('FFmpeg HLS conversion started', { commandLine });
+        })
+        .on('progress', (progress) => {
+          const percent = Math.round(progress.percent || 0);
+          const timemarkSeconds = this.parseTimemark(progress.timemark);
+          this.logger.debug(`HLS conversion progress: ${percent}% (${progress.timemark})`);
+        })
+        .on('end', () => {
+          this.logger.info('FFmpeg HLS conversion completed successfully');
+          resolve(playlistPath);
+        })
+        .on('error', (err, stdout, stderr) => {
+          this.logger.error('FFmpeg HLS conversion failed', {
+            error: err.message,
+            stderr,
+            stdout
+          });
+          reject(new Error(`FFmpeg HLS conversion failed: ${err.message}`));
+        })
+        .run();
+    });
+  }
+
+  /**
+   * Helper method to parse FFmpeg timemark into seconds
+   */
+  private parseTimemark(timemark: string): number {
+    if (!timemark) return 0;
+
+    const parts = timemark.split(':');
+    if (parts.length !== 3) return 0;
+
+    const hours = parseInt(parts[0]) || 0;
+    const minutes = parseInt(parts[1]) || 0;
+    const seconds = parseFloat(parts[2]) || 0;
+
+    return hours * 3600 + minutes * 60 + seconds;
   }
 
   /**

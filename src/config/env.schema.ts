@@ -107,7 +107,24 @@ const envSchema = {
     type: "string" as const,
     required: true,
 
-  }
+  },
+  BUCKET_ACCESS_KEY_ID: {
+    type: "string" as const,
+    required: true,
+  },
+  BUCKET_ACCESS_KEY_SECRET: {
+    type: "string" as const,
+    required: true,
+  },
+  BUCKET_URI: {
+    type: "string" as const,
+    required: true,
+  },
+  BUCKET_NAME: {
+    type: "string" as const,
+    required: true,
+  },
+
   // GEMINI_API_KEY: {
   //   type: "string" as const,
   //   required: true,

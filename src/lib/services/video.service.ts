@@ -14,15 +14,17 @@ import RedisService from "./redis.service";
 import ScreenshotService from "./screenshot.service";
 import FFMPEGService from "./ffmpeg.service";
 import MemeProvider from "../providers/meme.provider";
+import BlobService from "./blob.service";
 
 // Get video from vector store -- done
 // rank if -- done 
 // generate if not found
 //  - generate script in chunk. -- done
-//  - generate a uuid for video use that as dir name, inside that create audios , vidoes and outputs
-//  - generate slide + generate voice (//)
-//  - stitch audio to slid
-//  - stick all the slides together  
+//  - generate a uuid for video use that as dir name, inside that create audios , vidoes and outputs --done
+//  - generate slide + generate voice (//) -- done
+//  - stitch audio to slid - done
+//  - stick all the slides together   -- done
+//  - convert to hls 
 //
 // save to vector store
 
@@ -34,7 +36,9 @@ export default class VideoService {
   private renderPagePath = "sxzy";
   private llmService: LLMService;
   private ttsService: TTSService;
+  private blobService: BlobService;
   private screenShotService: ScreenshotService;
+  private ouptputFixedPath = "output.mp4";
   private redisService: RedisService;
   private ffmpegService: FFMPEGService;
   private memeProvider: MemeProvider
@@ -52,7 +56,8 @@ export default class VideoService {
     redisService: RedisService,
     screenShotService: ScreenshotService,
     ffmpegService: FFMPEGService,
-    memeProvider: MemeProvider
+    memeProvider: MemeProvider,
+    blobService: BlobService
   ) {
     this.logger = logger;
     this.errorHandler = new CentralErrorHandler(logger);
@@ -63,6 +68,7 @@ export default class VideoService {
     this.screenShotService = screenShotService;
     this.ffmpegService = ffmpegService
     this.memeProvider = memeProvider
+    this.blobService = blobService;
   }
   public static getInstance(
     logger: Logger,
@@ -72,10 +78,11 @@ export default class VideoService {
     redisService: RedisService,
     screenShotService: ScreenshotService,
     ffmpegService: FFMPEGService,
-    memeProvider: MemeProvider
+    memeProvider: MemeProvider,
+    blobService: BlobService
   ) {
     if (!this.instance) {
-      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService, memeProvider);
+      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService, memeProvider, blobService);
     }
     return this.instance;
   }
@@ -84,13 +91,17 @@ export default class VideoService {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Getting video from vector store", { query, opts })
       const results = await this.vectorDb.topK(query, this.TOP_K, { ...this.VIDEO_STORE_OPTS, includeMetadata: true });
-      const videoFromDb = results[0].metadata
-      const isValidVideo = await this.checkIfVideoIsValidForQuery(query, videoFromDb);
+      const videoFromDb = results[0]?.metadata
+      const isValidVideo = videoFromDb && await this.checkIfVideoIsValidForQuery(query, opts, videoFromDb);
       if (isValidVideo) {
         return {
           title: videoFromDb.title,
           url: videoFromDb.url
         };
+      }
+      const videoData = await this.generateVideo(query, opts);
+      return {
+        url: videoData
       }
     }, {
       method: "getVideo",
@@ -98,16 +109,36 @@ export default class VideoService {
     });
   }
   //TODO:add metadata type to video data.
-  private getValidationPrompt(query: string, videoData: any) {
+  private getValidationPrompt(query: string, opts: VideoOpts, videoData: any) {
     return `${PromptProvider.getVideoValidatorPrompt()}
-# Query: ${query}
+# Query: ${query},
+# User Config: ${Object.keys(opts).map((key) => {
+      return `require ${key}:${opts[key]}\n`
+    })}
+
 # Video data: ${Object.keys(videoData).map((key) => {
       return `${key}:${videoData[key]}\n`
     })}
 `
   }
-  private getVideoScriptGenerationPrompt(query: string) {
-    return [new SystemMessage(PromptProvider.getVideoScriptPrompt()), new HumanMessage(`Video topic:${query}`)]
+  private getVideoScriptGenerationPrompt(query: string, lang?: string) {
+    return [new SystemMessage(PromptProvider.getVideoScriptPrompt()), new HumanMessage(`Video topic:${query}, programing language specified:${lang}`)]
+  }
+  private storeToVectorDB(videoId: string, videoTitle: string, videoDescription: string, videoUrl: string, language?: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Storing video to vector store", { videoId, videoTitle, videoDescription, videoUrl });
+      await this.vectorDb.save(videoDescription, videoId, {
+        title: videoTitle,
+        url: videoUrl,
+        language,
+        description: videoDescription
+      }, {
+        ...this.VIDEO_STORE_OPTS
+      });
+    }, {
+      service: "VideoService",
+      method: "storeToVectorDB"
+    })
   }
 
   public async generateVideo(query: string, opts: VideoOpts) {
@@ -115,28 +146,41 @@ export default class VideoService {
       this.logger.info("generating video for query ", { query, opts });
       // generate video id.
       const videoId = v4();
-
       // get script.
-      const scriptData = await this.generateVideoScript(query);
+      const scriptData = await this.generateVideoScript(query, opts.lang);
       // then in parrerl generate slide and audio.
       const slidesAndAudio = await this.generateAudioAndSlides(query, scriptData.scripts, videoId);
-
       // stitch up slide and audio.
       const videoChunks = await this.stichUpImgaeToAudios(slidesAndAudio, videoId);
       // stitch up all the video chunks together.
       const video = await this.ffmpegService.stitchVideos({
         videoPaths: videoChunks,
-        outputPath: `${this.tempDir}/${videoId}/output.mp4`
+        outputPath: `${this.tempDir}/${videoId}/${this.ouptputFixedPath}`
       })
-      return video;
-      // convert to hls.
-      // upload to r2.
+      const hlsData = await this.convertToHls(videoId);
+      // upload to bucket.
+      await this.pushToBlob(hlsData.dirPath, videoId);
+      const playlistPath = `${env.BUCKET_URI}/${env.BUCKET_NAME}/${videoId}/playlist.m3u8`
       // save to vector store.
+      await this.storeToVectorDB(videoId, scriptData.title, scriptData.description, playlistPath, opts.lang);
       // clean up the video directory.
+      return playlistPath;
     }, {
       service: "VideoService",
       method: "generateVideo"
     })
+  }
+  private async pushToBlob(path: string, videoId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("pushing video to blob", { path, videoId });
+      const bucketName = env.BUCKET_NAME;
+      return this.blobService.uploadFolder(path, bucketName, videoId);
+    }, {
+      service: "VideoService",
+      method: "pushToBlob"
+
+    })
+
   }
 
   private async generateAudioAndSlides(query: string, scripts: string[], videoId: string) {
@@ -158,10 +202,10 @@ export default class VideoService {
     })
   }
 
-  public async generateVideoScript(query: string) {
+  public async generateVideoScript(query: string, lang?: string) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating script for provide query ", { query });
-      const response = await this.llmService.structuredResponseWithFallback(this.getVideoScriptGenerationPrompt(query), videoScriptGenerationSchema, {
+      const response = await this.llmService.structuredResponseWithFallback(this.getVideoScriptGenerationPrompt(query, lang), videoScriptGenerationSchema, {
         model: "o3",
         provider: "openai"
       })
@@ -173,14 +217,14 @@ export default class VideoService {
     })
   }
 
-  private async checkIfVideoIsValidForQuery(query: string, videoData: any): Promise<boolean> {
+  private async checkIfVideoIsValidForQuery(query: string, opts: VideoOpts, videoData: any): Promise<boolean> {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Checking if video is valid for query")
       const schema = z.object({
         reason: z.string().describe("Reason of why this video is valid for the query"),
         is_valid: z.boolean().describe("Is this video valid for the query")
       })
-      const prompt = this.getValidationPrompt(query, videoData);
+      const prompt = this.getValidationPrompt(query, opts, videoData);
       const response = await this.llmService.structuredResponse(prompt, schema, {
         model: "gpt-4.1-mini",
         provider: "openai"
@@ -258,6 +302,23 @@ current slide nurration: ${narrations[index]},
       method: "attachMeme"
     })
 
+  }
+
+  private async convertToHls(videoId: string) {
+    return this.errorHandler.handleError(async () => {
+      const outputPath = `${this.tempDir}/${videoId}/hls`;
+      const videoPath = `${this.tempDir}/${videoId}/${this.ouptputFixedPath}`
+      const hlsPath = await this.ffmpegService.convertToHLS({
+        inputPath: videoPath,
+        outputDir: outputPath,
+        playlistName: `playlist.m3u8`
+
+      });
+      return { dirPath: outputPath, videoUrl: hlsPath };
+    }, {
+      service: "VideoService",
+      method: "convertToHls"
+    })
   }
   private async stichUpImgaeToAudios(slideData: { slide: string, audio: string }[], videoId: string) {
     return this.errorHandler.handleError(async () => {

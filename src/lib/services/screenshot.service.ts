@@ -200,14 +200,15 @@ export default class ScreenshotService {
 
       const buffer = await page.screenshot({
         fullPage: false,
-        type: 'png',
+        type: 'jpeg',
+        quality: 80,
         omitBackground: false
       });
 
       const path = await this.fileService.saveFile(
         buffer,
         this.getDirectoryPath(videoId),
-        "png"
+        "jpeg"
       );
 
       await browser.close();

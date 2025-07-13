@@ -24,7 +24,7 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const vs = getDefaultVideoService();
-  const path = await vs.generateVideo("CSS Positioning Fundamentals - explain the differences between absolute, relative, and fixed positioning, show how they interact with the document flow, and demonstrate practical examples of when to use each approach", { lang: "rust" });
+  const path = await vs.getVideo("Stacks data structure explained", { lang: "python" });
   return NextResponse.json(path);
 };
 

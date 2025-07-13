@@ -6,6 +6,7 @@ import CourseRepository from "@/lib/repository/mongoose/course.mongoose.reposito
 import { ModuleRepository } from "@/lib/repository/mongoose/module.mongoose.repository";
 import { QuizRepository } from "@/lib/repository/mongoose/quiz.mongoose.repository";
 import UserRepository from "@/lib/repository/mongoose/user.mongoose.repository";
+import BlobService from "@/lib/services/blob.service";
 import ChapterService from "@/lib/services/chapter.service";
 import CourseService from "@/lib/services/course.service";
 import EmbeddingService from "@/lib/services/embedding.service";
@@ -133,6 +134,7 @@ export function getDefaultVideoService() {
   const screenShotService = getDefaultScreenshotService();
   const ffmpegService = getDefaultFFMPEGService();
   const memeProvider = getDefaultMemeProvider()
+  const blobService = getDefaultBlobService();
   return VideoService.getInstance(
     logger,
     vectorDbService,
@@ -141,7 +143,8 @@ export function getDefaultVideoService() {
     redisService,
     screenShotService,
     ffmpegService,
-    memeProvider
+    memeProvider,
+    blobService
   );
 }
 
@@ -157,6 +160,11 @@ export function getDefaultFFMPEGService() {
   const logger = getDefaultLogger();
   const ffmpegService = FFMPEGService.getInstance(logger);
   return ffmpegService;
+}
+
+export function getDefaultBlobService() {
+  const logger = getDefaultLogger()
+  return BlobService.getInstance(logger)
 }
 
 export function getDefaultRedisService() {

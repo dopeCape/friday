@@ -3,6 +3,7 @@ import { z } from "zod";
 export const videoScriptGenerationSchema = z.object({
   scripts: z.array(z.string()).describe("Script chuncked per slide"),
   title: z.string().describe("Title for video"),
+  description: z.string().describe("Description for video, what has been taught, what language has been used if any, evry thing to semantically"),
 })
 
 const BaseContentSchema = z.object({
