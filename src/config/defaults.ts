@@ -112,7 +112,8 @@ export function getDefaultCourseService() {
   const moduleService = getDefaultModuleService();
   const llmService = getDefaultLLMService();
   const iconsProvider = getDefaultIconsProvider();
-  return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider);
+  const userService = getDefaultUserService()
+  return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider, userService);
 }
 export function getDefaultFileService() {
   const logger = getDefaultLogger();

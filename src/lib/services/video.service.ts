@@ -90,13 +90,20 @@ export default class VideoService {
   public async getVideo(query: string, opts: VideoOpts) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Getting video from vector store", { query, opts })
+
       const results = await this.vectorDb.topK(query, this.TOP_K, { ...this.VIDEO_STORE_OPTS, includeMetadata: true });
-      const videoFromDb = results[0]?.metadata
-      const isValidVideo = videoFromDb && await this.checkIfVideoIsValidForQuery(query, opts, videoFromDb);
-      if (isValidVideo) {
+
+      const videoDataFromDb = results.map(result => ({
+        title: result.metadata.title,
+        videoId: result.id,
+        videoUrl: result.metadata.url,
+        description: result.metadata.description
+      }));
+
+      const relevantVideo = await this.selectMostRelevantVideo(query, opts, videoDataFromDb);
+      if (relevantVideo) {
         return {
-          title: videoFromDb.title,
-          url: videoFromDb.url
+          url: relevantVideo.videoUrl,
         };
       }
       const videoData = await this.generateVideo(query, opts);
@@ -109,21 +116,37 @@ export default class VideoService {
     });
   }
   //TODO:add metadata type to video data.
-  private getValidationPrompt(query: string, opts: VideoOpts, videoData: any) {
+  private getValidationPrompt(query: string, opts: VideoOpts, videoData: { title: string, videoId: string, videoUrl: string, description: string }[]) {
     return `${PromptProvider.getVideoValidatorPrompt()}
-# Query: ${query},
-# User Config: ${Object.keys(opts).map((key) => {
-      return `require ${key}:${opts[key]}\n`
-    })}
 
-# Video data: ${Object.keys(videoData).map((key) => {
-      return `${key}:${videoData[key]}\n`
-    })}
-`
+<input_data>
+  <user_query>${query}</user_query>
+  <user_config>
+    ${Object.entries(opts).map(([key, value]) =>
+      `<requirement>
+        <type>${key}</type>
+        <value>${value}</value>
+      </requirement>`
+    ).join('\n    ')}
+  </user_config>
+  
+  <video_list>
+    ${videoData.map(video =>
+      `<video>
+        <id>${video.videoId}</id>
+        <title>${video.title}</title>
+        <url>${video.videoUrl}</url>
+        <description>${video.description}</description>
+      </video>`
+    ).join('\n    ')}
+  </video_list>
+</input_data>`
   }
+
   private getVideoScriptGenerationPrompt(query: string, lang?: string) {
     return [new SystemMessage(PromptProvider.getVideoScriptPrompt()), new HumanMessage(`Video topic:${query}, programing language specified:${lang}`)]
   }
+
   private storeToVectorDB(videoId: string, videoTitle: string, videoDescription: string, videoUrl: string, language?: string) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Storing video to vector store", { videoId, videoTitle, videoDescription, videoUrl });
@@ -217,22 +240,41 @@ export default class VideoService {
     })
   }
 
-  private async checkIfVideoIsValidForQuery(query: string, opts: VideoOpts, videoData: any): Promise<boolean> {
+  private async selectMostRelevantVideo(query: string, opts: VideoOpts, videoData: any[]): Promise<{ videoId: string; videoUrl: string; reason: string } | null> {
     return this.errorHandler.handleError(async () => {
-      this.logger.info("Checking if video is valid for query")
+      this.logger.info("Selecting most relevant video for query")
+
       const schema = z.object({
-        reason: z.string().describe("Reason of why this video is valid for the query"),
-        is_valid: z.boolean().describe("Is this video valid for the query")
+        video_id: z.string().describe("Selected video ID or NONE if no video is relevant"),
+        video_url: z.string().describe("Selected video URL or empty string if no video is relevant"),
+        reason: z.string().describe("Brief explanation of why this video was selected or why none were suitable")
       })
+
       const prompt = this.getValidationPrompt(query, opts, videoData);
       const response = await this.llmService.structuredResponse(prompt, schema, {
         model: "gpt-4.1-mini",
         provider: "openai"
       })
-      this.logger.info(`Verdict from llm \n query :${query}, isValid:${response.parsed.is_valid}, reason:${response.parsed.reason}`, { ...response.parsed })
-      return response.parsed.is_valid;
+
+      this.logger.info(`Video selection result\nQuery: ${query}\nSelected: ${response.parsed.video_id}\nURL: ${response.parsed.video_url}\nReason: ${response.parsed.reason}`, {
+        query,
+        selectedVideoId: response.parsed.video_id,
+        selectedVideoUrl: response.parsed.video_url,
+        reason: response.parsed.reason,
+        totalVideos: videoData.length
+      })
+
+      if (response.parsed.video_id === "NONE") {
+        return null;
+      }
+
+      return {
+        videoId: response.parsed.video_id,
+        videoUrl: response.parsed.video_url,
+        reason: response.parsed.reason
+      };
     }, {
-      method: "checkIfVideoIsValidForQuery",
+      method: "selectMostRelevantVideo",
       service: "VideoService"
     })
   }

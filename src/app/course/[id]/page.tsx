@@ -375,42 +375,43 @@ export default function Page({
   }
 
   return (
-    <div className="min-h-screen text-white relative overflow-hidden">
-      <MinimalElements />
-      <div className="min-h-screen flex">
-        <FridayContentArea
-          selectedModule={selectedModule}
-          selectedChapter={selectedChapter}
-          courseData={courseData}
-          isLoading={isLoading}
-          view={view}
-          navExpanded={navExpanded}
-          onSelectModule={handleSelectModule}
-          onSelectChapter={handleSelectChapter}
-          updateModuleStatus={updateModuleStatus}
-          updateChapterCompletion={updateChapterCompletion}
-          updateChapterStatus={updateChapterStatus}
-          updateNavigationState={updateNavigationState}
-        />
-        <CollapsibleCourseNav
-          courseData={courseData}
-          selectedModule={selectedModule}
-          selectedChapter={selectedChapter}
-          onSelectModule={handleSelectModule}
-          onSelectChapter={handleSelectChapter}
-          onSelectCourse={handleSelectCourse}
-          isExpanded={navExpanded}
-          onToggleExpand={() => setNavExpanded(!navExpanded)}
-        />
-      </div>
+    <AnimatePresence >
+      <div className="min-h-screen text-white relative overflow-hidden">
+        <MinimalElements />
+        <div className="min-h-screen flex">
+          <FridayContentArea
+            selectedModule={selectedModule}
+            selectedChapter={selectedChapter}
+            courseData={courseData}
+            isLoading={isLoading}
+            view={view}
+            navExpanded={navExpanded}
+            onSelectModule={handleSelectModule}
+            onSelectChapter={handleSelectChapter}
+            updateModuleStatus={updateModuleStatus}
+            updateChapterCompletion={updateChapterCompletion}
+            updateChapterStatus={updateChapterStatus}
+            updateNavigationState={updateNavigationState}
+          />
+          <CollapsibleCourseNav
+            courseData={courseData}
+            selectedModule={selectedModule}
+            selectedChapter={selectedChapter}
+            onSelectModule={handleSelectModule}
+            onSelectChapter={handleSelectChapter}
+            onSelectCourse={handleSelectCourse}
+            isExpanded={navExpanded}
+            onToggleExpand={() => setNavExpanded(!navExpanded)}
+          />
+        </div>
 
-      <AnimatePresence>
         {isLoading && (
           <EnhancedLoadingScreen
             onComplete={() => { }}
           />
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+
+    </AnimatePresence>
   );
 }

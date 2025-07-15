@@ -1141,7 +1141,7 @@ function ModuleContent({
               {chapters.map((chapter, chapterIndex) => (
                 <motion.div
                   key={chapter._id}
-                  className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-gray-800/20 transition-all duration-200 cursor-pointer group/chapter border-l-2 border-transparent hover:border-primary/30"
+                  className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-gray-800/20   cursor-pointer group/chapter border-l-2 border-transparent hover:border-primary/30"
                   variants={{
                     hidden: { opacity: 0, x: -15 },
                     visible: { opacity: 1, x: 0 }
@@ -1158,9 +1158,8 @@ function ModuleContent({
                       }`}
                     whileHover={{ scale: 1.3 }}
                   />
-
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-300 group-hover/chapter:text-white transition-colors duration-200 truncate">
+                    <p className="text-sm text-gray-300 group-hover/chapter:text-white  truncate">
                       {chapter.title}
                     </p>
                   </div>

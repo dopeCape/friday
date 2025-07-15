@@ -52,8 +52,6 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
       const isLastChapter = currentIndex === moduleChapters.length - 1;
 
       if (nextChapter && !nextChapter.isLocked && !isLastChapter) {
-        console.log('🔄 Direct navigation - next chapter already unlocked');
-
         updateNavigationState({
           completedChapterId: selectedChapter._id,
           newCurrentChapterId: nextChapter._id
@@ -70,7 +68,6 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
         return;
       }
 
-      console.log('📡 Making API call - chapter locked or module boundary');
       setNavigationLoading(true);
 
       const response = await fetch(`/api/course/${courseData.course._id}`, {
@@ -298,7 +295,7 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
               className="mb-40"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <div className="space-y-12">
                 <div className="space-y-8">
@@ -493,6 +490,7 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
           className={`flex-1 p-20 overflow-y-auto ${navExpanded ? 'pr-[416px]' : 'pr-20'}`}
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <div className="max-w-5xl mx-auto space-y-20">
             <div className="space-y-8">

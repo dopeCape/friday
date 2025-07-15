@@ -18,7 +18,7 @@ Generate a course outline that is EXTREMELY thorough and comprehensive. This wil
 ## Course Elements
 ### 1. Course Details
 - **Title**: Clear, concise title describing the course content
-- **Description**: Comprehensive overview of what the course covers (minimum 150 words)
+- **Description**: Comprehensive overview of what the course covers, also include the programing language for the course if any. (minimum 150 words)
 - **Technologies**: List of ALL technologies/frameworks/languages used, including prerequisites
 - **Difficulty Level**: "beginner", "intermediate", "advanced", or "expert"
 - **Prerequisites**: MINIMAL required knowledge or skills before taking this course
@@ -68,6 +68,7 @@ Carefully consider these aspects when designing the course:
 3. **Tech Stack Familiarity**:
    - Unless explicitly stated, assume minimal prior knowledge
    - ALWAYS include prerequisite technologies and concepts before advanced topics
+   - for topic that require a programing language but use haven't specified one (eg, system design, lld, hld, dsa etc) ,use one of language from there familar tech  or just python/javascript 
     `
   }
 
@@ -167,6 +168,7 @@ You will be provided with the following context:
 
 Ensure your content:
 - Is extremely thorough and comprehensive
+- Ensure that the code languatge to use has to be from the course context, if the course is not about a specific programming language, check the course description.
 - Aligns perfectly with the module title and surrounding modules
 - Follows a logical progression
 - Is appropriate for the course's overall difficulty level
@@ -491,6 +493,7 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 <chapter_requirements>
 <comprehensive_coverage>
 - Cover all key concepts and topics thoroughly
+- for the code block use the language that matches the topic, look into course description. 
 - Mix different content types strategically for engaging learning
 - Progress from basic concepts to practical applications
 - Include examples and hands-on demonstrations
@@ -1283,44 +1286,138 @@ Remember: Your goal is to create memes that are funny, relatable, and appropriat
 
   static getVideoValidatorPrompt() {
     return `
-# Video Validation Prompt
+<video_selection_prompt>
+  <role>
+    You are a video content selector. Your job is to find the most relevant video from a list of videos based on a user's query.
+  </role>
 
-You are a video content validator. Your job is to determine if a video is relevant to a user's query.
+  <input>
+    <user_query>The user's search request</user_query>
+    <video_list>
+      Array of videos, each containing:
+      <video_properties>
+        <id>Unique identifier</id>
+        <title>Video title</title>
+        <programming_language>Programming language (if applicable)</programming_language>
+        <description>Video description</description>
+      </video_properties>
+    </video_list>
+  </input>
 
-## Input
-- **User Query**: The user's search request
-- **Video Metadata**: Title, programming language, description, and other available metadata
+  <task>
+    Select the single most relevant video from the provided list that best matches the user's query. If no videos are sufficiently relevant, return no selection.
+  </task>
 
-## Task
-Determine if the video is contextually valid for the given query.
+  <evaluation_criteria>
+    <criterion>Topic relevance to the query</criterion>
+    <criterion>Programming language match (if specified in query)</criterion>
+    <criterion>Skill level appropriateness (beginner vs advanced)</criterion>
+    <criterion>Specificity match (exact concepts vs general topics)</criterion>
+    <criterion>Recency/currency of content (when determinable)</criterion>
+  </evaluation_criteria>
 
-## Evaluation
-Consider:
-- Does the video topic match the query?
-- Is the programming language correct (if specified)?
-- Would this video help answer the user's question?
+  <output_format>
+    <format>
+      <selection>
+        <video_id>[video_id or NONE]</video_id>
+        <reason>[Brief explanation in 1-2 sentences]</reason>
+      </selection>
+    </format>
+  </output_format>
 
-## Output Format
-Return only:
-VALID: true/false
-REASON: [Brief explanation in 1-2 sentences]
+  <examples>
+    <example>
+      <query>Python web scraping tutorial</query>
+      <videos>
+        <video>
+          <id>v1</id>
+          <title>Web Scraping with Python and BeautifulSoup</title>
+          <programming_language>Python</programming_language>
+          <description>Learn to scrape websites using Python's BeautifulSoup library</description>
+        </video>
+        <video>
+          <id>v2</id>
+          <title>JavaScript DOM Manipulation</title>
+          <programming_language>JavaScript</programming_language>
+          <description>Master DOM manipulation techniques in JavaScript</description>
+        </video>
+        <video>
+          <id>v3</id>
+          <title>Advanced Python Data Structures</title>
+          <programming_language>Python</programming_language>
+          <description>Deep dive into Python's advanced data structures</description>
+        </video>
+      </videos>
+      <expected_output>
+        <selection>
+          <video_id>v1</video_id>
+          <reason>Video directly matches both the Python language requirement and web scraping topic from the query.</reason>
+        </selection>
+      </expected_output>
+    </example>
 
-## Examples
+    <example>
+      <query>React useState hook</query>
+      <videos>
+        <video>
+          <id>v1</id>
+          <title>JavaScript Array Methods Explained</title>
+          <programming_language>JavaScript</programming_language>
+          <description>Complete guide to JavaScript array methods</description>
+        </video>
+        <video>
+          <id>v2</id>
+          <title>Vue.js Reactivity System</title>
+          <programming_language>JavaScript</programming_language>
+          <description>Understanding Vue's reactivity and state management</description>
+        </video>
+        <video>
+          <id>v3</id>
+          <title>Python Flask Tutorial</title>
+          <programming_language>Python</programming_language>
+          <description>Build web apps with Python Flask framework</description>
+        </video>
+      </videos>
+      <expected_output>
+        <selection>
+          <video_id>NONE</video_id>
+          <reason>No videos cover React hooks; available videos focus on different JavaScript frameworks or Python.</reason>
+        </selection>
+      </expected_output>
+    </example>
 
-**Query**: "Python web scraping tutorial"
-**Video**: "Web Scraping with Python and BeautifulSoup"
-VALID: true
-REASON: Video directly matches the query topic and programming language.
+    <example>
+      <query>machine learning basics</query>
+      <videos>
+        <video>
+          <id>v1</id>
+          <title>Advanced Deep Learning with PyTorch</title>
+          <programming_language>Python</programming_language>
+          <description>Complex neural networks and advanced ML techniques</description>
+        </video>
+        <video>
+          <id>v2</id>
+          <title>Introduction to Machine Learning Concepts</title>
+          <programming_language>Python</programming_language>
+          <description>Beginner-friendly overview of ML fundamentals and basic algorithms</description>
+        </video>
+        <video>
+          <id>v3</id>
+          <title>Statistical Analysis in R</title>
+          <programming_language>R</programming_language>
+          <description>Statistical methods and data analysis using R</description>
+        </video>
+      </videos>
+      <expected_output>
+        <selection>
+          <video_id>v2</video_id>
+          <reason>Video matches the beginner level implied by "basics" and covers ML fundamentals, unlike the advanced or unrelated alternatives.</reason>
+        </selection>
+      </expected_output>
+    </example>
+  </examples>
+</video_selection_prompt>
 
-**Query**: "React useState hook"
-**Video**: "JavaScript Array Methods Explained"
-VALID: false
-REASON: Video covers JavaScript arrays, not React hooks as requested.
-
-**Query**: "machine learning basics"
-**Video**: "Advanced Deep Learning with PyTorch"
-VALID: false
-REASON: Video is too advanced for someone looking for ML basics.
 
 `
 

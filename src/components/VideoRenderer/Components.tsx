@@ -101,6 +101,37 @@ const FridayCodeBlock = ({ content, language = 'text', comment }) => {
 const FridayMermaid = ({ chart }) => {
   const [svg, setSvg] = useState('');
   const [error, setError] = useState('');
+  const [fixAttempts, setFixAttempts] = useState(0);
+  const [currentChart, setCurrentChart] = useState(chart);
+
+  const fixMermaidDiagram = async (diagram: string) => {
+    try {
+      const response = await fetch('/api/fix/mermaid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ diagram }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to fix diagram:', response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+      return data.diagram || null;
+    } catch (err) {
+      console.error('Error fixing diagram:', err);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    // Reset fix attempts when chart prop changes
+    setFixAttempts(0);
+    setCurrentChart(chart);
+  }, [chart]);
 
   useEffect(() => {
     const renderChart = async () => {
@@ -140,22 +171,43 @@ const FridayMermaid = ({ chart }) => {
           fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
           fontSize: 14,
         });
+
         const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-        const { svg: renderedSvg } = await mermaid.render(diagramId, chart.trim());
+        const { svg: renderedSvg } = await mermaid.render(diagramId, currentChart.trim());
+
         setSvg(renderedSvg);
         setError('');
       } catch (err) {
-        setError('Failed to render diagram');
+        console.error('Mermaid render error:', err);
+
+        // Attempt to fix the diagram if we haven't exceeded max attempts
+        if (fixAttempts < 2) {
+          console.log(`Attempting to fix diagram (attempt ${fixAttempts + 1}/2)...`);
+
+          const fixedDiagram = await fixMermaidDiagram(currentChart);
+
+          if (fixedDiagram) {
+            // Update the fix attempts counter and current chart
+            setFixAttempts(prev => prev + 1);
+            setCurrentChart(fixedDiagram);
+            // The useEffect will re-run with the new currentChart
+            return;
+          }
+        }
+
+        // If we've exhausted all attempts or fix failed
+        const attemptText = fixAttempts > 0 ? ` after ${fixAttempts} fix attempt${fixAttempts > 1 ? 's' : ''}` : '';
+        setError(`Failed to render diagram${attemptText}`);
         setSvg('');
       }
     };
 
-    if (chart && chart.trim()) {
+    if (currentChart && currentChart.trim()) {
       renderChart();
     } else {
       setError('Empty diagram content');
     }
-  }, [chart]);
+  }, [currentChart, fixAttempts]);
 
   if (error) {
     return (

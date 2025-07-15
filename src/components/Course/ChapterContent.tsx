@@ -45,7 +45,7 @@ const ChapterContentRenderer: React.FC<ChapterContentRendererProps> = ({ chapter
               </FridayCodeBlock>
             )}
             {section.type === 'diagram' && (
-              <FridayMermaid chart={section.content} />
+              <FridayMermaid chart={section.content} contentId={section._id} chapterId={chapter._id} />
             )}
             {section.type === 'markdown-code' && (
               <FridayMarkdownCode language={section.codeBlockLanguage} content={section.content} />

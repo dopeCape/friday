@@ -460,4 +460,23 @@ Students should feel a sense of natural progression from the previous chapter an
       method: "updateChapter"
     });
   }
+
+  public async updateMermaidContent(chapterId: string, content: string, contentId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Updating mermaid content", { chapterId, content, contentId });
+      this.ChapterRepository.update({ _id: chapterId }, {
+        $set: {
+          "content.$[elem].content": content
+        }
+      },
+        {
+          arrayFilters: [{ "elem._id": contentId }],
+          new: true
+        });
+    }, {
+      service: "ChapterService",
+      method: "updateMermaidContent"
+    })
+
+  }
 }

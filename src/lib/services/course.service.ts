@@ -14,6 +14,7 @@ import {
 import ModuleService from "./module.service";
 import IconsProvider from "../providers/icons.provider";
 import { AppError } from "../errorHandler/appError";
+import UserService from "./user.service";
 
 export default class CourseService {
   private logger: Logger;
@@ -23,13 +24,15 @@ export default class CourseService {
   private llmService: LLMService;
   private moduleService: ModuleService;
   private iconProvider: IconsProvider
+  private userService: UserService
 
   private constructor(
     logger: Logger,
     courseRepository: CourseRepositoryType,
     moduleService: ModuleService,
     llmService: LLMService,
-    iconProvider: IconsProvider
+    iconProvider: IconsProvider,
+    userService: UserService,
   ) {
     this.logger = logger;
     this.courseRepository = courseRepository;
@@ -37,6 +40,7 @@ export default class CourseService {
     this.llmService = llmService;
     this.moduleService = moduleService;
     this.iconProvider = iconProvider
+    this.userService = userService
   }
 
   public static getInstance(
@@ -44,7 +48,8 @@ export default class CourseService {
     courseRepository: CourseRepositoryType,
     moduleService: ModuleService,
     llmService: LLMService,
-    iconProvider: IconsProvider
+    iconProvider: IconsProvider,
+    userService: UserService
   ) {
     if (!this.instance) {
       const courseService = new CourseService(
@@ -52,7 +57,8 @@ export default class CourseService {
         courseRepository,
         moduleService,
         llmService,
-        iconProvider
+        iconProvider,
+        userService
       );
       this.instance = courseService;
     }
@@ -91,14 +97,18 @@ export default class CourseService {
     return course
   }
 
-  private getCouseGenerationMessages(userQuery: string) {
+  private getCouseGenerationMessages(userQuery: string, userData: any) {
     const systemMessage = new SystemMessage(PromptProvider.getCourseStructureGenerationPrompt())
-    const userMessage = new HumanMessage(userQuery);
+    const userMessage = new HumanMessage(`
+<course_query>
+${userQuery}
+</course_query>
+
+`);
     return [systemMessage, userMessage]
   }
 
   private async findMatchingTemplate(courseGenerationResult: CourseGenreation) {
-    // Search for a matching template based on title and content similarity
     const existingTemplate = await this.courseRepository.get({
       createdBy: "template",
       title: courseGenerationResult.title,
@@ -145,9 +155,9 @@ export default class CourseService {
   public async createCourse(courseData: NewCourse) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating course", { courseData });
-
+      const userPreferences = await this.userService.getUserPreferences(courseData.userId)
       const courseGenerationResult = (await this.llmService.structuredResponse(
-        this.getCouseGenerationMessages(courseData.prompt),
+        this.getCouseGenerationMessages(courseData.prompt, userPreferences),
         courseGenerationSchema,
         {
           provider: "openai",

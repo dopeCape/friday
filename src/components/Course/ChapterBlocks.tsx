@@ -10,6 +10,8 @@ import 'katex/dist/katex.min.css';
 
 interface FridayMermaidProps {
   chart: string;
+  contentId: string;
+  chapterId: string
 }
 
 interface FridayCodeBlockProps {
@@ -109,17 +111,72 @@ const FridayCodeBlock: React.FC<FridayCodeBlockProps> = ({
   );
 };
 
-const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart }) => {
+const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart, contentId, chapterId }) => {
   const [svg, setSvg] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fixAttempts, setFixAttempts] = useState<number>(0);
+  const [currentChart, setCurrentChart] = useState<string>(chart);
+
+  const saveMermaidDiagram = async (fixedDiagram: string) => {
+    try {
+      await fetch(`/api/chapters/${chapterId}/mermaid`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contentId,
+          content: fixedDiagram
+        }),
+      });
+      // Fire and forget - no error handling needed
+    } catch (err) {
+      // Silently fail as requested
+      console.log('Failed to save fixed diagram, but continuing...');
+    }
+  };
+
+  const fixMermaidDiagram = async (diagram: string): Promise<string | null> => {
+    try {
+      const response = await fetch('/api/fix/mermaid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ diagram }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to fix diagram:', response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+      const fixedDiagram = data.data.diagram || null;
+
+      // If we got a fixed diagram, save it in the background
+      if (fixedDiagram) {
+        saveMermaidDiagram(fixedDiagram);
+      }
+
+      return fixedDiagram;
+    } catch (err) {
+      console.error('Error fixing diagram:', err);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    setFixAttempts(0);
+    setCurrentChart(chart);
+  }, [chart]);
 
   useEffect(() => {
     const renderChart = async () => {
       try {
         setIsLoading(true);
         setError('');
-
         mermaid.initialize({
           startOnLoad: false,
           theme: 'dark',
@@ -154,28 +211,37 @@ const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart }) => {
           },
           fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
           fontSize: 13,
-
         });
 
         const diagramId = `mermaid-diagram-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-        const { svg: renderedSvg } = await mermaid.render(diagramId, chart.trim());
+        const { svg: renderedSvg } = await mermaid.render(diagramId, currentChart.trim());
         setSvg(renderedSvg);
         setError('');
       } catch (err) {
-        setError(`Sorry we failed to render diagram.`);
+        console.error('Mermaid render error:', err);
+        if (fixAttempts < 2) {
+          console.log(`Attempting to fix diagram (attempt ${fixAttempts + 1}/2)...`);
+          const fixedDiagram = await fixMermaidDiagram(currentChart);
+          if (fixedDiagram) {
+            setFixAttempts(prev => prev + 1);
+            setCurrentChart(fixedDiagram);
+            return;
+          }
+        }
+        setError(`Sorry we failed to render diagram${fixAttempts > 0 ? ' after ' + fixAttempts + ' fix attempt' + (fixAttempts > 1 ? 's' : '') : ''}.`);
         setSvg('');
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (chart && chart.trim()) {
+    if (currentChart && currentChart.trim()) {
       renderChart();
     } else {
       setError('Empty diagram content');
       setIsLoading(false);
     }
-  }, [chart]);
+  }, [currentChart, fixAttempts]);
 
   if (isLoading) {
     return (
@@ -190,7 +256,9 @@ const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart }) => {
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
-          <p className="text-white/40 text-sm">Rendering diagram...</p>
+          <p className="text-white/40 text-sm">
+            {fixAttempts > 0 ? `Fixing and re-rendering diagram (attempt ${fixAttempts}/2)...` : 'Rendering diagram...'}
+          </p>
         </div>
       </motion.div>
     );
@@ -738,10 +806,12 @@ interface ContentBlock {
 interface FridayChapterContentProps {
   contentBlocks: ContentBlock[];
   className?: string;
+  chapterId: string;
 }
 
 const FridayChapterContent: React.FC<FridayChapterContentProps> = ({
   contentBlocks,
+  chapterId,
   className = ''
 }) => {
   return (
@@ -805,7 +875,7 @@ const FridayChapterContent: React.FC<FridayChapterContentProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
-                <FridayMermaid chart={block.content} />
+                <FridayMermaid chart={block.content} contentId={block._id} chapterId={chapterId} />
               </motion.div>
             );
 

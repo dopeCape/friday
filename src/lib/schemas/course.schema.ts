@@ -48,6 +48,7 @@ const chapterContentSchema = z.object({
   type: z.enum(["text", "code", "diagram", "markdown-code", "file-tree", "web-preview", "latex"]),
   content: z.string(),
   codeBlockLanguage: z.string().optional(),
+  _id: z.string().optional()
 });
 const chapterSchema = z.object({
   _id: z.string(),

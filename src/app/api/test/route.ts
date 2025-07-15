@@ -24,7 +24,7 @@ import { z } from "zod";
 
 export async function GET(req: Request) {
   const vs = getDefaultVideoService();
-  const path = await vs.getVideo("Stacks data structure explained", { lang: "python" });
+  const path = await vs.getVideo("Stacks data structure explained", { lang: "javascript" });
   return NextResponse.json(path);
 };
 

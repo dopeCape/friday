@@ -98,4 +98,18 @@ export default class UserService {
     })
   }
 
+  public async getUserPreferences(clerkId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Getting user preferences", { clerkId });
+      const user = await this.userRepository.get({ clerkId });
+      if (!user) {
+        throw new AppError(404, "User not found", "UserDoesNotExists");
+      }
+      return user.stats;
+    }, {
+      service: "UserService",
+      method: "getUserPreferences"
+    })
+  }
+
 }
