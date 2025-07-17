@@ -47,7 +47,6 @@ import { VideoOpts } from "./video.type"
 import { TTSOpts } from "./tts.type";
 type SessionClaims = {
   onboarded: boolean
-
 }
 export type {
   User, UserOs, UserLevel,
