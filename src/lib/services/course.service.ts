@@ -1,5 +1,5 @@
 import { CentralErrorHandler } from "../errorHandler/centralErrorHandler";
-import { Course, CourseGenreation, Logger, NewCourse } from "@/types";
+import { Chapter, Course, CourseGenreation, Logger, Module, NewCourse } from "@/types";
 import { CourseRepository as CourseRepositoryType } from "@/types";
 import LLMService from "./llm.service";
 import { PromptProvider } from "../providers/prompt.provider";
@@ -15,6 +15,9 @@ import ModuleService from "./module.service";
 import IconsProvider from "../providers/icons.provider";
 import { AppError } from "../errorHandler/appError";
 import UserService from "./user.service";
+import ChapterService from "./chapter.service";
+import RealtimeService from "./realtime.service";
+import z from "zod";
 
 export default class CourseService {
   private logger: Logger;
@@ -25,6 +28,10 @@ export default class CourseService {
   private moduleService: ModuleService;
   private iconProvider: IconsProvider
   private userService: UserService
+  private chapterService: ChapterService
+  private FIRST_N_CHAPTERS_TO_GENERATE = 3
+  private realtimeService: RealtimeService
+  private ATTACH_VIDEO_TO_FIRST_N_CHAPTERS = false
 
   private constructor(
     logger: Logger,
@@ -33,6 +40,8 @@ export default class CourseService {
     llmService: LLMService,
     iconProvider: IconsProvider,
     userService: UserService,
+    chapterService: ChapterService,
+    realtimeService: RealtimeService
   ) {
     this.logger = logger;
     this.courseRepository = courseRepository;
@@ -41,6 +50,8 @@ export default class CourseService {
     this.moduleService = moduleService;
     this.iconProvider = iconProvider
     this.userService = userService
+    this.chapterService = chapterService
+    this.realtimeService = realtimeService
   }
 
   public static getInstance(
@@ -49,7 +60,9 @@ export default class CourseService {
     moduleService: ModuleService,
     llmService: LLMService,
     iconProvider: IconsProvider,
-    userService: UserService
+    userService: UserService,
+    chapterService: ChapterService,
+    realtimeService: RealtimeService
   ) {
     if (!this.instance) {
       const courseService = new CourseService(
@@ -58,7 +71,9 @@ export default class CourseService {
         moduleService,
         llmService,
         iconProvider,
-        userService
+        userService,
+        chapterService,
+        realtimeService
       );
       this.instance = courseService;
     }
@@ -70,10 +85,9 @@ export default class CourseService {
     courseId: string,
     courseGenerationResult: CourseGenreation,
     moduleIds: string[],
+    icons: string[],
     isTemplate: boolean = false
   ) {
-    const iconQueries = courseGenerationResult.iconQuery.map(query => query.join(","));
-    const icons = await this.iconProvider.searchIconsBatch(iconQueries);
 
     const course: Course = {
       _id: courseId,
@@ -152,9 +166,27 @@ ${userQuery}
     });
   }
 
-  public async createCourse(courseData: NewCourse) {
+  private async pushToDataToUser(generationId: string, event: string, data: Record<string, any>) {
+    await this.realtimeService.pushToClient(generationId, event, data)
+  }
+
+  private async generateSyntheticThinking(generationId: string, query: string) {
+    const data = await this.llmService.structuredResponse(PromptProvider.getSyntheticThinkingPrompt(query), z.object({
+      thinking: z.array(z.object({
+        title: z.string().describe("Title of the block"),
+        content: z.string().describe("Content of the block, in markdown format"),
+      })
+      )
+    }), { provider: "openai", model: "gpt-4.1" })
+    await this.pushToDataToUser(generationId, "THINKING_STREAM", data.parsed);
+
+
+  }
+
+  public async createCourse(courseData: NewCourse & { generationId: string }) {
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating course", { courseData });
+      this.generateSyntheticThinking(courseData.generationId, courseData.prompt);
       const userPreferences = await this.userService.getUserPreferences(courseData.userId)
       const courseGenerationResult = (await this.llmService.structuredResponse(
         this.getCouseGenerationMessages(courseData.prompt, userPreferences),
@@ -164,12 +196,20 @@ ${userQuery}
           model: "o3",
         }
       )).parsed;
-
       this.logger.info("Generated course structure", { courseGenerationResult });
-
+      await this.pushToDataToUser(courseData.generationId, "COURSE_DATA", {
+        title: courseGenerationResult.title,
+        description: courseGenerationResult.description,
+        difficultyLevel: courseGenerationResult.difficultyLevel,
+        estimatedCompletionTime: courseGenerationResult.estimatedCompletionTime,
+        technologies: courseGenerationResult.technologies
+      })
+      const iconQueries = courseGenerationResult.iconQuery.map(query => query.join(","));
+      const icons = await this.iconProvider.searchIconsBatch(iconQueries);
+      await this.pushToDataToUser(courseData.generationId, "ICONS", icons);
       const courseId = new mongoose.Types.ObjectId().toString();
-      let modules, chapters;
-
+      let modules: Module[] = [];
+      let chapters: Chapter[] = [];
       if (!courseData.isPrivate) {
         const templateId = new mongoose.Types.ObjectId().toString();
         const templateResult = await this.moduleService.createModules(
@@ -183,6 +223,7 @@ ${userQuery}
           templateId,
           courseGenerationResult,
           templateResult.modules.map(module => module._id),
+          icons,
           true
         );
         await this.courseRepository.create(templateCourse);
@@ -198,19 +239,58 @@ ${userQuery}
         modules = result.modules;
         chapters = result.chapters;
       }
-
       const course = await this.getCourseFromGeneratedCourseData(
         courseData,
         courseId,
         courseGenerationResult,
-        modules.map(module => module._id)
+        modules.map(module => module._id),
+        icons
       );
+      await this.pushModulesToUser(courseData.generationId, modules)
+      const firstTwoChapters = modules[0].contents.slice(0, this.FIRST_N_CHAPTERS_TO_GENERATE);
       await this.courseRepository.create(course);
+      await this.generateNChapters(firstTwoChapters, this.ATTACH_VIDEO_TO_FIRST_N_CHAPTERS);
+      await this.pushToDataToUser(courseData.generationId, "COMPLETION", { courseId: course._id });
       return { course, modules, chapters };
     }, {
       service: "CourseService",
       method: "createCourse"
     });
+  }
+
+  private async pushModulesToUser(generationId: string, modules: Module[]) {
+    const modulesToPush: {
+      title: string,
+      icon: string,
+      description: string,
+      chapters: number,
+      duration: string,
+      difficulty: string,
+    }[] = modules.map(module => ({
+      title: module.title,
+      icon: module.icon,
+      description: `${module.description.slice(0, 100)}  ...`,
+      chapters: module.contents.length,
+      duration: module.estimatedCompletionTime.toString(),
+      difficulty: module.difficultyLevel,
+    }))
+    await this.pushToDataToUser(generationId, "MODULES", modulesToPush)
+  }
+
+  private async generateNChapters(chapterIds: string[], attachVideos: boolean) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("generating first N chapters ", {
+        chapterIds,
+        attachVideos
+      })
+      await Promise.all(chapterIds.map((chapterId) => this.chapterService.getChapterWithContent(chapterId, attachVideos)))
+      this.logger.info("generated first N chapters")
+    }, {
+      method: "generateNChapters",
+      service: "courseService"
+
+
+    })
   }
 
   public async getCourse(id: string) {

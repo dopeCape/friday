@@ -4,6 +4,8 @@ import { BaseErrorHandler } from "../errorHandler/baseErrorHandler";
 import { z, ZodDiscriminatedUnion, ZodObject, ZodUnion } from "zod";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { openai } from '@ai-sdk/openai';
+import { streamObject } from 'ai';
 import env from "@/config/env.config";
 
 type ZodToType<T extends ZodObject<any, any, any>> = z.infer<T>;
@@ -32,6 +34,30 @@ export default class LLMService {
     }
     return this.instance;
   }
+
+  async structuredResponseWithStream<T extends ZodObject<any, any, any> | ZodDiscriminatedUnion<any, any> | ZodUnion<any>>(input: string,
+    structure: T,
+    opts: LLMOpts,
+    array: boolean,
+  ) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Invoking structured response with stream", { input, structure, opts });
+      const model = this.getStreamableModel(opts);
+      const { partialObjectStream, } = streamObject({
+        model: model,
+        schema: structure,
+        prompt: input,
+        mode: "json",
+        output: array ? 'array' : null
+      });
+      return partialObjectStream;
+    }, {
+      service: "LLMService",
+      method: "structuredResponseWithStream"
+
+    })
+  }
+
 
   async structuredResponse<T extends ZodObject<any, any, any> | ZodDiscriminatedUnion<any, any> | ZodUnion<any>>(
     input: string | ConverstionType,
@@ -631,6 +657,18 @@ export default class LLMService {
       service: "LLMService",
       method: "parseRawResponse"
     });
+  }
+
+  private getStreamableModel(opts: LLMOpts) {
+    switch (opts.provider) {
+      case "openai":
+        return openai(opts.model, {
+        });
+      //TODO: impelment gemini stream model 
+      default:
+        throw new Error(`Unsupported provider: ${opts.provider}`);
+    }
+
   }
 
   private getModel(opts: LLMOpts) {

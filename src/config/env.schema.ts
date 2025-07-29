@@ -124,6 +124,29 @@ const envSchema = {
     type: "string" as const,
     required: true,
   },
+  PUSHER_APP_ID: {
+    type: "string" as const,
+    required: true,
+
+  },
+  PUSHER_APP_KEY: {
+    type: "string" as const,
+    required: true,
+
+  },
+  PUSHER_SECRET: {
+    type: "string" as const,
+    required: true,
+  },
+  PUSHER_CLUSTER: {
+    type: "string" as const,
+    required: true,
+  },
+  PUPPETEER_EXECUTABLE_PATH: {
+    type: "string" as const,
+    required: true,
+  }
+
 
   // GEMINI_API_KEY: {
   //   type: "string" as const,

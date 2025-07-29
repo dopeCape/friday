@@ -30,21 +30,27 @@ export default class ScreenshotService {
 
   private async waitForMermaidDiagrams(page: any) {
     try {
-      // Wait for all Mermaid diagrams to be rendered
       await page.evaluate(() => {
         return new Promise<void>((resolve) => {
           const checkMermaidReady = () => {
-            // Check if there are any Mermaid containers
             const mermaidContainers = document.querySelectorAll('[data-processed-by="mermaid"], .mermaid');
 
             if (mermaidContainers.length === 0) {
-              // No Mermaid diagrams, resolve immediately
               resolve();
               return;
             }
 
-            // Check if all Mermaid diagrams have SVG content
             const allRendered = Array.from(mermaidContainers).every(container => {
+              const isBeingFixed = container.getAttribute('data-mermaid-fixing') === 'true';
+              if (isBeingFixed) {
+                return false;
+              }
+
+              const hasFailed = container.getAttribute('data-mermaid-failed') === 'true';
+              if (hasFailed) {
+                return true;
+              }
+
               const svg = container.querySelector('svg');
               return svg && svg.children.length > 0;
             });
@@ -52,8 +58,7 @@ export default class ScreenshotService {
             if (allRendered) {
               resolve();
             } else {
-              // Check again in 100ms
-              setTimeout(checkMermaidReady, 100);
+              setTimeout(checkMermaidReady, 10000);
             }
           };
 
@@ -64,13 +69,11 @@ export default class ScreenshotService {
       this.logger.info('Mermaid diagrams rendered successfully');
     } catch (error) {
       this.logger.warn('Error waiting for Mermaid diagrams:', error);
-      // Continue anyway after warning
     }
   }
 
   private async waitForKatex(page: any) {
     try {
-      // Wait for KaTeX (LaTeX) to finish rendering
       await page.evaluate(() => {
         return new Promise<void>((resolve) => {
           const checkKatexReady = () => {
@@ -81,7 +84,6 @@ export default class ScreenshotService {
               return;
             }
 
-            // Check if all KaTeX elements have been processed
             const allRendered = Array.from(katexElements).every(element => {
               return !element.textContent?.includes('\\') && element.children.length > 0;
             });
@@ -102,6 +104,7 @@ export default class ScreenshotService {
       this.logger.warn('Error waiting for KaTeX:', error);
     }
   }
+
 
   private async waitForCodeHighlighting(page: any) {
     try {
@@ -138,13 +141,49 @@ export default class ScreenshotService {
     }
   }
 
+  private async waitForCodeScaling(page: any) {
+    try {
+      await page.evaluate(() => {
+        return new Promise<void>((resolve) => {
+          const checkScalingComplete = () => {
+            const codeBlocks = document.querySelectorAll('[data-code-block="true"]');
+
+            if (codeBlocks.length === 0) {
+              resolve();
+              return;
+            }
+
+            // Check if any code blocks are still calculating scale
+            const stillScaling = Array.from(codeBlocks).some(block => {
+              return block.getAttribute('data-code-scaling') === 'true';
+            });
+
+            if (!stillScaling) {
+              // All scaling calculations are done, wait a bit for visual settling
+              setTimeout(resolve, 200);
+            } else {
+              setTimeout(checkScalingComplete, 150);
+            }
+          };
+
+          checkScalingComplete();
+        });
+      });
+
+      this.logger.info('Code block scaling completed');
+    } catch (error) {
+      this.logger.warn('Error waiting for code scaling:', error);
+    }
+  }
+
+
   private async waitForAllContent(page: any) {
     try {
-      // Wait for all dynamic content to be ready
       await Promise.all([
         this.waitForMermaidDiagrams(page),
         this.waitForKatex(page),
-        this.waitForCodeHighlighting(page)
+        this.waitForCodeHighlighting(page),
+        this.waitForCodeScaling(page)
       ]);
 
       // Additional wait for any remaining async operations
@@ -163,7 +202,8 @@ export default class ScreenshotService {
   public async takeScreenshot(url: string, videoId: string) {
     return this.errorHandler.handleError(async () => {
       const browser = await puppeteer.launch({
-        executablePath: "/etc/profiles/per-user/baby/bin/brave",
+        //TODO: update this to work on trigger.dev
+        executablePath: env.PUPPETEER_EXECUTABLE_PATH,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -174,15 +214,12 @@ export default class ScreenshotService {
 
       const page = await browser.newPage();
 
-      // Set a longer timeout for complex pages
       page.setDefaultTimeout(120_000);
 
-      // Set viewport before navigation
       await page.setViewport({ width: 1920, height: 1080 });
 
       this.logger.info(`Navigating to URL: ${url}`);
 
-      // Navigate and wait for network to be mostly idle
       await page.goto(url, {
         timeout: 120_000,
         waitUntil: ['networkidle0', 'domcontentloaded']
@@ -222,7 +259,6 @@ export default class ScreenshotService {
     });
   }
 
-  // Optional: Method to take screenshot with custom wait conditions
   public async takeScreenshotWithCustomWait(
     url: string,
     videoId: string,

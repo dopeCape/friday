@@ -10,6 +10,8 @@ import {
 } from "@langchain/core/messages";
 import { ModuleRepository } from "../repository/mongoose/module.mongoose.repository";
 import CourseRepository from "../repository/mongoose/course.mongoose.repository";
+import VideoService from "./video.service";
+import RealtimeService from "./realtime.service";
 
 export default class ChapterService {
   private logger: Logger;
@@ -19,13 +21,18 @@ export default class ChapterService {
   private errorHandler: CentralErrorHandler;
   private llmService: LLMService;
   private courseRepository: CourseRepository;
+  private videoService: VideoService;
+  private realtimeService: RealtimeService;
 
   private constructor(
     logger: Logger,
     chapterRepository: ChapterRepositoryType,
     llmService: LLMService,
     moduleRepository: ModuleRepository,
-    courseRepository: CourseRepository
+    courseRepository: CourseRepository,
+    videoService: VideoService,
+    realtimeSerivce: RealtimeService,
+
   ) {
     this.logger = logger;
     this.ChapterRepository = chapterRepository;
@@ -33,6 +40,8 @@ export default class ChapterService {
     this.llmService = llmService;
     this.moduleRepository = moduleRepository
     this.courseRepository = courseRepository
+    this.videoService = videoService
+    this.realtimeService = realtimeSerivce
   }
 
   public static getInstance(
@@ -40,10 +49,12 @@ export default class ChapterService {
     chapterRepository: ChapterRepositoryType,
     llmService: LLMService,
     moduleRepository: ModuleRepository,
-    courseRepository: CourseRepository
+    courseRepository: CourseRepository,
+    videoService: VideoService,
+    realtimeService: RealtimeService
   ) {
     if (!this.instance) {
-      const chapterService = new ChapterService(logger, chapterRepository, llmService, moduleRepository, courseRepository);
+      const chapterService = new ChapterService(logger, chapterRepository, llmService, moduleRepository, courseRepository, videoService, realtimeService);
       this.instance = chapterService;
     }
     return this.instance
@@ -69,11 +80,9 @@ export default class ChapterService {
     })
   }
 
-
-
-  public async getChapterWithContent(chapterId: string) {
+  public async getChapterWithContent(chapterId: string, addVideo: boolean) {
     return this.errorHandler.handleError(async () => {
-      this.logger.info("Getting chapter with content", { chapterId });
+      this.logger.info("Getting chapter with content", { chapterId, addVideo });
 
       const chapter = await this.ChapterRepository.get({ _id: chapterId });
       if (!chapter) {
@@ -98,6 +107,7 @@ export default class ChapterService {
         this.logger.error("Course context not found", { chapterId, courseId: moduleContext.courseId });
         throw new AppError(500, "Internal server error", "InternalError");
       }
+
       const moduleChapters = await this.ChapterRepository.list({ moduleId: chapter.moduleId });
       const sortedChapters = moduleChapters.sort((a, b) => {
         const aIndex = moduleContext.contents.indexOf(a._id);
@@ -129,6 +139,7 @@ export default class ChapterService {
           courseContext,
           moduleContext,
           chapterPosition,
+          addVideo,
           totalChapters,
           previousChapter,
           nextChapter
@@ -152,18 +163,29 @@ export default class ChapterService {
         }
       });
 
+      // Process content blocks (including video generation if needed)
+      const processedContent = await this.processContentBlocks(
+        generationResult.content,
+        chapterId,
+        addVideo
+      );
+
       const updatedChapter: Chapter = {
         ...chapter,
-        content: generationResult.content,
+        content: processedContent,
         refs: generationResult.refs,
         isGenerated: true,
         estimatedTime: generationResult.estimatedTime
       };
 
       await this.ChapterRepository.update({ _id: chapterId }, updatedChapter);
+
+      const videoBlocksCount = processedContent.filter(block => block.type === "video").length;
+
       this.logger.info("Chapter content generated and saved successfully", {
         chapterId,
         contentBlocks: updatedChapter.content.length,
+        videoBlocks: videoBlocksCount,
         flowContextUsed: {
           previous: previousChapter?.title,
           next: nextChapter?.title,
@@ -178,20 +200,105 @@ export default class ChapterService {
     });
   }
 
+  private async processContentBlocks(
+    contentBlocks: any[],
+    chapterId: string,
+    addVideo: boolean
+  ): Promise<any[]> {
+    return Promise.all(
+      contentBlocks.map(async (contentBlock, index) => {
+        if (contentBlock.type === "video" && addVideo) {
+          return this.processVideoBlock(contentBlock, chapterId, index);
+        }
+
+        return contentBlock;
+      })
+    );
+  }
+
+  private async processVideoBlock(
+    contentBlock: any,
+    chapterId: string,
+    blockIndex: number
+  ): Promise<any> {
+    try {
+      if (!contentBlock.videoQuery) {
+        this.logger.warn("Video block missing videoQuery", {
+          chapterId,
+          blockIndex,
+          contentBlock
+        });
+
+        return this.createVideoFailureBlock("Video query not provided by content generator");
+      }
+
+      this.logger.info("Generating video for content block", {
+        chapterId,
+        blockIndex,
+        videoQuery: contentBlock.videoQuery,
+        programmingLanguage: contentBlock.programmingLanguage
+      });
+
+      const videoOptions: { lang?: string } = {};
+      if (contentBlock.programmingLanguage) {
+        videoOptions.lang = contentBlock.programmingLanguage;
+      }
+
+      const videoResult = await this.videoService.getVideo(
+        contentBlock.videoQuery,
+        videoOptions
+      );
+
+      this.logger.info("Video generated successfully", {
+        chapterId,
+        blockIndex,
+        videoUrl: videoResult.url,
+        videoQuery: contentBlock.videoQuery
+      });
+
+      return {
+        ...contentBlock,
+        content: videoResult.url,
+        type: "video" as const
+      };
+
+    } catch (error) {
+      this.logger.error("Failed to generate video for content block", {
+        chapterId,
+        blockIndex,
+        videoQuery: contentBlock.videoQuery,
+        programmingLanguage: contentBlock.programmingLanguage,
+        error: error.message
+      });
+
+      return this.createVideoFailureBlock(`Video generation failed: ${error.message}`);
+    }
+  }
+
+  private createVideoFailureBlock(reason: string): any {
+    return {
+      type: "text" as const,
+      content: `**Video Content Unavailable**\n\n${reason}. Please refer to the text and code examples for understanding this concept.`
+    };
+  }
+
+
   private getChapterGenerationMessages(
     chapter: Chapter,
     courseContext: Course,
     moduleContext: Module,
     chapterPosition: number,
+    addVideo: boolean,
     totalChapters: number,
     previousChapter?: Chapter,
-    nextChapter?: Chapter
+    nextChapter?: Chapter,
   ) {
     const contextPrompt = this.buildEnhancedChapterContextPrompt(
       chapter,
       courseContext,
       moduleContext,
       chapterPosition,
+      addVideo,
       totalChapters,
       previousChapter,
       nextChapter
@@ -208,6 +315,7 @@ export default class ChapterService {
     courseContext: Course,
     moduleContext: Module,
     chapterPosition: number,
+    addVideo: boolean,
     totalChapters: number,
     previousChapter?: Chapter,
     nextChapter?: Chapter
@@ -256,9 +364,12 @@ ${nextChapter ? `### Next Chapter
 *This is the FINAL chapter in the module. Provide a comprehensive conclusion and prepare students for the next module or course completion.*
 `}
 
+
 ## Content Generation Instructions
 
 Generate comprehensive, detailed content for the current chapter "${chapter.title}".
+
+### ${!addVideo && "DO NOT ATTACH VIDEO TO THIS CHAPTER"}
 
 **Critical Flow Integration Requirements:**
 1. **Build from Previous**: ${previousChapter ? `Reference and build upon concepts from "${previousChapter.title}"` : "Establish strong foundational concepts as this is the first chapter"}
@@ -477,6 +588,5 @@ Students should feel a sense of natural progression from the previous chapter an
       service: "ChapterService",
       method: "updateMermaidContent"
     })
-
   }
 }

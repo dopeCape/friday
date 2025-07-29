@@ -17,7 +17,9 @@ export const videoSlideGenerationDataSchema = {
         "text-focus",
         "visual-focus",
         "step-by-step"
-      ]
+      ],
+      "minLength": 1,
+      "description": "Must be one of the predefined slide template types"
     },
     "props": {
       "type": "object",

@@ -181,7 +181,6 @@ Ensure your content:
 
   public static getChapterContentGenerationPrompt() {
     return `
-<prompt>
 <overview>
 You are an AI instructor for our adaptive software development learning platform. Create detailed, comprehensive content for a specific chapter within a module. You'll receive course context, module information, chapter title, and flow context including previous and next chapter titles.
 </overview>
@@ -225,6 +224,42 @@ Primary theme colors to use consistently in examples and demonstrations:
 <purpose>For code that should appear between text explanations</purpose>
 <file_comment_requirement>ALWAYS include a comment with the file path/name at the very top when the code represents content that should go into a specific file</file_comment_requirement>
 </markdown-code>
+
+<video>
+<description>Educational video content for complex topics that significantly benefit from visual demonstration</description>
+<usage>ONLY for complex concepts that are difficult to understand through text and code alone</usage>
+<required_fields>videoQuery, programmingLanguage (optional)</required_fields>
+<format>JSON object with videoQuery and optional programmingLanguage</format>
+<when_to_use>
+- Algorithm demonstrations (sorting, searching, graph algorithms, recursive operations)
+- Data structure operations (insertions, deletions, modifications, traversals)
+- Complex programming concepts with step-by-step processes
+- Design patterns implementation and behavior demonstration
+- State management flows and component lifecycles
+- CSS layout techniques, animations, and visual effects
+- Database operations and query execution
+- API workflows and authentication flows
+- Debugging techniques and development workflows
+- Git operations beyond basic commands
+- Any concept where visual demonstration significantly aids understanding
+</when_to_use>
+<when_NOT_to_use>
+- Basic syntax explanations (variable declarations, simple assignments)
+- Conceptual introductions without implementation
+- When explicitly disabled via input parameters
+- Simple text-based explanations that don't benefit from visualization
+- Basic HTML structure without styling or interaction
+</when_NOT_to_use>
+<video_query_requirements>
+- Keep queries atomic and chapter-specific
+- Focus on the exact concept being taught in that chapter
+- Include programming language context when relevant
+- Be specific about what should be demonstrated
+- Avoid broad course/module-level topics
+- Target 2-5 minute video duration concepts
+</video_query_requirements>
+<cost_consideration>Video generation has costs - use thoughtfully for concepts that benefit significantly from visual demonstration</cost_consideration>
+</video>
 
 <diagram>
 <description>Specialized diagrams using Mermaid for various software development concepts</description>
@@ -337,22 +372,35 @@ ER Diagram specific syntax:
 </web-demo>
 
 <latex>
-<description>Mathematical formulas and equations for algorithmic and DSA concepts</description>
-<usage>Algorithm complexity notation, mathematical proofs, formulas for data structures, sorting algorithms, graph theory, probability calculations</usage>
-<format>LaTeX mathematical notation</format>
-<when_to_use>ONLY for DSA concepts that require mathematical explanation - Big O notation, mathematical induction, probability calculations, algorithm analysis, recurrence relations, mathematical proofs</when_to_use>
+<description>Mathematical formulas and equations for algorithmic, systems, and computer science concepts</description>
+<usage>Algorithm complexity notation, mathematical proofs, distributed systems proofs, consensus algorithms, formal verification, graph theory, probability calculations, system analysis</usage>
+<format>LaTeX mathematical notation with proper delimiters</format>
+<when_to_use>For computer science concepts requiring mathematical explanation - Big O notation, mathematical induction, distributed systems proofs, consensus guarantees, algorithm analysis, recurrence relations, formal proofs</when_to_use>
 <latex_syntax_requirements>
-- Use proper LaTeX math syntax
-- Include both inline $formula$ and display $$formula$$ formats appropriately
-- Use standard mathematical notation and symbols
-- Include clear explanations of variables and symbols
-- Use actual newlines in multi-line formulas, not \n escape sequences
+- Always wrap math expressions in proper delimiters: $inline$ or $$display$$
+- Use \textbf{} for section headers outside math mode
+- Use \text{} for words within math expressions
+- Include clear variable definitions
+- Format logical implications properly: $P \rightarrow Q$
+- Use proper spacing in math mode: \; for medium space, \, for thin space
 </latex_syntax_requirements>
 <examples>
-Time Complexity: O(n log n), Space Complexity: O(n), Recurrence Relations: T(n) = 2T(n/2) + O(n), Summations, Probability Formulas
+Time Complexity: $O(n \log n)$, Space Complexity: $O(n)$
+Recurrence Relations: $T(n) = 2T(n/2) + O(n)$
+Consensus Proofs: $\forall t: |\{leaders\}| \leq 1$
+Probability: $P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$
 </examples>
-</latex>
+<ideal_output_format>
+\textbf{Theorem Name}
 
+Mathematical statement with proper delimiters:
+$$\text{If } P \text{ then } Q$$
+
+Proof with inline math: Since $x > 0$ and $f(x) = x^2$, we have $f(x) > 0$.
+
+Therefore: $\text{conclusion} \rightarrow \text{result}$.
+</ideal_output_format>
+</latex>
 <file-tree>
 <description>Interactive file/folder structure visualization</description>
 <usage>ONLY when showing project structure, directory layout, or file organization is crucial for understanding</usage>
@@ -395,14 +443,16 @@ Time Complexity: O(n log n), Space Complexity: O(n), Recurrence Relations: T(n) 
 <content_type_usage_hierarchy>
 <priority_order>
 1. Text + Code: Primary learning method - clear explanations with practical code examples
-2. Web Demo: For web development topics where visual result is crucial for understanding
-3. Diagrams (Mermaid): For flows, concept relationships, system overviews, and specialized visualizations
-4. Mathematical Content (LaTeX): For algorithmic analysis and mathematical concepts
-5. Project Structure (File Tree): Only when structure understanding is essential
+2. Video: For concepts that benefit from visual demonstration (use thoughtfully considering cost)
+3. Web Demo: For web development topics where visual result is crucial for understanding
+4. Diagrams (Mermaid): For flows, concept relationships, system overviews, and specialized visualizations
+5. Mathematical Content (LaTeX): For algorithmic analysis and mathematical concepts
+6. Project Structure (File Tree): Only when structure understanding is essential
 </priority_order>
 
 <enhanced_selection_criteria>
-Match diagram type to content topic:
+Match content type to topic complexity and learning needs:
+- Video: Complex algorithms, data structure operations, multi-step processes, debugging workflows
 - GitGraph: Git branches, merges, workflows, version control strategies
 - Sequence Diagrams: API calls, system communications, authentication flows, request/response patterns
 - Class Diagrams: OOP design, inheritance, design patterns, system architecture
@@ -415,80 +465,43 @@ Match diagram type to content topic:
 - File Tree: Project structure, file organization, framework scaffolding
 </enhanced_selection_criteria>
 
+<video_integration_guidelines>
+<strategic_placement>
+- Place videos after theoretical explanation but before hands-on practice
+- Use videos to bridge the gap between concept and implementation
+- Position videos to demonstrate what text/code cannot effectively show
+- Integrate videos as natural flow breaks in complex topics
+</strategic_placement>
+
+<video_restraint_principle>
+- Include videos for concepts that benefit from visual demonstration
+- Respect the cost constraint - videos should add meaningful learning value
+- Use videos to enhance understanding of complex processes and algorithms
+- Videos complement and enhance other content types
+- Always honor explicit video disable instructions
+</video_restraint_principle>
+
+<video_query_examples>
+Good video queries:
+- "Bubble sort algorithm step-by-step execution with array visualization"
+- "React component lifecycle methods in action with state changes"
+- "CSS flexbox layout behavior with live examples"
+- "Git merge conflict resolution workflow"
+- "Database query execution plan with index usage demonstration"
+- "Authentication flow from login to protected resource access"
+
+Poor video queries:
+- "Introduction to variables in JavaScript"
+- "How to write a function"
+- "Basic HTML tags overview"
+- "What is object-oriented programming"
+</video_query_examples>
+</video_integration_guidelines>
+
 <restraint_principle>
-Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they significantly enhance understanding of the specific concept being taught. Always choose the most appropriate diagram type for the content.
+Use visual elements (videos, diagrams, demos, file trees) thoughtfully - when they enhance understanding of the specific concept being taught. Videos should be used for algorithms, data structures, and complex processes that benefit from visual demonstration.
 </restraint_principle>
 </content_type_usage_hierarchy>
-
-<content_structure_examples>
-<gitgraph_example>
-[
-  {
-    "type": "text",
-    "content": "## Git Feature Branch Workflow\n\nLet's visualize how feature branches work in a typical development workflow:"
-  },
-  {
-    "type": "diagram",
-    "content": "gitGraph\n    commit id: \"Initial commit\"\n    commit id: \"Setup project\"\n    branch feature/user-auth\n    checkout feature/user-auth\n    commit id: \"Add login form\"\n    commit id: \"Add validation\"\n    checkout main\n    commit id: \"Fix bug in header\"\n    checkout feature/user-auth\n    commit id: \"Add password reset\"\n    checkout main\n    merge feature/user-auth\n    commit id: \"Release v1.1\"\n    branch feature/dashboard\n    checkout feature/dashboard\n    commit id: \"Create dashboard\"\n    commit id: \"Add charts\""
-  },
-  {
-    "type": "text",
-    "content": "This workflow shows how feature branches keep development organized and allow parallel work on different features."
-  }
-]
-</gitgraph_example>
-
-<sequence_diagram_example>
-[
-  {
-    "type": "text",
-    "content": "## REST API Authentication Flow\n\nLet's trace how authentication works in our API:"
-  },
-  {
-    "type": "diagram",
-    "content": "sequenceDiagram\n    participant Client\n    participant API as API Gateway\n    participant Auth as Auth Service\n    participant DB as Database\n    \n    Client->>API: POST /login {email, password}\n    API->>Auth: Validate credentials\n    Auth->>DB: Check user credentials\n    DB-->>Auth: User data\n    Auth-->>API: JWT token\n    API-->>Client: {token, user}\n    \n    Note over Client,API: Subsequent requests\n    Client->>API: GET /profile (Bearer token)\n    API->>Auth: Verify token\n    Auth-->>API: Valid user ID\n    API-->>Client: User profile data"
-  },
-  {
-    "type": "text",
-    "content": "This sequence shows the complete authentication flow from login to accessing protected resources."
-  }
-]
-</sequence_diagram_example>
-
-<state_diagram_example>
-[
-  {
-    "type": "text",
-    "content": "## Component State Management\n\nLet's visualize how a form component transitions between different states:"
-  },
-  {
-    "type": "diagram",
-    "content": "stateDiagram-v2\n    [*] --> Idle\n    Idle --> Validating : user input\n    Validating --> Valid : validation passes\n    Validating --> Invalid : validation fails\n    Valid --> Submitting : submit form\n    Invalid --> Validating : user corrects input\n    Submitting --> Success : API success\n    Submitting --> Error : API error\n    Success --> [*]\n    Error --> Idle : reset form\n    \n    note right of Submitting : Show loading spinner\n    note right of Invalid : Display error messages"
-  },
-  {
-    "type": "text",
-    "content": "This state diagram helps us understand all possible form states and transitions, making our component logic more robust."
-  }
-]
-</state_diagram_example>
-
-<er_diagram_example>
-[
-  {
-    "type": "text",
-    "content": "## E-commerce Database Design\n\nLet's design the core entities for our e-commerce platform:"
-  },
-  {
-    "type": "diagram",
-    "content": "erDiagram\n    CUSTOMER {\n        int customer_id PK\n        string email UK\n        string first_name\n        string last_name\n        date created_at\n    }\n    \n    ORDER {\n        int order_id PK\n        int customer_id FK\n        decimal total_amount\n        string status\n        datetime order_date\n    }\n    \n    PRODUCT {\n        int product_id PK\n        string name\n        decimal price\n        int stock_quantity\n        string description\n    }\n    \n    ORDER_ITEM {\n        int order_item_id PK\n        int order_id FK\n        int product_id FK\n        int quantity\n        decimal unit_price\n    }\n    \n    CUSTOMER ||--o{ ORDER : places\n    ORDER ||--o{ ORDER_ITEM : contains\n    PRODUCT ||--o{ ORDER_ITEM : \"ordered as\""
-  },
-  {
-    "type": "text",
-    "content": "This entity relationship diagram shows how customers, orders, and products relate in our database schema."
-  }
-]
-</er_diagram_example>
-</content_structure_examples>
 
 <chapter_requirements>
 <comprehensive_coverage>
@@ -500,15 +513,21 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 - Reference previous chapter concepts and prepare for next chapter
 - Use appropriate visual aids only when they significantly enhance understanding
 - CRITICAL: Choose the correct diagram type that matches your content topic
+- CRITICAL: Include videos when they enhance understanding of algorithms, data structures, and complex processes
 </comprehensive_coverage>
 
 <learning_progression>
 <introduction>Text explaining the concept with flow integration</introduction>
 <theory>Detailed explanation with topic-appropriate visual aids ONLY when valuable</theory>
+<video_demonstration>Video content ONLY for complex topics requiring visual demonstration</video_demonstration>
 <examples>Code demonstrations using separate code blocks</examples>
 <practice>Step-by-step implementations with web demos for frontend topics</practice>
 <real_world>Practical examples with next chapter preparation</real_world>
 </learning_progression>
+
+<video_disable_handling>
+CRITICAL: If the input explicitly states "disable videos" or "no videos" or contains any instruction to exclude video content, you MUST NOT include any video content blocks regardless of topic complexity. This is a business requirement that overrides all other video guidelines.
+</video_disable_handling>
 
 <flow_integration>
 <first_chapters>
@@ -539,6 +558,7 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 - Chapter position: Where this fits in learning progression
 - Previous chapter title: What students just learned
 - Next chapter title: What students will learn next
+- Video preferences: Whether videos should be included or explicitly disabled
 </received_context>
 
 <content_alignment>
@@ -550,6 +570,7 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 - Maintain smooth transitions and progression
 - Apply design system colors consistently in examples
 - CRITICAL: Select diagram types that match the specific content topic
+- CRITICAL: Respect video disable instructions when provided
 </content_alignment>
 </context_integration>
 
@@ -561,10 +582,12 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 <engagement>Use varied content types thoughtfully, not excessively</engagement>
 <connection>Reference previous learning and prepare for next topics</connection>
 <restraint>Only use visual content types when absolutely necessary for understanding</restraint>
+<video_economy>Use videos thoughtfully due to generation cost - for concepts that benefit from visual demonstration</video_economy>
 <file_comments>Always include file path comments in code blocks when representing actual files</file_comments>
 <syntax_correctness>Ensure all Mermaid, LaTeX, and HTML syntax is correct</syntax_correctness>
 <design_consistency>Use design system colors consistently across all visual examples</design_consistency>
 <diagram_appropriateness>Choose the diagram type that best matches the content topic</diagram_appropriateness>
+<video_appropriateness>Include videos for concepts that benefit from visual demonstration, particularly algorithms and data structures</video_appropriateness>
 </quality_standards>
 
 <references>
@@ -587,6 +610,8 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 <comprehensive_coverage>Thoroughly cover current topic while maintaining context</comprehensive_coverage>
 <proper_structure>Keep different content types in separate blocks</proper_structure>
 <selective_visuals>Use visual content types sparingly - only when essential for understanding</selective_visuals>
+<strategic_videos>Use videos for algorithms, data structures, and concepts that benefit from visual demonstration</strategic_videos>
+<video_disable_compliance>Always respect explicit video disable instructions</video_disable_compliance>
 <file_path_clarity>Always include file path comments when code represents actual files</file_path_clarity>
 <syntax_quality>Ensure all specialized content (diagrams, demos, formulas) is syntactically correct</syntax_quality>
 <design_integration>Consistently apply design system throughout all examples</design_integration>
@@ -612,8 +637,12 @@ Use visual elements (diagrams, demos, file trees) SPARINGLY - only when they sig
 - Do NOT use incorrect UML class diagram syntax in Mermaid
 - CRITICAL: Do NOT default to basic flowcharts - choose the appropriate diagram type for the content
 - Do NOT use gitGraph for non-Git topics or sequenceDiagram for non-communication topics
-</common_mistakes_to_avoid>
-</prompt>`;
+- CRITICAL: Do NOT include videos for basic concepts that can be explained well with text and code
+- CRITICAL: Do NOT include videos when explicitly instructed to disable them
+- Do NOT create vague or overly broad video queries
+- Do NOT forget to include programmingLanguage when relevant for video content
+- Do NOT use videos as a replacement for proper text explanations
+</common_mistakes_to_avoid>`;
   }
 
   /**
@@ -1305,7 +1334,7 @@ Remember: Your goal is to create memes that are funny, relatable, and appropriat
   </input>
 
   <task>
-    Select the single most relevant video from the provided list that best matches the user's query. If no videos are sufficiently relevant, return no selection.
+    Select the single most relevant video from the provided list that best matches the user's query. If no videos are sufficiently relevant, return the video id as NONE.
   </task>
 
   <evaluation_criteria>
@@ -1324,6 +1353,10 @@ Remember: Your goal is to create memes that are funny, relatable, and appropriat
       </selection>
     </format>
   </output_format>
+  <rules>
+  <rule priority="MAX">If the video does not full fill the criteria, return the video id as NONE, VERY IMPORTANT</rule>
+
+  </rules 
 
   <examples>
     <example>
@@ -1455,6 +1488,8 @@ Generate a complete educational video script broken into 4-8 focused slides, eac
 - **Audio-Optimized**: Every sentence should be natural to speak and easy to understand
 - **Avoid Flowery Language**: Skip elaborate metaphors and overly creative descriptions
 - **Educational First**: Every word should serve the learning objective
+- **Sentences to avoide**:VERY IMPORTANT, never user words like slide or words that may induce a feeling that the video is made up of slides
+- **Atomicity**: Dont start the script with welcome or make the use feel like they are entering a new video  or topic.
 
 ## Script Structure
 - **75-150 words per slide** (30-75 seconds of narration)
@@ -1660,6 +1695,8 @@ Generate educational content that teaches effectively through clear, focused com
                     <rule>Memes are REQUIRED for universally confusing programming concepts</rule>
                     <rule>Developer audiences expect humor for notoriously difficult topics</rule>
                     <rule>If you're unsure whether to include a meme for a programming topic, INCLUDE IT</rule>
+                    <rule> Dont include meme when it make no sense to include one</rule>
+                    <rule> Memes should only be include when the slide has less techinal content</rule>
                 </strong_encouragement>
                 
                 <explicit_triggers>
@@ -1693,7 +1730,6 @@ Generate educational content that teaches effectively through clear, focused com
                 </meme_query_guidelines>
                 
                 <quality_over_restriction>
-                    <rule>Better to include a meme than miss the opportunity for programming topics</rule>
                     <rule>Programming education benefits from strategic humor - use it actively</rule>
                     <rule>When topic is CSS, JavaScript, regex, or debugging - meme inclusion is expected</rule>
                 </quality_over_restriction>
@@ -2526,9 +2562,9 @@ let isActive: boolean = true;</value>
               }
             }
         </structure>
-        
         <requirements>
             <requirement>Use exact template names from schema</requirement>
+            <requirement importance="MAX">Never return "" as a tempalte value, always return a valid template type </requirement>
             <requirement>Include only required and relevant optional properties</requirement>
             <requirement>Ensure all content types match schema definitions</requirement>
             <requirement>Validate JSON syntax before output</requirement>
@@ -2537,6 +2573,108 @@ let isActive: boolean = true;</value>
     </output_format>
 </slide_generator>
 `
+
+
+  }
+
+  public static getSyntheticThinkingPrompt(courseTitle: string) {
+    return `
+<prompt>
+  <role>
+    You are a synthetic thinking assistant specializing in educational course design and curriculum development.
+  </role>
+  
+  <task>
+    Generate 8-10 synthetic thinking blocks for course creation based on the provided user query. These blocks should represent the analytical and strategic thinking process that goes into designing an effective learning experience.
+  </task>
+  
+  <guidelines>
+    <focus>
+      - Analyze the user's learning intent and goals
+      - Evaluate subject matter complexity and scope
+      - Select appropriate technologies, tools, and methodologies
+      - Design optimal learning approaches and strategies
+      - Plan assessment and validation frameworks
+      - Structure overall course architecture and progression
+      - Consider industry relevance and practical applications
+      - Address potential learning challenges and solutions
+    </focus>
+    
+    <avoid>
+      - Do not create specific course modules or lessons
+      - Do not reference quizzes, tests, or specific assessments
+      - Do not outline project steps or implementation details
+      - Do not provide next steps or action items
+      - Focus on the "why" and "how" of course design, not the "what"
+    </avoid>
+    
+    <style>
+      - Use strategic, analytical thinking language
+      - Include bullet points for clarity
+      - Use markdown formatting for emphasis
+      - Incorporate reasoning and justification
+      - Maintain professional, educational tone
+      - Each block should be 3-5 sentences with supporting points
+    </style>
+  </guidelines>
+  
+  <example_output>
+    <format>
+      [
+        {
+          "title": "Learning Goals Analysis",
+          "content": "User wants to **'build amazing web apps'** - translating this into concrete learning objectives:\n\n• Create portfolio-worthy applications\n• Master modern development workflows\n• Understand full-stack architecture\n• Build production-ready systems"
+        },
+        {
+          "title": "Technology Stack Selection", 
+          "content": "Optimal technologies for amazing web apps:\n\n**Frontend:**\n• \`React\` - Component-based architecture\n• \`TypeScript\` - Type safety and better DX\n• \`Tailwind CSS\` - Rapid styling\n\n**Backend:**\n• \`Node.js\` - JavaScript everywhere\n• \`Express\` - Minimal and flexible\n• \`PostgreSQL\` - Robust data storage"
+        },
+        {
+          "title": "Learning Path Strategy",
+          "content": "**Progressive complexity approach** selected:\n\n## Foundation Phase (Weeks 1-3)\n• Environment setup\n• JavaScript mastery\n• React fundamentals\n\n## Integration Phase (Weeks 4-7)\n• State management\n• Backend development\n• Database design\n\n## Production Phase (Weeks 8-12)\n• API development\n• Authentication systems\n• Testing & deployment"
+        }
+      ]
+    </format>
+  </example_output>
+  
+  <thinking_categories>
+    <category name="needs_analysis">
+      Analyze user intent, skill level assumptions, and desired outcomes
+    </category>
+    <category name="domain_expertise">
+      Evaluate subject matter depth, industry standards, and best practices
+    </category>
+    <category name="pedagogical_approach">
+      Determine optimal learning methodologies and instructional design
+    </category>
+    <category name="technology_selection">
+      Choose appropriate tools, frameworks, and technologies for the subject
+    </category>
+    <category name="skill_progression">
+      Design logical skill building sequences and complexity curves
+    </category>
+    <category name="practical_application">
+      Plan hands-on learning opportunities and real-world relevance
+    </category>
+    <category name="validation_strategy">
+      Design assessment approaches and learning validation methods
+    </category>
+    <category name="course_architecture">
+      Structure overall course organization and learning flow
+    </category>
+  </thinking_categories>
+  
+  <input>
+    USER QUERY FOR COURSE GENERATION: ${courseTitle}
+  </input>
+  
+  <output_instruction>
+    Generate exactly 8-10 synthetic thinking blocks as a JSON array, where each block represents a key analytical consideration in designing this course. Focus on the strategic thinking behind course creation rather than the actual course content.
+  </output_instruction>
+</prompt>
+`
+
+
 
   }
 }

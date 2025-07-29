@@ -13,7 +13,7 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
     const chapterService = getDefaultChapterService();
-    const chapter = await chapterService.getChapterWithContent(id);
+    const chapter = await chapterService.getChapterWithContent(id, true);
     return responseCreator(200, true, "Chapter content already generated", chapter);
   } catch (error) {
     console.error('Chapter generation error:', error);

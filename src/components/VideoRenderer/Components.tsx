@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import katex from 'katex';
@@ -34,8 +34,12 @@ export const fridayConfig = {
   }
 };
 
-// Friday Video Components
+
 const FridayCodeBlock = ({ content, language = 'text', comment }) => {
+  const codeRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
   const customStyle = {
     ...vscDarkPlus,
     'pre[class*="language-"]': {
@@ -62,47 +66,123 @@ const FridayCodeBlock = ({ content, language = 'text', comment }) => {
     }
   };
 
+  useEffect(() => {
+    const checkAndScale = () => {
+      if (!codeRef.current || !wrapperRef.current) return;
+
+      // Signal that scaling calculation is starting
+      codeRef.current.setAttribute('data-code-scaling', 'true');
+
+      // Reset scale to get true dimensions
+      setScale(1);
+
+      requestAnimationFrame(() => {
+        if (!codeRef.current || !wrapperRef.current) return;
+
+        const codeRect = codeRef.current.getBoundingClientRect();
+        const wrapperRect = wrapperRef.current.getBoundingClientRect();
+
+        // Check if code block exceeds wrapper height
+        if (codeRect.height > wrapperRect.height) {
+          const scaleRatio = wrapperRect.height / codeRect.height;
+          // Don't scale below 40% for readability
+          const finalScale = Math.max(0.4, scaleRatio);
+
+          console.log(`Code scaling: ${codeRect.height}px -> ${wrapperRect.height}px, scale: ${finalScale}`);
+          setScale(finalScale);
+
+          // Signal completion for screenshot service
+          codeRef.current.setAttribute('data-code-scaled', finalScale.toString());
+          codeRef.current.removeAttribute('data-code-scaling');
+        } else {
+          codeRef.current.removeAttribute('data-code-scaled');
+          codeRef.current.removeAttribute('data-code-scaling');
+        }
+      });
+    };
+
+    const timer = setTimeout(checkAndScale, 100);
+    window.addEventListener('resize', checkAndScale);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', checkAndScale);
+    };
+  }, [content, language]);
+
   return (
     <div className="w-full">
+      {/* Wrapper with max height constraint */}
       <div
-        className="rounded-lg overflow-hidden"
+        ref={wrapperRef}
+        className="overflow-hidden"
         style={{
-          backgroundColor: fridayConfig.colors.hover,
-          border: `2px solid ${fridayConfig.colors.border}`,
-          maxWidth: '100%'
+          maxHeight: 'calc(100vh - 250px)', // Leave room for titles and margins
+          minHeight: '100px' // Minimum height
         }}
       >
-        {comment && (
-          <div className="px-4 py-2 border-b border-white/[0.08]">
-            <span
-              className="text-sm font-mono"
-              style={{ color: fridayConfig.colors.muted }}
+        {/* Scalable code block */}
+        <div
+          ref={codeRef}
+          className="rounded-lg overflow-hidden transition-transform duration-300"
+          style={{
+            backgroundColor: fridayConfig.colors.hover,
+            border: `2px solid ${fridayConfig.colors.border}`,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left', // Scale from top-left to stay in bounds
+            width: scale < 1 ? `${100 / scale}%` : '100%', // Adjust width when scaled
+          }}
+          data-code-block="true"
+        >
+          {comment && (
+            <div className="px-4 py-2 border-b border-white/[0.08]">
+              <span
+                className="text-sm font-mono"
+                style={{ color: fridayConfig.colors.muted }}
+              >
+                # {comment}
+              </span>
+            </div>
+          )}
+          <div>
+            <SyntaxHighlighter
+              style={customStyle}
+              language={language}
+              PreTag="div"
+              wrapLines={true}
+              wrapLongLines={true}
             >
-              # {comment}
-            </span>
+              {content}
+            </SyntaxHighlighter>
           </div>
-        )}
-        <div>
-          <SyntaxHighlighter
-            style={customStyle}
-            language={language}
-            PreTag="div"
-            wrapLines={true}
-            wrapLongLines={true}
-          >
-            {content}
-          </SyntaxHighlighter>
+
+          {/* Scale indicator */}
+          {scale < 1 && (
+            <div
+              className="absolute top-2 right-2 px-2 py-1 rounded text-xs font-mono opacity-70"
+              style={{
+                backgroundColor: fridayConfig.colors.background,
+                color: fridayConfig.colors.primary,
+                fontSize: '0.7rem'
+              }}
+            >
+              {Math.round(scale * 100)}%
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+
 const FridayMermaid = ({ chart }) => {
   const [svg, setSvg] = useState('');
   const [error, setError] = useState('');
   const [fixAttempts, setFixAttempts] = useState(0);
   const [currentChart, setCurrentChart] = useState(chart);
+  const [isFixing, setIsFixing] = useState(false);
+  const containerRef = useRef(null);
 
   const fixMermaidDiagram = async (diagram: string) => {
     try {
@@ -120,22 +200,48 @@ const FridayMermaid = ({ chart }) => {
       }
 
       const data = await response.json();
-      return data.diagram || null;
+      return data.data.diagram || null;
     } catch (err) {
       console.error('Error fixing diagram:', err);
       return null;
     }
   };
 
+  // Update data attributes based on state
+  useEffect(() => {
+    if (containerRef.current) {
+      if (isFixing) {
+        containerRef.current.setAttribute('data-mermaid-fixing', 'true');
+        containerRef.current.removeAttribute('data-mermaid-failed');
+      } else if (error) {
+        containerRef.current.setAttribute('data-mermaid-failed', 'true');
+        containerRef.current.removeAttribute('data-mermaid-fixing');
+      } else {
+        containerRef.current.removeAttribute('data-mermaid-fixing');
+        containerRef.current.removeAttribute('data-mermaid-failed');
+        // Add processed attribute for successful renders
+        if (svg) {
+          containerRef.current.setAttribute('data-processed-by', 'mermaid');
+        }
+      }
+    }
+  }, [isFixing, error, svg]);
+
   useEffect(() => {
     // Reset fix attempts when chart prop changes
     setFixAttempts(0);
     setCurrentChart(chart);
+    setIsFixing(false); // Reset fixing state for new chart
   }, [chart]);
 
   useEffect(() => {
     const renderChart = async () => {
       try {
+        // Only clear isFixing if this is the first attempt (not a fix retry)
+        if (fixAttempts === 0) {
+          setIsFixing(false);
+        }
+
         mermaid.initialize({
           startOnLoad: false,
           theme: 'dark',
@@ -177,6 +283,7 @@ const FridayMermaid = ({ chart }) => {
 
         setSvg(renderedSvg);
         setError('');
+        setIsFixing(false); // Only set to false on successful render
       } catch (err) {
         console.error('Mermaid render error:', err);
 
@@ -184,14 +291,18 @@ const FridayMermaid = ({ chart }) => {
         if (fixAttempts < 2) {
           console.log(`Attempting to fix diagram (attempt ${fixAttempts + 1}/2)...`);
 
+          setIsFixing(true); // Mark as fixing
           const fixedDiagram = await fixMermaidDiagram(currentChart);
+          // Don't set isFixing to false here - let the re-render handle it
 
           if (fixedDiagram) {
             // Update the fix attempts counter and current chart
             setFixAttempts(prev => prev + 1);
             setCurrentChart(fixedDiagram);
-            // The useEffect will re-run with the new currentChart
+            // The useEffect will re-run with the new currentChart, keeping isFixing = true
             return;
+          } else {
+            setIsFixing(false); // Only set false if fix attempt failed
           }
         }
 
@@ -199,6 +310,7 @@ const FridayMermaid = ({ chart }) => {
         const attemptText = fixAttempts > 0 ? ` after ${fixAttempts} fix attempt${fixAttempts > 1 ? 's' : ''}` : '';
         setError(`Failed to render diagram${attemptText}`);
         setSvg('');
+        setIsFixing(false); // Done trying
       }
     };
 
@@ -206,13 +318,15 @@ const FridayMermaid = ({ chart }) => {
       renderChart();
     } else {
       setError('Empty diagram content');
+      setIsFixing(false); // Not fixing if empty
     }
   }, [currentChart, fixAttempts]);
 
   if (error) {
     return (
       <div
-        className="text-center py-6 rounded-lg"
+        ref={containerRef}
+        className="mermaid text-center py-6 rounded-lg"
         style={{
           backgroundColor: fridayConfig.colors.hover,
           border: `1px solid ${fridayConfig.colors.border}`,
@@ -224,11 +338,26 @@ const FridayMermaid = ({ chart }) => {
     );
   }
 
-  if (!svg) return null;
+  if (!svg) {
+    return (
+      <div
+        ref={containerRef}
+        className="mermaid text-center py-6 rounded-lg"
+        style={{
+          backgroundColor: fridayConfig.colors.hover,
+          border: `1px solid ${fridayConfig.colors.border}`,
+          color: fridayConfig.colors.muted
+        }}
+      >
+        {isFixing ? 'Fixing diagram...' : 'Loading diagram...'}
+      </div>
+    );
+  }
 
   return (
     <div
-      className="w-full p-4 rounded-lg"
+      ref={containerRef}
+      className="mermaid w-full p-4 rounded-lg"
       style={{
         backgroundColor: fridayConfig.colors.hover,
         border: `1px solid ${fridayConfig.colors.border}`,
@@ -464,7 +593,7 @@ export const ContentRenderer = ({ content }) => {
         <div
           className="rounded-lg p-4 max-w-full"
           style={{
-            backgroundColor: content.primary ? fridayConfig.colors.primary : fridayConfig.colors.hover,
+            backgroundColor: fridayConfig.colors.hover,
             border: `1px solid ${fridayConfig.colors.border}`,
             color: content.primary ? fridayConfig.colors.background : fridayConfig.colors.white,
             fontSize: fridayConfig.typography.body

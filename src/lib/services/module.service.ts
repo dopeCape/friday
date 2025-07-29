@@ -13,6 +13,7 @@ import IconsProvider from "../providers/icons.provider";
 import SearchService from "./serarch.service";
 import QuizService from "./quiz.service";
 import ChapterService from "./chapter.service";
+import { AppError } from "../errorHandler/appError";
 
 export default class ModuleService {
   private logger: Logger;
@@ -437,4 +438,22 @@ Next module
       method: "getModulesWithProgressByCourseId"
     });
   }
+  public async generateModuleChapters(moduleId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("generating chapters for module", { moduleId });
+      const module = await this.moduleRepository.get({ _id: moduleId });
+      if (!module) {
+        throw new AppError(404, "Module not found", "ModuleNotFound", { moduleId });
+      }
+      await Promise.all(module.contents.map(async (chapterId) => {
+        await this.chapterService.getChapterWithContent(chapterId, true)
+      }));
+    }, {
+      service: "ModuleService",
+      method: "generateModuleChapters"
+
+    })
+  }
+
+
 }

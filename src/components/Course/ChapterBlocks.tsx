@@ -6,6 +6,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import katex from 'katex';
 import mermaid from 'mermaid';
 import { motion } from "motion/react";
+import FridayVideoPlayer from "./VideoPlayer"
 import 'katex/dist/katex.min.css';
 
 interface FridayMermaidProps {
@@ -797,7 +798,7 @@ const FridayMarkdownCode: React.FC<FridayMarkdownCodeProps> = ({
 };
 
 interface ContentBlock {
-  type: 'text' | 'code' | 'markdown-code' | 'diagram' | 'web-demo' | 'latex';
+  type: 'text' | 'code' | 'markdown-code' | 'diagram' | 'web-demo' | 'latex' | "video";
   content: string;
   codeBlockLanguage?: string;
   [key: string]: any;
@@ -890,6 +891,18 @@ const FridayChapterContent: React.FC<FridayChapterContentProps> = ({
                 <FridayWebDemo content={block.content} />
               </motion.div>
             );
+          case "video":
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+              >
+                <FridayVideoPlayer src={block.content} />
+              </motion.div>
+
+            )
 
           case 'latex':
             return (

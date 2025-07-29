@@ -2,6 +2,7 @@ import { Chapter } from "@/types";
 import { motion } from "motion/react";
 import { FridayCodeBlock, FridayLatex, FridayMarkdown, FridayMarkdownCode, FridayMermaid, FridayWebDemo } from "./ChapterBlocks";
 import { FridayFileTree, TreeViewElement } from "./Tree";
+import FridayVideoPlayer from "./VideoPlayer";
 
 interface ChapterContentRendererProps {
   chapter: Chapter;
@@ -25,9 +26,8 @@ const ChapterContentRenderer: React.FC<ChapterContentRendererProps> = ({ chapter
         const isMarkdownCode = section.type === 'markdown-code';
         const nextSection = chapter.content[index + 1];
         const nextIsMarkdownCode = nextSection?.type === 'markdown-code';
-
         const marginClass = isMarkdownCode ? 'mb-4' : nextIsMarkdownCode ? 'mb-8' : 'mb-16';
-
+        console.log(section.type, section.content)
         return (
           <motion.div
             key={index}
@@ -38,6 +38,9 @@ const ChapterContentRenderer: React.FC<ChapterContentRendererProps> = ({ chapter
           >
             {section.type === 'text' && (
               <FridayMarkdown content={section.content} />
+            )}
+            {section.type === 'video' && (
+              <FridayVideoPlayer src={section.content} />
             )}
             {section.type === 'code' && (
               <FridayCodeBlock language={section.codeBlockLanguage}>

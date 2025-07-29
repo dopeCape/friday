@@ -15,7 +15,17 @@ export default function Page({
     const { id: slideId } = await params;
     const response = await fetch(`/api/getSlide/${slideId}`);
     const slideData = await response.json();
-    setSlideData(slideData);
+    const data = slideData.data;
+    //ik i am using "ANY", but its 4 in the morning and i want to sleep.
+    let templateData: any;
+    if (data.properties) {
+      templateData = data.properties
+    }
+    if (data.template) {
+      templateData = data
+    }
+
+    setSlideData(templateData);
   }
   return (
     <div className="w-full h-full flex items-center justify-center" >
@@ -27,4 +37,3 @@ export default function Page({
     </div>
   );
 };
-

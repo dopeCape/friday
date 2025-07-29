@@ -420,10 +420,10 @@ export default class FFMPEGService {
       segmentPrefix = 'segment',
       videoCodec = 'libx264',
       audioCodec = 'aac',
-      videoBitrate = '2000k',
+      videoBitrate = '300k',
       audioBitrate = '128k',
       resolution,
-      hlsFlags = ['hls_time', 'hls_playlist_type=vod', 'hls_segment_filename']
+      hlsFlags = ['hls_time', 'hls_playlist_type=vod', 'hls_segment_filename'],
     } = options;
 
     const playlistPath = path.join(outputDir, playlistName);
@@ -435,7 +435,8 @@ export default class FFMPEGService {
         outputDir,
         playlistPath,
         segmentDuration,
-        segmentPrefix
+        segmentPrefix,
+
       });
 
       // Validate input file
@@ -481,7 +482,7 @@ export default class FFMPEGService {
         videoBitrate,
         audioBitrate,
         resolution,
-        hlsFlags
+        hlsFlags,
       });
 
       // Verify output files were created
@@ -536,7 +537,7 @@ export default class FFMPEGService {
       videoBitrate,
       audioBitrate,
       resolution,
-      hlsFlags
+      hlsFlags,
     } = options;
 
     return new Promise((resolve, reject) => {
@@ -546,6 +547,7 @@ export default class FFMPEGService {
         .audioCodec(audioCodec)
         .videoBitrate(videoBitrate)
         .audioBitrate(audioBitrate);
+
 
       // Add resolution scaling if specified
       if (resolution) {
@@ -560,8 +562,10 @@ export default class FFMPEGService {
         '-hls_playlist_type vod',                   // Video on demand playlist
         '-pix_fmt yuv420p',                         // Ensure compatibility
         '-preset fast',                             // Encoding speed vs quality
-        '-movflags +faststart'                      // Optimize for streaming
+        '-movflags +faststart',                      // Optimize for streaming
+        '-tune stillimage',        // This goes here, not in hlsFlags!
       ];
+
 
       // Add any additional HLS flags
       hlsFlags.forEach(flag => {

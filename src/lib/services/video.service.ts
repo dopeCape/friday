@@ -245,7 +245,7 @@ export default class VideoService {
       this.logger.info("Selecting most relevant video for query")
 
       const schema = z.object({
-        video_id: z.string().describe("Selected video ID or NONE if no video is relevant"),
+        video_id: z.string().describe("Selected video ID or NONE if no video is relevant, very important to return NONE if no video is relevant"),
         video_url: z.string().describe("Selected video URL or empty string if no video is relevant"),
         reason: z.string().describe("Brief explanation of why this video was selected or why none were suitable")
       })
@@ -311,10 +311,13 @@ current slide nurration: ${narrations[index]},
     return this.errorHandler.handleError(async () => {
       this.logger.info("Generating slide for nurration", { query, narrations, currentIndex });
       const prompt = this.getSlideGenrationPrompt(query, narrations, currentIndex);
-      const slideData = await this.llmService.structuredResponse(prompt, videoSlideGenerationDataSchema as unknown as Record<string, string>, {
-        model: "o3",
-        provider: "openai",
-      });
+      let slideData: any = { template: "" }
+      while (slideData.template === "") {
+        slideData = await this.llmService.structuredResponse(prompt, videoSlideGenerationDataSchema as unknown as Record<string, string>, {
+          model: "o3",
+          provider: "openai",
+        });
+      }
       const slideId = v4();
       const slideDataWithMeme = await this.attachMeme(slideData.parsed);
       await this.redisService.set(slideId, JSON.stringify(slideDataWithMeme));
@@ -374,7 +377,6 @@ current slide nurration: ${narrations[index]},
     }, {
       service: "VideoService",
       method: "stichUpImgaeToAudios"
-
     })
   }
 }

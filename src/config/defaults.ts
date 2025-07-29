@@ -16,6 +16,7 @@ import LLMService from "@/lib/services/llm.service";
 import { Logger } from "@/lib/services/logger.service";
 import ModuleService from "@/lib/services/module.service";
 import QuizService from "@/lib/services/quiz.service";
+import RealtimeService from "@/lib/services/realtime.service";
 import RedisService from "@/lib/services/redis.service";
 import ScreenshotService from "@/lib/services/screenshot.service";
 import SearchService from "@/lib/services/serarch.service";
@@ -78,7 +79,9 @@ export function getDefaultChapterService() {
   const llmService = getDefaultLLMService();
   const courseRepository = getDefaultCourseRepository();
   const moduleRepository = getDefaultModuleRepository();
-  return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository)
+  const videoService = getDefaultVideoService();
+  const realtimeService = getDefaultRealtimeService()
+  return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository, videoService, realtimeService);
 }
 
 
@@ -113,7 +116,9 @@ export function getDefaultCourseService() {
   const llmService = getDefaultLLMService();
   const iconsProvider = getDefaultIconsProvider();
   const userService = getDefaultUserService()
-  return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider, userService);
+  const chapterService = getDefaultChapterService()
+  const realtimeServie = getDefaultRealtimeService();
+  return CourseService.getInstance(logger, courseRepository, moduleService, llmService, iconsProvider, userService, chapterService, realtimeServie);
 }
 export function getDefaultFileService() {
   const logger = getDefaultLogger();
@@ -172,3 +177,7 @@ export function getDefaultRedisService() {
   const logger = getDefaultLogger();
   return RedisService.getInstance(logger);
 }
+export function getDefaultRealtimeService() {
+  const logger = getDefaultLogger();
+  return RealtimeService.getInstace(logger);
+} 
