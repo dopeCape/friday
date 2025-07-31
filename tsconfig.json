@@ -42,7 +42,8 @@
     "trigger.config.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "temp/**/*"
   ],
   "ts-node": {
     "esm": true,

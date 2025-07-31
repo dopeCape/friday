@@ -361,7 +361,7 @@ const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart, contentId, chapter
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div 
+      <div
         className="bg-white/[0.01] border border-white/[0.06] rounded-lg p-6 cursor-pointer hover:border-white/20 transition-colors"
         onClick={() => setIsModalOpen(true)}
       >
@@ -370,7 +370,7 @@ const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart, contentId, chapter
           dangerouslySetInnerHTML={{ __html: svg }}
         />
       </div>
-      {isModalOpen && <MermaidModal chart={currentChart} onClose={() => setIsModalOpen(false)} svg={svg} />}
+      {isModalOpen && <MermaidModal onClose={() => setIsModalOpen(false)} svg={svg} />}
     </motion.div>
   );
 };

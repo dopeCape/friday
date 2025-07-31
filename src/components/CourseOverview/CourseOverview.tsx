@@ -176,7 +176,6 @@ const itemVariants = {
     filter: "blur(0px)",
     transition: {
       duration: 0.6,
-      ease: [0.25, 0.46, 0.45, 0.94]
     }
   }
 };
@@ -191,7 +190,6 @@ const iconVariants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
     }
   }
 };
@@ -207,7 +205,6 @@ const loadingToContentVariants = {
     scale: 1,
     transition: {
       duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94],
       delay: 0.2
     }
   },
