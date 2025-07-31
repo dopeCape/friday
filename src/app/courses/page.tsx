@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CourseList } from "@/components/CourseList";
+import AnimatedBackground from '@/components/AnimatedBackground';
 
 interface Course {
   _id: string;
@@ -102,14 +103,7 @@ export default function CourseBrowsePage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div
-        className="fixed inset-0 opacity-[0.015]"
-        style={{
-          backgroundImage: `radial-gradient(circle, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '160px 160px',
-        }}
-      />
+    <div className="min-h-screen relative">
 
       <div className="relative">
         {/* Header */}

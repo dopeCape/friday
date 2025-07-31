@@ -112,12 +112,89 @@ const FridayCodeBlock: React.FC<FridayCodeBlockProps> = ({
   );
 };
 
+const MermaidModal = ({ onClose, svg }: { onClose: () => void, svg: string }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const svgContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    if (svgContainerRef.current) {
+      const svgElement = svgContainerRef.current.querySelector('svg');
+      if (svgElement) {
+        svgElement.style.width = '100%';
+        svgElement.style.height = '100%';
+        svgElement.style.maxWidth = 'none';
+        svgElement.style.maxHeight = 'none';
+      }
+    }
+  }, [svg]);
+
+
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (modalRef.current && event.target === modalRef.current) {
+      onClose();
+    }
+  };
+
+  return (
+    <motion.div
+      ref={modalRef}
+      className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={handleBackdropClick}
+    >
+      <motion.div
+        className="relative w-[95vw] h-[95vh] flex items-center justify-center"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div
+          className="w-full h-full p-6 bg-white/[0.03] border border-white/10 rounded-xl flex items-center justify-center"
+        >
+          <div
+            ref={svgContainerRef}
+            className="w-full h-full"
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+        </div>
+        <motion.button
+          onClick={onClose}
+          className="absolute -top-2 -right-2 text-white/60 hover:text-white bg-black/50 rounded-full p-1 transition-colors"
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart, contentId, chapterId }) => {
   const [svg, setSvg] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fixAttempts, setFixAttempts] = useState<number>(0);
   const [currentChart, setCurrentChart] = useState<string>(chart);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const saveMermaidDiagram = async (fixedDiagram: string) => {
     try {
@@ -284,12 +361,16 @@ const FridayMermaid: React.FC<FridayMermaidProps> = ({ chart, contentId, chapter
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="bg-white/[0.01] border border-white/[0.06] rounded-lg p-6">
+      <div 
+        className="bg-white/[0.01] border border-white/[0.06] rounded-lg p-6 cursor-pointer hover:border-white/20 transition-colors"
+        onClick={() => setIsModalOpen(true)}
+      >
         <div
           className="mermaid-container text-center [&_svg]:max-w-full [&_svg]:h-auto [&_text]:fill-white/85 [&_rect]:stroke-[#63a1ff]/25 [&_path]:stroke-[#63a1ff]/40"
           dangerouslySetInnerHTML={{ __html: svg }}
         />
       </div>
+      {isModalOpen && <MermaidModal chart={currentChart} onClose={() => setIsModalOpen(false)} svg={svg} />}
     </motion.div>
   );
 };

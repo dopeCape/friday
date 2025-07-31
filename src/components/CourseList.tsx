@@ -100,9 +100,9 @@ function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExh
       <div className={`grid grid-cols-12 gap-16 items-center ${!isEven ? 'direction-rtl' : ''}`}>
         <div className={`col-span-12 lg:col-span-7 space-y-8 ${!isEven ? 'lg:order-2 text-right' : 'text-left'}`}>
           <div className="space-y-6">
-            {course.icon && course.icon.length > 0 && (
+            {course.icon && course.icon.length > 1 && (
               <div className={`flex gap-3 text-3xl text-gray-600 ${!isEven ? 'justify-end' : 'justify-start'}`}>
-                {course.icon.slice(0, 2).map((icon, i) => (
+                {course.icon.slice(1, 3).map((icon, i) => (
                   <motion.span
                     key={i}
                     className={`nf ${icon} group-hover:text-blue-400 transition-colors`}
@@ -153,7 +153,7 @@ function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExh
               <div className={`space-y-2 ${!isEven ? 'items-end' : 'items-start'}`}>
                 <div className="flex items-center justify-between text-xs text-gray-700 w-32">
                   <span>Progress</span>
-                  <span>{progressPercentage}%</span>
+                  <span>{Math.floor(progressPercentage)}%</span>
                 </div>
                 <div className="w-32 h-px bg-gray-900 relative">
                   <motion.div
@@ -170,10 +170,15 @@ function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExh
 
         <div className={`col-span-12 lg:col-span-5 ${!isEven ? 'lg:order-1' : ''}`}>
           <motion.div
-            className="relative aspect-[4/3] border border-dotted border-gray-900 group-hover:border-blue-400 transition-colors overflow-hidden"
+            className="relative aspect-[4/3] border border-dotted border-gray-900 group-hover:border-blue-400 transition-colors overflow-hidden flex items-center justify-center"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
+            {course.icon && course.icon.length > 0 && (
+                <motion.span
+                    className={`nf ${course.icon[0]} text-8xl text-gray-700 group-hover:text-blue-400 transition-colors`}
+                />
+            )}
             <div
               className="absolute inset-0 opacity-[0.08]"
               style={{

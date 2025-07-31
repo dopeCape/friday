@@ -1,4 +1,4 @@
-import { getDefaultCourseService } from "@/config/defaults";
+import { getDefaultCourseRepository, getDefaultCourseService } from "@/config/defaults";
 import dbConnect from "@/config/mongodb.config";
 import type { generateCourse } from "@/trigger/generateCourse";
 import { tasks } from "@trigger.dev/sdk/v3";
@@ -19,6 +19,8 @@ export async function POST(req: NextRequest) {
     const generationId = v4()
     await dbConnect();
     const { userQuery } = await validateBody(courseGenerationRequestSchema, req);
+    const courseService = getDefaultCourseService();
+    await courseService.courseGenerationValidations(userQuery, userId);
     const data: NewCourse & { generationId: string } = {
       userId,
       isPrivate: true,

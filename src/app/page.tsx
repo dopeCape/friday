@@ -260,7 +260,7 @@ export default function Home() {
       router.push("/check-login");
       return;
     }
-    setShowPromptInput(state);
+    router.push("/create-course");
   };
 
   return (

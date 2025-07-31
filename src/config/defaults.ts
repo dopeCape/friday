@@ -141,6 +141,7 @@ export function getDefaultVideoService() {
   const ffmpegService = getDefaultFFMPEGService();
   const memeProvider = getDefaultMemeProvider()
   const blobService = getDefaultBlobService();
+  const fileService = getDefaultFileService();
   return VideoService.getInstance(
     logger,
     vectorDbService,
@@ -150,7 +151,8 @@ export function getDefaultVideoService() {
     screenShotService,
     ffmpegService,
     memeProvider,
-    blobService
+    blobService,
+    fileService
   );
 }
 

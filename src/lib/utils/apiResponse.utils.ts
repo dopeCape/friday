@@ -10,15 +10,13 @@ export function apiErrorHandler(error: ErrorResponse) {
     errorData: error.errorData,
   });
   return Response.json({
-    message: error.message,
+    message: error.metadata?.message,
     errorCode: error.errorCode,
     errorData: env.NODE_ENV === "development" ? error.errorData : undefined
   }, {
     status: error.statusCode,
   })
-
 }
-
 export function responseCreator(
   statusCode: number,
   success: boolean,

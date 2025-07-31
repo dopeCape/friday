@@ -22,6 +22,17 @@ export default function FloatingNavbar() {
         isProtected: false,
       },
       {
+        title: "Create new course",
+        url: "/create-course",
+        isProtected: true,
+      },
+      {
+        title: "Video Tutorials",
+        url: "/video-tutorials",
+        isProtected: true,
+      },
+
+      {
         title: "Browse",
         url: "/courses",
         isProtected: false,
@@ -30,7 +41,7 @@ export default function FloatingNavbar() {
         title: "My Courses",
         url: "/my-course",
         isProtected: true,
-      }
+      },
     ]
   }, [])
 

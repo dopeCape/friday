@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceholdersAndVanishTextarea } from '@/components/VanishInput';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useRouter } from 'next/navigation';
 import Pusher from "pusher-js"
 
@@ -622,7 +623,9 @@ const SkeletonLoader = ({ type = 'default' }) => {
 
 const GenerationTransition = ({ query }) => {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center relative overflow-hidden ">
+      <AnimatedBackground />
+
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-black to-black"
         initial={{ scale: 0, borderRadius: '50%' }}
@@ -676,13 +679,13 @@ const GenerationTransition = ({ query }) => {
 
 const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGenerationStart, isFromInput = false, channelId }) => {
   const router = useRouter();
-  const [currentState, setCurrentState] = useState(isFromInput ? 'TRANSITION' : 'SYNTHETIC_THINKING');
+  const [currentState, setCurrentState] = useState(isFromInput ? 'TRANSITION' : 'THINKING');
   const [currentSection, setCurrentSection] = useState({ title: '', content: '', isComplete: false, titleComplete: false });
   const [completedSections, setCompletedSections] = useState([]);
   const [courseData, setCourseData] = useState(null);
   const [icons, setIcons] = useState(null);
-  const [allModules, setAllModules] = useState([]); // All modules from backend
-  const [displayedModules, setDisplayedModules] = useState([]); // Modules currently shown
+  const [allModules, setAllModules] = useState([]);
+  const [displayedModules, setDisplayedModules] = useState([]);
   const [courseId, setCourseId] = useState(null);
   const [countdown, setCountdown] = useState(5);
   const [progress, setProgress] = useState(0);
@@ -732,7 +735,7 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
 
   // Handle state transitions based on data availability
   useEffect(() => {
-    if (currentState === 'SYNTHETIC_THINKING' && streamingComplete && planningSections.length > 0) {
+    if (currentState === 'THINKING' && streamingComplete && planningSections.length > 0) {
       // Move to course details after thinking is complete
       setTimeout(() => {
         setCurrentState('COURSE_DETAILS');
@@ -788,7 +791,7 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
 
   // Fixed section streaming logic
   useEffect(() => {
-    if (currentState !== 'SYNTHETIC_THINKING' || planningSections.length === 0 || showTransition) {
+    if (currentState !== 'THINKING' || planningSections.length === 0 || showTransition) {
       return;
     }
 
@@ -851,14 +854,14 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
 
   const handleTransitionComplete = useCallback(() => {
     setShowTransition(false);
-    setCurrentState('SYNTHETIC_THINKING');
+    setCurrentState('THINKING');
     onGenerationStart?.();
   }, [onGenerationStart]);
 
   // Update progress based on current state
   useEffect(() => {
     const progressMap = {
-      'SYNTHETIC_THINKING': streamingComplete ? 25 : (completedSections.length / Math.max(planningSections.length, 1)) * 25,
+      'THINKING': streamingComplete ? 25 : (completedSections.length / Math.max(planningSections.length, 1)) * 25,
       'COURSE_DETAILS': courseData ? 40 : 30,
       'ICONS_DISCOVERY': icons ? 55 : 45,
       'MODULE_STRUCTURE': allModules?.length > 0 ? 65 + (displayedModules.length / allModules.length) * 20 : 65,
@@ -889,41 +892,7 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      <motion.div
-        className="fixed inset-0"
-        animate={{
-          background: [
-            'radial-gradient(circle at 15% 25%, rgba(99,161,255,0.06) 0%, transparent 60%), radial-gradient(circle at 85% 75%, rgba(99,161,255,0.04) 0%, transparent 60%)',
-            'radial-gradient(circle at 85% 25%, rgba(99,161,255,0.04) 0%, transparent 60%), radial-gradient(circle at 15% 75%, rgba(99,161,255,0.06) 0%, transparent 60%)',
-            'radial-gradient(circle at 15% 25%, rgba(99,161,255,0.06) 0%, transparent 60%), radial-gradient(circle at 85% 75%, rgba(99,161,255,0.04) 0%, transparent 60%)'
-          ]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Floating particles */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-0.5 h-0.5 bg-blue-400/15 rounded-full"
-          style={{
-            left: `${5 + i * 12}%`,
-            top: `${10 + i * 10}%`,
-          }}
-          animate={{
-            y: [0, -400, -800],
-            x: [0, Math.sin(i * 0.3) * 40, 0],
-            opacity: [0, 0.3, 0],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: 20 + i * 4,
-            repeat: Infinity,
-            delay: i * 4,
-            ease: "easeOut"
-          }}
-        />
-      ))}
+      <AnimatedBackground />
 
       {/* Clean status bar */}
       <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-8 z-10">
@@ -944,20 +913,17 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex items-center justify-center min-h-screen px-8">
         <AnimatePresence mode="wait">
 
-          {currentState === 'SYNTHETIC_THINKING' && (
+          {currentState === 'THINKING' && (
             <div className="min-h-screen flex">
-              {/* Completed sections sidebar */}
               <AnimatePresence>
                 {completedSections.length > 0 && (
                   <CompletedSidebar completedSections={completedSections} />
                 )}
               </AnimatePresence>
 
-              {/* Main content area */}
               <motion.div
                 className="flex-1 flex items-center justify-center px-8"
                 layout
@@ -1159,7 +1125,7 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
                   </div>
                   <div className="text-center">
                     <div className="text-sm text-blue-400/60 font-mono uppercase tracking-wider mb-2">Duration</div>
-                    <div className="text-lg text-white/90">{courseData.estimatedCompletionTime}</div>
+                    <div className="text-lg text-white/90">{courseData.estimatedCompletionTime} Hours</div>
                   </div>
                 </motion.div>
               </motion.div>
@@ -1493,17 +1459,17 @@ const CourseGenerationApp = () => {
   const [generationStarted, setGenerationStarted] = useState(false);
   const [generationId, setGenerationId] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const placeholders = [
-    "Build amazing web apps",
-    "Learn machine learning fundamentals",
-    "Master Python programming",
-    "Create mobile apps with React Native",
-    "Understand blockchain technology",
-    "Design user interfaces",
-    "Build REST APIs with Node.js"
+    "I'm a beginner wanting to build web apps for my startup",
+    "Data analyst learning ML to predict customer behavior",
+    "Java dev transitioning to Python in 3 months",
+    "Complete beginner creating mobile apps for food delivery",
+    "Finance professional exploring blockchain for investments",
+    "Developer learning UI/UX design for better interfaces",
+    "Building scalable APIs for my e-commerce platform"
   ];
-
   const handleSubmit = useCallback(async (e) => {
     if (userQuery.trim() && !generationStarted && !createLoading) {
       e.preventDefault();
@@ -1518,12 +1484,18 @@ const CourseGenerationApp = () => {
         if (response.ok) {
           const result = await response.json();
           const generationId = result.data.id;
-          if (generationId) setGenerationId(generationId);
+          if (generationId) {
+            setGenerationId(generationId)
+            setShowGeneration(true);
+          };
+        }
+        if (!response.ok) {
+          const body = await response.json();
+          setErrorMessage(body.message || "Opps! Something went wrong. Please try again.");
         }
       } catch (err) {
         console.error('Failed to create course:', err);
       } finally {
-        setShowGeneration(true);
         setCreateLoading(false);
       }
     }
@@ -1552,41 +1524,7 @@ const CourseGenerationApp = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-8 relative">
-      <motion.div
-        className="fixed inset-0"
-        animate={{
-          background: [
-            'radial-gradient(circle at 15% 25%, rgba(99,161,255,0.06) 0%, transparent 60%), radial-gradient(circle at 85% 75%, rgba(99,161,255,0.04) 0%, transparent 60%)',
-            'radial-gradient(circle at 85% 25%, rgba(99,161,255,0.04) 0%, transparent 60%), radial-gradient(circle at 15% 75%, rgba(99,161,255,0.06) 0%, transparent 60%)',
-            'radial-gradient(circle at 15% 25%, rgba(99,161,255,0.06) 0%, transparent 60%), radial-gradient(circle at 85% 75%, rgba(99,161,255,0.04) 0%, transparent 60%)'
-          ]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Floating particles */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-0.5 h-0.5 bg-blue-400/15 rounded-full"
-          style={{
-            left: `${5 + i * 12}%`,
-            top: `${10 + i * 10}%`,
-          }}
-          animate={{
-            y: [0, -400, -800],
-            x: [0, Math.sin(i * 0.3) * 40, 0],
-            opacity: [0, 0.3, 0],
-            scale: [1, 1.5, 1]
-          }}
-          transition={{
-            duration: 20 + i * 4,
-            repeat: Infinity,
-            delay: i * 4,
-            ease: "easeOut"
-          }}
-        />
-      ))}
+      <AnimatedBackground />
 
       <div className="max-w-2xl w-full">
         <motion.div
@@ -1598,6 +1536,7 @@ const CourseGenerationApp = () => {
           <h1 className="text-4xl font-light mb-4 text-white/95">Generate Your Course</h1>
           <p className="text-white/60">Describe what you want to learn and we'll create a personalized course</p>
         </motion.div>
+
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1612,6 +1551,30 @@ const CourseGenerationApp = () => {
             isLoading={createLoading}
           />
         </motion.div>
+        {/* Minimal Guidelines */}
+        <motion.div
+          className="mt-6 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <p className="text-white/40 text-sm font-light">
+            Include your skill level, goals, and context for a personalized course
+          </p>
+        </motion.div>
+        {errorMessage &&
+          <motion.div
+            className="mt-6 text-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <p className="text-red-300 text-sm font-light">
+              {errorMessage}
+            </p>
+          </motion.div>
+        }
+
       </div>
     </div>
   );

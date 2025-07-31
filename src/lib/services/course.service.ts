@@ -541,5 +541,26 @@ ${userQuery}
       method: "getTemplates"
     });
   }
+  public async courseGenerationValidations(query: string, userId: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Checkin if user has  more then 2 course", { userId, query });
+      const userCourses = await this.courseRepository.list({ createdBy: userId, isFromTemplate: false });
+      if (userCourses.length == 2) {
+        throw new AppError(403, "Oops! You can't create more than 2 courses", "MAX_COURSE_REACHED", { message: "Oops! You can't create more than 2 courses" });
+      }
+      const messages = [new SystemMessage(PromptProvider.getCourseRequestValidationPrompt()), new HumanMessage(`userQuery:${query}`)]
+      const response = await this.llmService.structuredResponse(messages, z.object({
+        isValidCourseQuery: z.boolean().describe("wheter or not the query is valid"),
+        remark: z.string().describe("remark about the users query if its invalid"),
+      }), { provider: "openai", model: "gpt-4.1-mini" })
+      if (!response.parsed.isValidCourseQuery) {
+        throw new AppError(400, response.parsed.remark, "INVALID_QUERY", { message: response.parsed.remark });
+      }
+    }, {
+      service: "CourseService",
+      method: "courseGenerationValidations"
+    })
+  }
+
 }
 

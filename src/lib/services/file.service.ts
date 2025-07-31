@@ -30,6 +30,18 @@ export default class FileService {
     return completePath;
   }
 
+  public async cleanUp(folderPath: string) {
+    return this.errorHandler.handleError(async () => {
+      this.logger.info("Cleaning Up", {
+        folderPath,
+      })
+      await fs.promises.rm(folderPath, { recursive: true, force: true });
+    }, {
+      service: "FileService",
+      method: "cleanUp"
+    })
+  }
+
   public async saveFile(data: any, path: string, extension: string): Promise<string> {
     return this.errorHandler.handleError(async () => {
       await fs.promises.mkdir(path, { recursive: true });

@@ -17,8 +17,6 @@ export default function TryFriday({ text, clickHandler, isTextBox, disabled }: I
   const [loading, setLoading] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const router = useRouter();
-
-
   const handleClick = async () => {
     if (loading) return;
     console.log(input);

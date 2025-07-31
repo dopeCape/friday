@@ -34,23 +34,19 @@ export default class ScreenshotService {
         return new Promise<void>((resolve) => {
           const checkMermaidReady = () => {
             const mermaidContainers = document.querySelectorAll('[data-processed-by="mermaid"], .mermaid');
-
             if (mermaidContainers.length === 0) {
               resolve();
               return;
             }
-
             const allRendered = Array.from(mermaidContainers).every(container => {
               const isBeingFixed = container.getAttribute('data-mermaid-fixing') === 'true';
               if (isBeingFixed) {
                 return false;
               }
-
               const hasFailed = container.getAttribute('data-mermaid-failed') === 'true';
               if (hasFailed) {
                 return true;
               }
-
               const svg = container.querySelector('svg');
               return svg && svg.children.length > 0;
             });

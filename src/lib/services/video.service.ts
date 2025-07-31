@@ -15,18 +15,8 @@ import ScreenshotService from "./screenshot.service";
 import FFMPEGService from "./ffmpeg.service";
 import MemeProvider from "../providers/meme.provider";
 import BlobService from "./blob.service";
+import FileService from "./file.service";
 
-// Get video from vector store -- done
-// rank if -- done 
-// generate if not found
-//  - generate script in chunk. -- done
-//  - generate a uuid for video use that as dir name, inside that create audios , vidoes and outputs --done
-//  - generate slide + generate voice (//) -- done
-//  - stitch audio to slid - done
-//  - stick all the slides together   -- done
-//  - convert to hls 
-//
-// save to vector store
 
 export default class VideoService {
   private static instance: VideoService | null;
@@ -42,6 +32,7 @@ export default class VideoService {
   private redisService: RedisService;
   private ffmpegService: FFMPEGService;
   private memeProvider: MemeProvider
+  private fileService: FileService
   private tempDir = env.TEMP_PATH
   private TOP_K = 4;
   private VIDEO_STORE_OPTS = {
@@ -57,7 +48,8 @@ export default class VideoService {
     screenShotService: ScreenshotService,
     ffmpegService: FFMPEGService,
     memeProvider: MemeProvider,
-    blobService: BlobService
+    blobService: BlobService,
+    fileService: FileService
   ) {
     this.logger = logger;
     this.errorHandler = new CentralErrorHandler(logger);
@@ -69,6 +61,7 @@ export default class VideoService {
     this.ffmpegService = ffmpegService
     this.memeProvider = memeProvider
     this.blobService = blobService;
+    this.fileService = fileService
   }
   public static getInstance(
     logger: Logger,
@@ -79,10 +72,11 @@ export default class VideoService {
     screenShotService: ScreenshotService,
     ffmpegService: FFMPEGService,
     memeProvider: MemeProvider,
-    blobService: BlobService
+    blobService: BlobService,
+    fileService: FileService
   ) {
     if (!this.instance) {
-      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService, memeProvider, blobService);
+      this.instance = new VideoService(logger, vectorDb, llmService, ttsService, redisService, screenShotService, ffmpegService, memeProvider, blobService, fileService);
     }
     return this.instance;
   }
@@ -175,11 +169,12 @@ export default class VideoService {
       const slidesAndAudio = await this.generateAudioAndSlides(query, scriptData.scripts, videoId);
       // stitch up slide and audio.
       const videoChunks = await this.stichUpImgaeToAudios(slidesAndAudio, videoId);
+      const directoryPath = `${this.tempDir}/${videoId}/`;
       // stitch up all the video chunks together.
-      const video = await this.ffmpegService.stitchVideos({
+      await this.ffmpegService.stitchVideos({
         videoPaths: videoChunks,
-        outputPath: `${this.tempDir}/${videoId}/${this.ouptputFixedPath}`
-      })
+        outputPath: `${directoryPath}${this.ouptputFixedPath}`
+      });
       const hlsData = await this.convertToHls(videoId);
       // upload to bucket.
       await this.pushToBlob(hlsData.dirPath, videoId);
@@ -187,6 +182,7 @@ export default class VideoService {
       // save to vector store.
       await this.storeToVectorDB(videoId, scriptData.title, scriptData.description, playlistPath, opts.lang);
       // clean up the video directory.
+      await this.fileService.cleanUp(directoryPath);
       return playlistPath;
     }, {
       service: "VideoService",
@@ -324,7 +320,6 @@ current slide nurration: ${narrations[index]},
       const slideUrl = this.getRenderUrl(slideId);
       const slidePath = await this.screenShotService.takeScreenshot(slideUrl, videoId);
       return slidePath;
-
     }, {
       service: "VideoService",
       method: "generateSlide",
@@ -348,7 +343,6 @@ current slide nurration: ${narrations[index]},
     })
 
   }
-
   private async convertToHls(videoId: string) {
     return this.errorHandler.handleError(async () => {
       const outputPath = `${this.tempDir}/${videoId}/hls`;

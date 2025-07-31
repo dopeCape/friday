@@ -202,7 +202,7 @@ const VideoLatex = ({ content }) => {
       try {
         let processedContent = content.trim();
 
-        if (!processedContent.includes('
+        if (!processedContent.includes('$')) {
 
 // Shared Components
 const DottedBackground = ({ opacity = 0.05, size = '100px' }) => (

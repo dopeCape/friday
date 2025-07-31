@@ -423,8 +423,8 @@ Students should feel a sense of natural progression from the previous chapter an
         throw new AppError(404, "Invalid course", "CourseNotFound");
       }
 
-      const module = await this.moduleRepository.get({ _id: moduleId });
-      if (!module) {
+      const courseModule = await this.moduleRepository.get({ _id: moduleId });
+      if (!courseModule) {
         this.logger.error("Module not found", { moduleId });
         throw new AppError(404, "Invalid module", "ModuleNotFound");
       }
@@ -434,8 +434,8 @@ Students should feel a sense of natural progression from the previous chapter an
         throw new AppError(404, "Chapter not found", "ChapterNotFound");
       }
 
-      const currentChapterIndex = module.contents.findIndex((id) => id === chapter._id.toString());
-      const currentModuleIndex = course.moduleIds.findIndex((id) => id === module._id.toString());
+      const currentChapterIndex = courseModule.contents.findIndex((id) => id === chapter._id.toString());
+      const currentModuleIndex = course.moduleIds.findIndex((id) => id === courseModule._id.toString());
 
       if (currentChapterIndex === -1) {
         this.logger.error("Chapter not found in module contents", { chapterId, moduleId });
@@ -450,11 +450,11 @@ Students should feel a sense of natural progression from the previous chapter an
       this.logger.info("Current positions found", {
         currentChapterIndex,
         currentModuleIndex,
-        totalChapters: module.contents.length,
+        totalChapters: courseModule.contents.length,
         totalModules: course.moduleIds.length
       });
 
-      const isLastChapterInModule = currentChapterIndex === module.contents.length - 1;
+      const isLastChapterInModule = currentChapterIndex === courseModule.contents.length - 1;
       const isLastModuleInCourse = currentModuleIndex === course.moduleIds.length - 1;
 
       this.logger.info("Navigation flags", { isLastChapterInModule, isLastModuleInCourse });
@@ -512,7 +512,7 @@ Students should feel a sense of natural progression from the previous chapter an
         this.logger.info("Course current module updated", { courseId, currentModuleId: nextModuleId });
 
       } else if (!isLastChapterInModule) {
-        nextChapterId = module.contents[currentChapterIndex + 1];
+        nextChapterId = courseModule.contents[currentChapterIndex + 1];
         this.logger.info("Next chapter in current module identified", { nextChapterId });
 
         await this.moduleRepository.update({ _id: moduleId }, { currentChapterId: nextChapterId });

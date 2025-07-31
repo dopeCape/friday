@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PlaceholdersAndVanishTextarea } from "@/components/VanishInput";
 import { useRouter } from "next/navigation";
 import { CourseList } from "@/components/CourseList";
+import AnimatedBackground from '@/components/AnimatedBackground';
 interface Course {
   _id: string;
   title: string;
@@ -112,7 +113,8 @@ export default function MyCoursesPage() {
 
   if (courses.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4 relative">
+        <AnimatedBackground />
         <motion.div
           className="text-center space-y-12 max-w-md"
           initial={{ opacity: 0, y: 30 }}
@@ -169,15 +171,7 @@ export default function MyCoursesPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div
-        className="fixed inset-0 opacity-[0.015]"
-        style={{
-          backgroundImage: `radial-gradient(circle, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '160px 160px',
-        }}
-      />
-
+    <div className="min-h-screen relative">
       <div className="relative">
         <div className="pt-20 pb-16 flex items-center justify-center">
           <motion.div
@@ -196,49 +190,27 @@ export default function MyCoursesPage() {
           </motion.div>
         </div>
 
-        <div className="flex justify-center pb-20">
-          {!showCreateForm ? (
-            <motion.button
-              onClick={() => setShowCreateForm(true)}
-              className="group relative px-8 py-4 border border-dotted border-gray-700 hover:border-blue-400 text-gray-400 hover:text-blue-400 transition-all duration-300"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="relative flex items-center gap-3">
-                <span className="text-sm">+</span>
-                Create new course
-              </span>
-            </motion.button>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full max-w-2xl relative px-6"
-            >
-              <PlaceholdersAndVanishTextarea
-                placeholders={[
-                  "Advanced React patterns and architecture",
-                  "Building scalable Node.js microservices",
-                  "Modern CSS layout and animation mastery",
-                  "TypeScript for enterprise applications",
-                  "Python data science and machine learning"
-                ]}
-                onChange={(e) => setInput(e.target.value)}
-                onSubmit={handleCreateCourse}
-                isLoading={createLoading}
-              />
-              <button
-                onClick={() => setShowCreateForm(false)}
-                className="absolute -top-3 -right-3 text-gray-700 hover:text-gray-500 text-sm w-8 h-8 flex items-center justify-center transition-colors"
-              >
-                ×
-              </button>
-            </motion.div>
-          )}
-        </div>
+        <motion.div
+          className="flex justify-center pb-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <motion.button
+            onClick={() => {
+              router.push("/create-course");
+            }}
+            className="group relative px-8 py-4 border border-dotted border-gray-700 hover:border-blue-400 text-gray-400 hover:text-blue-400 transition-all duration-300"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span className="relative flex items-center gap-3">
+              <span className="text-sm">+</span>
+              Create new course
+            </span>
+          </motion.button>
+        </motion.div>
 
-        {/* Use the extracted CourseList component */}
         <CourseList
           courses={courses}
           onCourseClick={handleCourseClick}

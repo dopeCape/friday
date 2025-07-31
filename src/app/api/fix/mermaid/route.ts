@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const data = await validateBody(schema, req);
     const response = await llmService.structuredResponse(getFixingPrompt(data.diagram), oupputSchema, {
       provider: "openai",
-      model: "gpt-4o-mini"
+      model: "gpt-4.1-mini"
     });
     logger.info("Fixed mermaid diagram", { fixedDiagram: response.parsed.fixedDiagram });
     return responseCreator(200, true, "Fixed mermaid diagram", { diagram: response.parsed.fixedDiagram });
