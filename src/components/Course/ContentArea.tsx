@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { Chapter, CourseData, Module } from "@/types";
 import ChapterView from "./ChapterView";
 import { toast } from "sonner";
+import TruncatedText from './TruncatedText';
+import ModuleReferences from './ModuleReferences';
 
 interface FridayContentAreaProps {
   selectedModule: Module | null;
@@ -316,12 +318,28 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
                         {courseData.course.description}
                       </p>
 
-                      <div className="flex items-center gap-12 text-sm text-white/30">
-                        <div className="px-4 py-2 bg-[#63a1ff]/5 border border-[#63a1ff]/20 rounded-sm">
-                          {courseData.course.difficultyLevel}
+                      <div className="flex items-center justify-between pt-4">
+                        <div className="flex items-center gap-12 text-sm text-white/30">
+                          <div className="px-4 py-2 bg-[#63a1ff]/5 border border-[#63a1ff]/20 rounded-sm">
+                            {courseData.course.difficultyLevel}
+                          </div>
+                          <span>{courseData.course.estimatedCompletionTime}h</span>
+                          <span>{courseData.modules.length} modules</span>
                         </div>
-                        <span>{courseData.course.estimatedCompletionTime}h</span>
-                        <span>{courseData.modules.length} modules</span>
+                        <motion.button
+                          onClick={() => {
+                            const currentChapter = courseData.chapters.find(c => c.isActive);
+                            if (currentChapter) {
+                              onSelectChapter(currentChapter);
+                            }
+                          }}
+                          className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors duration-300"
+                          whileHover={{ scale: 1.05, y: -1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <span>Continue where you left</span>
+                          <span className="nf nf-fa-arrow_right text-xs"></span>
+                        </motion.button>
                       </div>
                     </div>
 
@@ -432,9 +450,7 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
                           }`}>
                           {module.title}
                         </h3>
-                        <p className="text-[var(--friday-mute-color)] leading-relaxed">
-                          {module.description}
-                        </p>
+                        <TruncatedText text={module.description} />
                       </div>
 
                       <div className="flex items-center gap-6 text-xs text-white/20">
@@ -503,9 +519,7 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
                   <h1 className="text-4xl text-white font-extralight mb-3">
                     {selectedModule.title}
                   </h1>
-                  <p className="text-[var(--friday-mute-color)] text-lg leading-relaxed">
-                    {selectedModule.description}
-                  </p>
+                  <TruncatedText text={selectedModule.description} />
                   <div className="flex items-center gap-8 mt-4 text-sm text-white/30">
                     <span className="capitalize">{selectedModule.difficultyLevel}</span>
                     <span>{selectedModule.estimatedCompletionTime}h</span>
@@ -513,6 +527,7 @@ const FridayContentArea: React.FC<FridayContentAreaProps> = ({
                   </div>
                 </div>
               </div>
+              {selectedModule.refs && <ModuleReferences references={selectedModule.refs} />}
             </div>
             <div className="space-y-8">
               {courseData.chapters.filter(ch => selectedModule.contents.includes(ch._id)).map((chapter, index) => (

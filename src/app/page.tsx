@@ -136,19 +136,19 @@ const CodeMatrix = () => (
           ease: "easeInOut"
         }}
       >
-        {['const', 'function', 'return', 'import', 'export', '=> {}', 'async', 'await'][Math.floor(Math.random() * 8)]}
+        {['class diagram', 'sequence flow', 'microservices', 'load balancer', 'database', 'API design', 'distributed', 'scalability'][Math.floor(Math.random() * 8)]}
       </motion.div>
     ))}
   </div>
 );
 
 const TextAnimation = () => {
-  const heading = "Code Like You Mean It";
-  const subHeading = "Stop consuming tutorials. Start building the future with AI that adapts to how you think and code.";
+  const heading = "Master Systems Through AI";
+  const subHeading = "Personalized courses that adapt to your learning style. From fundamentals to expert-level system design.";
 
   return (
     <div className="relative px-4">
-      <div className="relative flex flex-wrap justify-center z-10 text-2xl sm:text-3xl xl:text-6xl font-bold p-6">
+      <div className="relative flex flex-wrap justify-center z-10 text-xl sm:text-2xl xl:text-4xl font-semibold p-6">
         <motion.div
           initial={{
             opacity: 0,
@@ -196,7 +196,7 @@ const TextAnimation = () => {
         />
       </div>
 
-      <div className="relative text-lg sm:text-xl xl:text-3xl text-center text-gray-400 p-6 mt-4">
+      <div className="relative text-base sm:text-lg xl:text-xl text-center text-gray-400 p-6 mt-4">
         <motion.div
           initial={{
             opacity: 0,
@@ -263,40 +263,29 @@ export default function Home() {
     router.push("/create-course");
   };
 
+  const handleBeginClick = () => {
+    router.push("/create-course");
+  };
+
   return (
     <div className="min-h-screen text-white relative overflow-hidden">
       <MagneticGrid mouseX={mousePosition.x} mouseY={mousePosition.y} />
       <MorphingBlob />
       <CodeMatrix />
 
-      {/* Floating code snippets */}
+      {/* Floating code snippets - Updated for system design */}
       {[
-        'const magic = () => {}',
-        'import { future } from "ai"',
-        'export default Developer',
-        'async build() { return success }',
-        'const skills = await learn()',
-        '// TODO: change the world'
+        'class UserService { }',
+        'import { microservice } from "arch"',
+        'export default SystemDesign',
+        'async scalable() { return distributed }',
+        'const architecture = await design()',
+        '// TODO: optimize for scale'
       ].map((code, i) => (
         <FloatingCode key={code} code={code} delay={i * 4} />
       ))}
 
-      <motion.div
-        className="fixed w-3 h-3 rounded-full pointer-events-none z-50 mix-blend-difference"
-        style={{
-          left: smoothMouseX,
-          top: smoothMouseY,
-          translateX: "-50%",
-          translateY: "-50%",
-          background: "rgba(59,130,246,0.8)"
-        }}
-        animate={{
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-        }}
-      />
+      {/* Removed cursor dot component */}
 
       {/* Hero Section */}
       <AnimatePresence mode="wait">
@@ -341,7 +330,7 @@ export default function Home() {
               }}
               style={maskStyle}
             />
-            <TryFriday text="Try Friday" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} disabled={!isLoaded} />
+            <TryFriday text="Start Learning" clickHandler={handleChangeSetShow} isTextBox={showPromptInput} disabled={!isLoaded} />
           </div>
 
           <div className="h-16 mx-auto w-[30%] relative">
@@ -350,7 +339,7 @@ export default function Home() {
         </div>
       </AnimatePresence>
 
-      {/* Minimalist Philosophy */}
+      {/* Problem/Solution */}
       <section className="py-40 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -360,11 +349,11 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <h2 className="text-7xl md:text-9xl font-extralight text-white/90 mb-4 tracking-tighter">
-              Escape
+            <h2 className="text-5xl md:text-7xl font-extralight text-white/90 mb-4 tracking-tighter">
+              Beyond
             </h2>
-            <h3 className="text-4xl md:text-6xl font-light text-white/40 tracking-wider">
-              tutorial purgatory
+            <h3 className="text-2xl md:text-4xl font-light text-white/40 tracking-wider">
+              generic courses
             </h3>
           </motion.div>
 
@@ -378,22 +367,22 @@ export default function Home() {
             >
               <div className="space-y-8">
                 <motion.p
-                  className="text-2xl text-white/60 font-light leading-relaxed"
+                  className="text-lg text-white/60 font-light leading-relaxed"
                   whileHover={{ x: 10, transition: { duration: 0.3 } }}
                 >
-                  Endless tutorials that teach nothing
+                  One-size-fits-all courses that bore you
                 </motion.p>
                 <motion.p
-                  className="text-2xl text-white/60 font-light leading-relaxed"
+                  className="text-lg text-white/60 font-light leading-relaxed"
                   whileHover={{ x: 10, transition: { duration: 0.3 } }}
                 >
-                  Copy-paste code you don't understand
+                  Outdated content that doesn't evolve
                 </motion.p>
                 <motion.p
-                  className="text-2xl text-white/60 font-light leading-relaxed"
+                  className="text-lg text-white/60 font-light leading-relaxed"
                   whileHover={{ x: 10, transition: { duration: 0.3 } }}
                 >
-                  Zero portfolio to show for it
+                  Complex topics explained poorly
                 </motion.p>
               </div>
             </motion.div>
@@ -407,22 +396,22 @@ export default function Home() {
             >
               <div className="space-y-8">
                 <motion.p
-                  className="text-2xl text-blue-400/80 font-light leading-relaxed"
+                  className="text-lg text-blue-400/80 font-light leading-relaxed"
                   whileHover={{ x: -10, transition: { duration: 0.3 } }}
                 >
-                  → Build real projects from day one
+                  → AI-generated content for your level
                 </motion.p>
                 <motion.p
-                  className="text-2xl text-blue-400/80 font-light leading-relaxed"
+                  className="text-lg text-blue-400/80 font-light leading-relaxed"
                   whileHover={{ x: -10, transition: { duration: 0.3 } }}
                 >
-                  → AI that explains as you code
+                  → Multi-modal learning that adapts
                 </motion.p>
                 <motion.p
-                  className="text-2xl text-blue-400/80 font-light leading-relaxed"
+                  className="text-lg text-blue-400/80 font-light leading-relaxed"
                   whileHover={{ x: -10, transition: { duration: 0.3 } }}
                 >
-                  → Ship products people actually use
+                  → Master system design fundamentals
                 </motion.p>
               </div>
             </motion.div>
@@ -434,30 +423,30 @@ export default function Home() {
       <section className="py-40 px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2
-            className="text-7xl md:text-9xl font-extralight mb-16 tracking-tighter text-white/90"
+            className="text-5xl md:text-7xl font-extralight mb-16 tracking-tighter text-white/90"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1.5 }}
           >
-            Learn by building
+            Learn by understanding
           </motion.h2>
 
           <motion.p
-            className="text-3xl font-extralight text-white/50 max-w-3xl mx-auto leading-relaxed mb-20"
+            className="text-xl font-extralight text-white/50 max-w-3xl mx-auto leading-relaxed mb-20"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            No more theory without practice. No more tutorials without purpose.
+            AI creates the perfect learning path for complex technical topics. Text, code, diagrams, videos - whatever helps you master the concept.
           </motion.p>
 
           <div className="grid md:grid-cols-3 gap-16 mt-32">
             {[
-              { title: "Real projects", desc: "that solve real problems" },
-              { title: "Live guidance", desc: "when you need it most" },
-              { title: "Ship fast", desc: "iterate faster" }
+              { title: "Adaptive content", desc: "Generated for your skill level" },
+              { title: "Multi-modal", desc: "Text, code, diagrams, videos" },
+              { title: "Always current", desc: "Content evolves with technology" }
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -491,25 +480,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Outcomes */}
+      {/* What you'll master */}
       <section className="py-40 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.h2
-            className="text-6xl md:text-8xl font-extralight text-center mb-32 tracking-tighter text-white/90"
+            className="text-4xl md:text-6xl font-extralight text-center mb-32 tracking-tighter text-white/90"
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1.2 }}
           >
-            What you'll actually build
+            What you'll master
           </motion.h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-20">
             {[
-              { title: "SaaS Products", desc: "End-to-end applications" },
-              { title: "Developer Tools", desc: "CLI apps & extensions" },
-              { title: "AI Integrations", desc: "Smart automations" },
-              { title: "Portfolio Sites", desc: "That get you hired" }
+              { title: "System Design", desc: "High-level architecture patterns" },
+              { title: "OOP & UML", desc: "Design principles & modeling" },
+              { title: "Distributed Systems", desc: "Scalability & fault tolerance" },
+              { title: "Database Design", desc: "SQL, NoSQL & trade-offs" }
             ].map((outcome, i) => (
               <motion.div
                 key={i}
@@ -568,22 +557,22 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 1.5 }}
           >
-            <h2 className="text-8xl md:text-[12rem] font-extralight mb-8 tracking-tighter text-white/90 leading-none">
-              Ship
+            <h2 className="text-6xl md:text-8xl font-extralight mb-8 tracking-tighter text-white/90 leading-none">
+              Master
             </h2>
-            <h3 className="text-4xl md:text-6xl font-light text-white/40 mb-20 tracking-wider">
-              don't just learn
+            <h3 className="text-2xl md:text-4xl font-light text-white/40 mb-20 tracking-wider">
+              complex systems
             </h3>
 
             <motion.p
-              className="text-2xl font-extralight text-white/60 mb-32 leading-relaxed max-w-2xl mx-auto"
+              className="text-lg font-extralight text-white/60 mb-32 leading-relaxed max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              The future belongs to builders, not consumers.
-              <br />Stop watching. Start creating.
+              From computer science fundamentals to expert-level system design.
+              <br />AI-powered learning that adapts to you.
             </motion.p>
 
             <motion.button
@@ -598,8 +587,9 @@ export default function Home() {
                 borderColor: "rgba(255,255,255,0.6)"
               }}
               whileTap={{ scale: 0.98 }}
+              onClick={handleBeginClick}
             >
-              BEGIN BUILDING
+              BEGIN LEARNING
             </motion.button>
           </motion.div>
         </div>

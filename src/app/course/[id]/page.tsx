@@ -259,15 +259,10 @@ export default function Page({
     }
 
     if (updates.newCurrentChapterId) {
-      setSelectedChapter((prevChapter) => {
-        if (prevChapter && prevChapter._id === updates.newCurrentChapterId) {
-          return {
-            ...prevChapter,
-            isActive: true
-          };
-        }
-        return prevChapter;
-      });
+      const newChapter = courseData.chapters.find(c => c._id === updates.newCurrentChapterId);
+      if (newChapter) {
+        setSelectedChapter(newChapter);
+      }
     }
   }; const loadCourseData = async () => {
     const { id: courseId } = await params;
@@ -312,6 +307,11 @@ export default function Page({
   };
 
   const handleSelectChapter = async (chapter: Chapter) => {
+    const parentModule = courseData?.modules.find(m => m.contents.includes(chapter._id));
+    if (parentModule) {
+      setSelectedModule(parentModule);
+    }
+
     setIsLoading(true);
     setView('chapter');
     try {
@@ -323,7 +323,7 @@ export default function Page({
       }
     } catch (error: any) {
       console.error('Failed to load chapter content:', error);
-      setSelectedChapter(chapter);
+      setSelectedChapter(chapter); // Fallback to chapter data without content
     } finally {
       setIsLoading(false);
     }

@@ -81,7 +81,8 @@ export function getDefaultChapterService() {
   const moduleRepository = getDefaultModuleRepository();
   const videoService = getDefaultVideoService();
   const realtimeService = getDefaultRealtimeService()
-  return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository, videoService, realtimeService);
+  const searchService = getDefaultSearchService()
+  return ChapterService.getInstance(logger, chapterRepository, llmService, moduleRepository, courseRepository, videoService, realtimeService, searchService);
 }
 
 

@@ -31,12 +31,6 @@ export default function FloatingNavbar() {
         url: "/video-tutorials",
         isProtected: true,
       },
-
-      {
-        title: "Browse",
-        url: "/courses",
-        isProtected: false,
-      },
       {
         title: "My Courses",
         url: "/my-course",

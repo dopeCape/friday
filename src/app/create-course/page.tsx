@@ -689,8 +689,6 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
   const [courseId, setCourseId] = useState(null);
   const [countdown, setCountdown] = useState(5);
   const [progress, setProgress] = useState(0);
-  const [startTime] = useState(Date.now());
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [showTransition, setShowTransition] = useState(isFromInput);
   const [planningSections, setPlanningSections] = useState([]);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -832,13 +830,6 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
     }
   }, [currentSectionIndex, planningSections]);
 
-  // Timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setElapsedTime(Date.now() - startTime);
-    }, 100);
-    return () => clearInterval(timer);
-  }, [startTime]);
 
   const formatTime = (ms) => {
     const seconds = Math.floor(ms / 1000);
@@ -894,18 +885,13 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       <AnimatedBackground />
 
-      {/* Clean status bar */}
-      <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-8 z-10">
-        <div className="text-sm text-white/50 font-mono">
-          {formatTime(elapsedTime)}
-        </div>
-
+      <div className="absolute top-0 left-0 right-0 flex justify-center items-center p-8  z-10">
         <div className="text-center">
           <div className="text-xs text-white/30 mb-1 uppercase tracking-wider">Generating Course</div>
           <div className="text-sm text-white/70 italic">"{userQuery}"</div>
         </div>
 
-        <div className="text-right">
+        <div className="text-right absolute right-8">
           <div className="text-2xl font-light text-white/90">{Math.round(progress)}%</div>
           <div className="text-xs text-blue-400/60 font-mono uppercase tracking-wider">
             {currentState.replace('_', ' ')}
@@ -1455,7 +1441,7 @@ const PerfectCourseGeneration = ({ userQuery = "Build amazing web apps", onGener
 
 const CourseGenerationApp = () => {
   const [showGeneration, setShowGeneration] = useState(false);
-  const [userQuery, setUserQuery] = useState('');
+  const [userQuery, setUserQuery] = useState('sdfasdf');
   const [generationStarted, setGenerationStarted] = useState(false);
   const [generationId, setGenerationId] = useState("");
   const [createLoading, setCreateLoading] = useState(false);

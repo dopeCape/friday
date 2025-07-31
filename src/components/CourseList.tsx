@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface Course {
   _id: string;
@@ -31,6 +32,7 @@ export function CourseList({
   showProgress = true,
   className = ""
 }: CourseListProps) {
+  const router = useRouter();
   const spacingMap = {
     compact: 'space-y-16',
     normal: 'space-y-32',
@@ -41,7 +43,7 @@ export function CourseList({
     if (onCourseClick) {
       onCourseClick(courseId);
     } else {
-      window.location.href = `/courses/overview/${courseId}`;
+      router.push(`/courses/overview/${courseId}`);
     }
   };
 
@@ -72,6 +74,7 @@ interface CourseExhibitProps {
 }
 
 function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExhibitProps) {
+  const router = useRouter();
   const isEven = index % 2 === 0;
 
   const getProgressPercentage = (progress: any): number => {
@@ -83,6 +86,11 @@ function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExh
   };
 
   const progressPercentage = getProgressPercentage(course.progress);
+
+  const handleLearnClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/course/${course._id}`);
+  };
 
   return (
     <motion.div
@@ -165,6 +173,17 @@ function CourseExhibit({ course, index, onCourseClick, showProgress }: CourseExh
                 </div>
               </div>
             )}
+            <div className={`flex ${!isEven ? 'justify-end' : 'justify-start'} pt-2`}>
+                <motion.button
+                  onClick={handleLearnClick}
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-white px-4 py-2 border border-gray-800 rounded-full transition-colors duration-200 group-hover:border-blue-400/50 group-hover:bg-white/5"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Start Learning</span>
+                  <span className="nf nf-cod-arrow_right transition-transform duration-200 group-hover:translate-x-1"></span>
+                </motion.button>
+            </div>
           </div>
         </div>
 

@@ -1,3 +1,4 @@
+import ModuleReferences from "./ModuleReferences";
 import { Chapter } from "@/types";
 import { motion } from "motion/react";
 import { useRef } from "react";
@@ -60,7 +61,7 @@ const ChapterView: React.FC<ChapterViewProps> = ({
               <span>{chapter.estimatedTime || '50 minutes'}</span>
             </div>
           </motion.div>
-
+          {chapter.refs && chapter.refs.length > 0 && <ModuleReferences references={chapter.refs} />}
         </div>
 
         <ChapterContentRenderer chapter={chapter} />
