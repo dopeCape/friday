@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const currentCount = await redisService.get(videoCountKey) || 0;
     const countNumber = parseInt(currentCount.toString(), 10);
 
-    if (countNumber >= 8) {
+    if (countNumber >= 5) {
       throw new AppError(
         403,
         "Oops! You've reached your limit of 5 videos.",
@@ -67,3 +67,6 @@ export async function POST(req: NextRequest) {
     return apiErrorHandler(error as ErrorResponse);
   }
 }
+
+
+

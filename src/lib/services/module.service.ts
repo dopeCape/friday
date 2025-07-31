@@ -442,7 +442,7 @@ Next module
     return this.errorHandler.handleError(async () => {
       this.logger.info("generating chapters for module", { moduleId });
       const moduleFromDb = await this.moduleRepository.get({ _id: moduleId });
-      if (!module) {
+      if (!moduleFromDb) {
         throw new AppError(404, "Module not found", "ModuleNotFound", { moduleId });
       }
       await Promise.all(moduleFromDb.contents.map(async (chapterId) => {

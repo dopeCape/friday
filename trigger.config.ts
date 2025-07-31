@@ -1,5 +1,6 @@
 import { defineConfig } from "@trigger.dev/sdk/v3";
 import { puppeteer } from "@trigger.dev/build/extensions/puppeteer";
+import { ffmpeg } from "@trigger.dev/build/extensions/core";
 export default defineConfig({
   project: "proj_wwjkuyfnzmeopcujemqx",
   runtime: "node",
@@ -20,6 +21,6 @@ export default defineConfig({
   },
   dirs: ["./src/trigger"],
   build: {
-    extensions: [puppeteer()],
+    extensions: [puppeteer(), ffmpeg()],
   },
 });
