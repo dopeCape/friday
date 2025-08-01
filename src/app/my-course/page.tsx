@@ -116,7 +116,7 @@ export default function MyCoursesPage() {
       <div className="min-h-screen flex items-center justify-center px-4 relative">
         <AnimatedBackground />
         <motion.div
-          className="text-center space-y-12 max-w-md"
+          className="text-center space-y-12 max-w-md z-10"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
