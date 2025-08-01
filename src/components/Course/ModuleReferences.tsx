@@ -7,7 +7,7 @@ interface ModuleReferencesProps {
 }
 
 const ModuleReferences: React.FC<ModuleReferencesProps> = ({ references }) => {
-  const validLinks = references.filter(ref => ref.startsWith('http'));
+  const validLinks = references.filter(ref => ref && ref.startsWith('http'));
 
   if (validLinks.length === 0) {
     return null;
