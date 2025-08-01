@@ -133,7 +133,7 @@ export default function MyCoursesPage() {
           </div>
 
           <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => router.push("/create-course")}
             className="text-gray-500 hover:text-blue-400 text-sm transition-colors border-b border-dotted border-gray-700 hover:border-blue-400"
           >
             begin your journey
