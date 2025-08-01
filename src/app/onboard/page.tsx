@@ -317,9 +317,9 @@ export default function OnboardingPage() {
 
       toast.success("Onboarding completed successfully!");
 
-      if (user) {
-        await user.reload();
-      }
+      // if (user) {
+      //   await user.reload();
+      // }
 
       router.push("/");
     } catch (error) {
