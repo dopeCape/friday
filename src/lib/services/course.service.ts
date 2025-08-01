@@ -545,7 +545,7 @@ ${userQuery}
     return this.errorHandler.handleError(async () => {
       this.logger.info("Checkin if user has  more then 2 course", { userId, query });
       const userCourses = await this.courseRepository.list({ createdBy: userId, isFromTemplate: false });
-      if (userCourses.length == 2) {
+      if (userCourses.length >= 2) {
         throw new AppError(403, "Oops! You can't create more than 2 courses", "MAX_COURSE_REACHED", { message: "Oops! You can't create more than 2 courses" });
       }
       const messages = [new SystemMessage(PromptProvider.getCourseRequestValidationPrompt()), new HumanMessage(`userQuery:${query}`)]
