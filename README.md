@@ -52,19 +52,17 @@ I designed and built a complete, server-side pipeline that turns text into a str
     * This final video is then processed one last time to convert it into the **HLS (HTTP Live Streaming)** format, which breaks the video into small `.ts` segments and creates a `.m3u8` playlist. This is the standard for efficient, adaptive video streaming on the web.
     * The resulting HLS files are uploaded to a blob storage service for delivery.
 
-### 3. Challenge: Building a Maintainable and Testable Backend
+3. Challenge: Context-Aware Asset Discovery
 
-As the project's complexity grew, it became critical to avoid tightly-coupled code that would be difficult to debug, maintain, or test.
+A visually rich platform needs relevant icons and memes. A simple keyword search ("code" -> code_icon.png) is brittle and fails to capture the context of what the content is about. For example, a module on "Deployment" should get a rocket icon, not just a generic folder icon.
 
-**Solution: A Decoupled, Layered Architecture**
+Solution: Semantic Search with a Vector Database
 
-I implemented a classic **Service Layer** and **Repository Pattern** to structure the backend code:
+    Data Preparation: I created a script to process a large set of icons and memes. For each asset, I used an LLM to generate a rich set of metadata, including the primary concept it represents, related technologies, and common usage contexts.
 
-* **Repository Pattern (`/src/lib/repository`):** This layer is responsible for all direct database interactions. For example, `UserRepository` has methods like `getUser` and `createUser`. It completely abstracts the database, so the rest of the application doesn't need to know how the data is stored.
-* **Service Layer (`/src/lib/services`):** This layer contains the core business logic. For instance, the `CourseService` handles the logic for creating a course. It calls the `CourseRepository` to save data but also orchestrates other services, like the `LLMService` to generate content and the `IconsProvider` to find icons.
+    Embedding and Storage: The descriptive text for each asset was converted into a vector embedding (a numerical representation of its meaning) and stored in Pinecone, a vector database.
 
-This separation makes the system much easier to manage. I can test business logic without needing a live database connection (by mocking the repository), and I can change the database in the future by only updating the repository layer.
-
+    Semantic Querying: When the AI generates a course, it also generates descriptive search queries for the necessary icons (e.g., for a deployment module, it might generate "rocket, launch, production, publish"). The IconsProvider service embeds this query and uses Pinecone to find the icon whose vector is closest in meaning, resulting in a much more contextually relevant visual asset.
 ---
 
 ## 💻 Technology Stack
