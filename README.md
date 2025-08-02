@@ -52,18 +52,17 @@ I designed and built a complete, server-side pipeline that turns text into a str
     * This final video is then processed one last time to convert it into the **HLS (HTTP Live Streaming)** format, which breaks the video into small `.ts` segments and creates a `.m3u8` playlist. This is the standard for efficient, adaptive video streaming on the web.
     * The resulting HLS files are uploaded to a blob storage service for delivery.
 
-3. Challenge: Context-Aware Asset Discovery
+### 3. Challenge: Context-Aware Asset Discovery
 
-A visually rich platform needs relevant icons and memes. A simple keyword search ("code" -> code_icon.png) is brittle and fails to capture the context of what the content is about. For example, a module on "Deployment" should get a rocket icon, not just a generic folder icon.
+A visually rich platform needs relevant icons and memes. A simple keyword search (`"code" -> code_icon.png`) is brittle and fails to capture the context of what the content is about. For example, a module on "Deployment" should get a rocket icon, not just a generic folder icon.
 
-Solution: Semantic Search with a Vector Database
+**Solution: Semantic Search with a Vector Database**
 
-    Data Preparation: I created a script to process a large set of icons and memes. For each asset, I used an LLM to generate a rich set of metadata, including the primary concept it represents, related technologies, and common usage contexts.
+1. **Data Preparation:** I created a script to process a large set of icons and memes. For each asset, I used an LLM to generate a rich set of metadata, including the primary concept it represents, related technologies, and common usage contexts.
 
-    Embedding and Storage: The descriptive text for each asset was converted into a vector embedding (a numerical representation of its meaning) and stored in Pinecone, a vector database.
+2. **Embedding and Storage:** The descriptive text for each asset was converted into a vector embedding (a numerical representation of its meaning) and stored in **Pinecone**, a vector database.
 
-    Semantic Querying: When the AI generates a course, it also generates descriptive search queries for the necessary icons (e.g., for a deployment module, it might generate "rocket, launch, production, publish"). The IconsProvider service embeds this query and uses Pinecone to find the icon whose vector is closest in meaning, resulting in a much more contextually relevant visual asset.
----
+3. **Semantic Querying:** When the AI generates a course, it also generates descriptive search queries for the necessary icons (e.g., for a deployment module, it might generate "rocket, launch, production, publish"). The `IconsProvider` service embeds this query and uses Pinecone to find the icon whose vector is closest in meaning, resulting in a much more contextually relevant visual asset.---
 
 ## 💻 Technology Stack
 
