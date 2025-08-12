@@ -317,11 +317,12 @@ export default function OnboardingPage() {
 
       toast.success("Onboarding completed successfully!");
 
-      // if (user) {
-      //   await user.reload();
-      // }
+      if (user) {
+        await user.reload();
+      }
 
-      window.location.reload()
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      window.location.reload();
     } catch (error) {
       console.error('Onboarding error:', error);
 
